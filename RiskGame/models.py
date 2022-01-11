@@ -5,7 +5,7 @@ from django.db import models
 
 class GiocatoreRegistrato(models.Model):
     # campi del modello
-    NickName = models.CharField(max_length=16, primary_key=true)
+    NickName = models.CharField(max_length=16, primary_key=True)
     Nome = models.CharField(max_length=45)
     Cognome = models.CharField(max_length=45)
     Email = models.CharField(max_length=45)
@@ -13,22 +13,22 @@ class GiocatoreRegistrato(models.Model):
 
 
 class Mappa(models.Model):
-    IDMappa = models.IntegerField(primary_key=true)
+    IDMappa = models.IntegerField(primary_key=True)
     NomeMappa = models.CharField(max_length=45)
-    Autore = models.ForeignKey(GiocatoreRegistrato)
+    Autore = models.ForeignKey(GiocatoreRegistrato, on_delete=models.CASCADE)
     PercorsoMappa = models.CharField(max_length=100)
 
 
 class Partita(models.Model):
-    IDPartita = models.IntegerField(primary_key=true)
-    NumeroGiocatori = models.IntegerField
-    Difficolta = models.IntegerChoices('1', '2', '3')
-    Mappa = models.ForeignKey(Mappa)
+    IDPartita = models.IntegerField(primary_key=True)
+    NumeroGiocatori = models.IntegerField()
+    Difficolta = models.IntegerField()
+    Mappa = models.ForeignKey(Mappa, on_delete=models.CASCADE)
     Giocatori = models.ManyToManyField(GiocatoreRegistrato)
 
 
 class Statistiche(models.Model):
-    NicknameGiocatore = models.ForeignKey(GiocatoreRegistrato, primary_key=true)
+    NicknameGiocatore = models.OneToOneField(GiocatoreRegistrato, primary_key=True, on_delete=models.CASCADE)
     NumeroPartiteVinte = models.IntegerField()
     NumeroPartitePerse = models.IntegerField()
     PercentualeVinte = models.FloatField()
@@ -46,21 +46,21 @@ class Statistiche(models.Model):
 
 
 class Continente(models.Model):
-    IDContinente = models.IntegerField(primary_key=true)
+    IDContinente = models.IntegerField(primary_key=True)
     NomeContinente = models.CharField(max_length=45)
     Colore = models.CharField(max_length=45)
     NumeroTruppe = models.IntegerField()
-    Mappa = models.ForeignKey(Mappa)
+    Mappa = models.ForeignKey(Mappa, on_delete=models.CASCADE)
 
 
 class Territorio(models.Model):
-    IDTerritorio = models.IntegerField(primary_key=true)
+    IDTerritorio = models.IntegerField(primary_key=True)
     NomeTerritorio = models.CharField(max_length=45)
-    Continente = models.ForeignKey(Continente)
+    Continente = models.ForeignKey(Continente, on_delete=models.CASCADE)
 
 
 class Carta(models.Model):
-    Territorio = models.ForeignKey(Territorio)
+    Territorio = models.ForeignKey(Territorio, on_delete=models.CASCADE)
     Simbolo = models.CharField(max_length=45)
     Jolly = models.IntegerField()
 
