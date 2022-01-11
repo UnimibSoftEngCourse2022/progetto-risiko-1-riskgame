@@ -10,7 +10,6 @@ class GiocatoreRegistrato(models.Model):
     Cognome = models.CharField(max_length=45)
     Email = models.CharField(max_length=45)
     Password = models.CharField(max_length=16)
-    pass
 
 
 class Mappa(models.Model):
@@ -18,7 +17,6 @@ class Mappa(models.Model):
     NomeMappa = models.CharField(max_length=45)
     Autore = models.ForeignKey(GiocatoreRegistrato)
     PercorsoMappa = models.CharField(max_length=100)
-    pass
 
 
 class Partita(models.Model):
@@ -27,7 +25,6 @@ class Partita(models.Model):
     Difficolta = models.IntegerChoices('1', '2', '3')
     Mappa = models.ForeignKey(Mappa)
     Giocatori = models.ManyToManyField(GiocatoreRegistrato)
-    pass
 
 
 class Statistiche(models.Model):
@@ -46,7 +43,6 @@ class Statistiche(models.Model):
     NumeroTruppeGenerate = models.IntegerField()
     NumeroTruppePerse = models.IntegerField()
     NumeroPartiteGiocate = models.IntegerField()
-    pass
 
 
 class Continente(models.Model):
@@ -55,20 +51,17 @@ class Continente(models.Model):
     Colore = models.CharField(max_length=45)
     NumeroTruppe = models.IntegerField()
     Mappa = models.ForeignKey(Mappa)
-    pass
 
 
 class Territorio(models.Model):
     IDTerritorio = models.IntegerField(primary_key=true)
     NomeTerritorio = models.CharField(max_length=45)
     Continente = models.ForeignKey(Continente)
-    pass
 
 
 class Carta(models.Model):
     Territorio = models.ForeignKey(Territorio)
     Simbolo = models.CharField(max_length=45)
     Jolly = models.IntegerField()
-    pass
 
 #class GiocatoreRegistrato_Partita(models.Model): incluso in Partita
