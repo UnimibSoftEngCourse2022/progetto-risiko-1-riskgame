@@ -1,2 +1,48 @@
-<head></head>
-<body><h1>Homepage</h1></body>
+<!DOCTYPE html>
+<html style="font-size: 16px;" lang="it-IT">
+  <head>
+      {% load static %}
+    <meta name="viewport" content="width=device-width, height=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="page_type" content="np-template-header-footer-from-plugin">
+    <title>Home</title>
+    <link rel="stylesheet" href="{% static 'nicepage.css' %}" media="screen">
+<link rel="stylesheet" href="{% static 'Home/Home.css' %}" media="screen">
+    <script class="u-script" type="text/javascript" src="{% static 'jquery.js' %}" defer=""></script>
+    <script class="u-script" type="text/javascript" src="{% static 'nicepage.js' %}" defer=""></script>
+    <link id="u-theme-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i">
+    
+    
+    <script type="application/ld+json">{
+		"@context": "http://schema.org",
+		"@type": "Organization",
+		"name": "Site1"
+}</script>
+    <meta name="theme-color" content="#478ac9">
+    <meta property="og:title" content="Home">
+    <meta property="og:description" content="">
+    <meta property="og:type" content="website">
+  </head>
+  <body class="u-body"><header class="u-clearfix u-custom-color-1 u-header u-header" id="sec-3a71" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction=""><div class="u-align-left u-clearfix u-sheet u-valign-middle u-sheet-1">
+        <a href="https://nicepage.com/joomla-templates" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Registrazione<br>
+        </a>
+        <a href="{% url 'login' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-2">Accedi<br>
+        </a>
+        <a href="https://nicepage.com/joomla-templates" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-3">Ospite</a>
+      </div><style class="u-sticky-style" data-style-id="038f">.u-sticky-fixed.u-sticky-038f:before, .u-body.u-sticky-fixed .u-sticky-038f:before {
+borders: top right bottom left !important
+}</style></header>
+    <section class="u-clearfix u-custom-color-1 u-section-1" id="sec-3079">
+      <div class="u-align-left u-clearfix u-sheet u-sheet-1">
+        <img class="u-absolute-hcenter u-align-center u-expanded-height u-image u-image-contain u-image-default u-opacity u-opacity-40 u-image-1" alt="" data-image-width="719" data-image-height="485" src="{% static 'Home/MapBackground.png' %}">
+        <img class="u-image u-image-default u-image-2" src="{% static 'Home/RiskLogo.png' %}" alt="" data-image-width="900" data-image-height="400" data-animation-name="fadeIn" data-animation-duration="3000" data-animation-direction="Down" data-animation-delay="1000">
+      </div>
+    </section>
+    
+    
+
+
+  </body>
+</html>
