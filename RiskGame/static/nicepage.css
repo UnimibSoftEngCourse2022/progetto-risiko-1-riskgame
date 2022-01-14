@@ -4160,7 +4160,7 @@ textarea {
   -webkit-appearance: none;
 }
 ::-webkit-input-placeholder {
-  color: inherit;
+  color: #000000;
   opacity: 0.54;
 }
 ::-webkit-file-upload-button {
@@ -20945,7 +20945,11 @@ h6 {
 }
 .u-body {
   color: #111111;
-  background-color: #023c15;
+  background-color: #000000;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: contain;
+  background-position: center;
   --effect-scale: 1.1;
 }
 /*end-variables color*/
@@ -29762,7 +29766,7 @@ li.active > a.u-button-style.u-button-style.u-border-active-grey-25 {
 }
 .u-border-grey-30,
 .u-separator-grey-30:after {
-  border-color: #b3b3b3;
+  border-color: #000000;
   stroke: #b3b3b3;
 }
 .u-button-style.u-border-grey-30 {
@@ -35250,8 +35254,8 @@ a.u-link.u-text-hover-grey-90:hover {
         .u-container-layout.u-custom-color-1:before,
         .u-table-alt-custom-color-1 tr:nth-child(even)
         {
-            color: #ffffff;
-            background-color: #023c15;
+            color: #000000;
+           
         }
 
         .u-button-style.u-custom-color-1,

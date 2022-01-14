@@ -10,9 +10,9 @@
     <script class="u-script" type="text/javascript" src="{% static 'jquery.js' %}" defer=""></script>
     <script class="u-script" type="text/javascript" src="{% static 'nicepage.js' %}" defer=""></script>
 </head>
-<body class="u-body" data-style="blank" data-posts="" data-global-section-properties="{&quot;colorings&quot;:{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}}" data-source="blank" data-page-sections-style="[]" data-page-coloring-types="{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}" data-page-category="&quot;Basic&quot;"><section class="u-align-center u-clearfix u-custom-color-1 u-block-16f1-1" custom-posts-hash="[]" data-post-id="1815905046" data-section-properties="{&quot;grid-spacing&quot;:&quot;10&quot;,&quot;align&quot;:&quot;left&quot;,&quot;stretch&quot;:true}" data-id="16f1" data-posts-content="[{'images':[],'maps':[],'videos':[],'icons':[],'textWidth':'','textHeight':'','id':1,'headingProp':'h3','textProp':'text'}]" data-style="Form-Basic-v2" id="sec-eba7" data-source="Sketch">
+<body class="u-body" background="{% static 'SfondoMappa.png'%}" data-style="blank" data-posts="" data-global-section-properties="{&quot;colorings&quot;:{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}}" data-source="blank" data-page-sections-style="[]" data-page-coloring-types="{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}" data-page-category="&quot;Basic&quot;"><section class="u-align-center u-clearfix u-custom-color-1 u-block-16f1-1" custom-posts-hash="[]" data-post-id="1815905046" data-section-properties="{&quot;grid-spacing&quot;:&quot;10&quot;,&quot;align&quot;:&quot;left&quot;,&quot;stretch&quot;:true}" data-id="16f1" data-posts-content="[{'images':[],'maps':[],'videos':[],'icons':[],'textWidth':'','textHeight':'','id':1,'headingProp':'h3','textProp':'text'}]" data-style="Form-Basic-v2" id="sec-eba7" data-source="Sketch">
   <header class="u-clearfix u-custom-color-1 u-header u-header" id="sec-3a71" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction=""><div class="u-align-left u-clearfix u-sheet u-valign-middle u-sheet-1">
-        <a href="{% url 'home' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Ritorna alla Home<br>
+        <a href="{% url 'RiskGame:home' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Ritorna alla Home<br>
         </a>
       </div><style class="u-sticky-style" data-style-id="038f">.u-sticky-fixed.u-sticky-038f:before, .u-body.u-sticky-fixed .u-sticky-038f:before {
 borders: top left !important
@@ -20,34 +20,31 @@ borders: top left !important
     <div class="u-clearfix u-sheet u-block-16f1-2">
     
   <p class="u-text u-text-default u-block-16f1-27">Registrazione</p><div class="u-form u-block-16f1-3">
-      <form action="#" method="POST" class="u-clearfix u-form-spacing-15 u-form-vertical u-inner-form" style="padding: 15px;" source="custom" name="form">
-        
-        
+      <form action="{% url 'RiskGame:saveUserData' %}" method="POST" class="u-clearfix u-form-spacing-15 u-form-vertical u-inner-form" style="padding: 15px;" source="custom" name="form">
+        {% csrf_token %}
         <div class="u-form-group u-form-name u-block-16f1-4">
           <label for="name-6797" class="u-form-control-hidden u-label u-block-16f1-5">Name</label>
-          <input type="text" placeholder="Inserisci il tuo Nome" id="name-6797" name="name" class="u-border-1 u-border-grey-30 u-input u-input-rectangle u-block-16f1-6" required="">
+          <input type="text" placeholder="Inserisci il tuo Nome" id="name-6797" name="nome" class="u-border-1 u-border-grey-30 u-input u-input-rectangle u-block-16f1-6" required="">
         </div>
         <div class="u-form-group u-form-name u-block-16f1-15">
     <label for="name-ca1a" class="u-form-control-hidden u-label u-block-16f1-16"></label>
-    <input type="text" placeholder="Inserisci il tuo Cognome" id="name-ca1a" name="name-1" class="u-border-1 u-border-grey-30 u-input u-input-rectangle u-block-16f1-17" required="">
+    <input type="text" placeholder="Inserisci il tuo Cognome" id="name-ca1a" name="cognome" class="u-border-1 u-border-grey-30 u-input u-input-rectangle u-block-16f1-17" required="">
 </div>
         
         <div class="u-form-group u-form-name u-block-16f1-21">
     <label for="name-4bdd" class="u-form-control-hidden u-label u-block-16f1-22"></label>
-    <input type="text" placeholder="Inserisci il tuo Nickname" id="name-4bdd" name="name-2" class="u-border-1 u-border-grey-30 u-input u-input-rectangle u-block-16f1-23" required="">
+    <input type="text" placeholder="Inserisci il tuo Nickname" id="name-4bdd" name="nickname" class="u-border-1 u-border-grey-30 u-input u-input-rectangle u-block-16f1-23" required="">
 </div><div class="u-form-email u-form-group u-block-16f1-18">
     <label for="email-3022" class="u-form-control-hidden u-label u-block-16f1-19"></label>
-    <input type="email" placeholder="Inserisci un indirizzo Email" id="email-3022" name="email-1" class="u-border-1 u-border-grey-30 u-input u-input-rectangle u-block-16f1-20" required="">
+    <input type="email" placeholder="Inserisci un indirizzo Email" id="email-3022" name="email" class="u-border-1 u-border-grey-30 u-input u-input-rectangle u-block-16f1-20" required="">
 </div><div class="u-form-group u-block-16f1-24">
     <label for="text-f9ff" class="u-form-control-hidden u-label u-block-16f1-25"></label>
-    <input type="password" placeholder="Inserisci la tua Password" id="text-f9ff" name="text" class="u-border-1 u-border-grey-30 u-input u-input-rectangle u-block-16f1-26">
+    <input type="password" placeholder="Inserisci la tua Password" id="text-f9ff" name="password" class="u-border-1 u-border-grey-30 u-input u-input-rectangle u-block-16f1-26">
 </div><div class="u-align-center u-form-group u-form-submit u-block-16f1-13">
-          <a href="#" class="u-btn u-btn-submit u-button-style u-block-16f1-14">Conferma</a>
-          <input type="submit" value="submit" class="u-form-control-hidden">
+
+          <input type="submit" value="Conferma" >
         </div>
-        <div class="u-form-send-message u-form-send-success">La registrazione è avvenuta con successo!</div>
-        <div class="u-form-send-error u-form-send-message">L'email o la password sono errati. Inserire un dato valido</div>
-        <input type="hidden" value="" name="recaptchaResponse">
+
       </form>
     </div></div>
   <style data-mode="XL" data-visited="true">@media (min-width: 1200px) {
