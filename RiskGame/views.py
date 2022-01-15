@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, reverse
 from django.views.generic import TemplateView
-from RiskGame.models import GiocatoreRegistrato, Mappa
+from RiskGame.models import *
 from django.contrib import messages
 
 # Create your views here.
@@ -13,6 +13,16 @@ class HomePageView(TemplateView):
 class LoginView(TemplateView):
     template_name = "login.html"
 
+    def controlUserData(request):
+        if request.method == "POST":
+            NickName = request.POST['nickname']
+            Password = request.POST['password']
+            if GiocatoreRegistrato.objects.filter(NickName=NickName, Password=Password).exists():
+                return render(request, 'menu.html')
+            else:
+                messages.warning(request, 'i dati sono errati')
+                return render(request, 'login.html')
+
 
 class RegistrazioneView(TemplateView):
     template_name = "registrazione.html"
@@ -24,13 +34,15 @@ class RegistrazioneView(TemplateView):
             Cognome = request.POST['cognome']
             Email = request.POST['email']
             Password = request.POST['password']
-            GiocatoreRegistrato.objects.create(Nome=Nome, Cognome=Cognome, NickName=NickName,
+            try:
+                GiocatoreRegistrato.objects.create(Nome=Nome, Cognome=Cognome, NickName=NickName,
                                                                       Email=Email,
                                                                       Password=Password)
-            messages.success(request, 'I dati sono stati salvati')
-            return redirect(reverse('RiskGame:home'))
-
-        return render(request, 'registrazione.html')
+            except:
+                print("Dati già esistenti")
+                return render(request, 'registrazione.html')
+            print("Altrimenti")
+            return render(request, 'menu.html')
 
 
 class MenuView(TemplateView):
@@ -51,15 +63,10 @@ class CreazioneView(TemplateView):
             return render(request, self.template_name, {'mappe': mappe})
 
 
+class PartecipaView(TemplateView):
+    template_name = "partecipa.html"
 
+    def loadPartite(request):
+        temp_data = Partita.objects.all()
+        return render(request, "partecipa.html", {"partita_package": temp_data})
 
-
-def controlUserData(request):
-    if request.method == "POST":
-        NickName = request.POST['nickname']
-        Password = request.POST['password']
-        if GiocatoreRegistrato.objects.filter(NickName=NickName,Password=Password).exists():
-            return render(request, 'menu.html')
-        else:
-            messages.warning(request, 'i dati sono errati')
-            return render(request, 'login.html')

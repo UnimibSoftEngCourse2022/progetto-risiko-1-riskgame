@@ -12,16 +12,65 @@
 
 <body class="u-body" background="{% static 'SfondoMappa.png'%}" data-style="blank" data-posts="" data-global-section-properties="{&quot;colorings&quot;:{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}}" data-source="blank" data-page-sections-style="[]" data-page-coloring-types="{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}" data-page-category="&quot;Basic&quot;"><section class="u-clearfix u-custom-color-1 u-block-702b-1" custom-posts-hash="[]" data-style="blank" data-section-properties="{&quot;margin&quot;:&quot;none&quot;,&quot;stretch&quot;:true}" id="sec-341e" data-source="Blank" data-id="702b">
   <header class="u-clearfix u-custom-color-1 u-header u-header" id="sec-3a71" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction=""><div class="u-align-left u-clearfix u-sheet u-valign-middle u-sheet-1">
-        <a href="{% url 'RiskGame:home' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Logout<br>
+        <a href="{% url 'RiskGame:menu' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Menu<br>
         </a>
-      </div><style class="u-sticky-style" data-style-id="038f">.u-sticky-fixed.u-sticky-038f:before, .u-body.u-sticky-fixed .u-sticky-038f:before {
+      </div>
+      <style class="u-sticky-style" data-style-id="038f">.u-sticky-fixed.u-sticky-038f:before, .u-body.u-sticky-fixed .u-sticky-038f:before {
 borders: top right !important
 }</style></header>
     <div class="u-clearfix u-sheet u-block-702b-2">
-      <a href="{% url 'RiskGame:creazione' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-block-702b-3">Crea una partita</a>
-      <a href="{% url 'RiskGame:partecipa' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-block-702b-4">Partecipa a una partita<br></a>
-      <a href="{% url 'RiskGame:impostazione' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-block-702b-5">Impostazioni<br></a></div>
+        <div class="container">
+            <table>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            {% for partita in partita_package %}
+                <div class="tile-partita">
+                    <center>
+                        <font size="5" color="blue">Partita {{ partita.IDPartita }}</font><br>
+                        <img src="{{ partita.Mappa }}"><hr>
+                        Numero giocatori: {{ partita.NumeroGiocatori }}/6<br>
+                        Difficoltà:
+                        {% if partita.Difficolta == 1 %}
+                            Semplice
+                        {% elif partita.Difficolta == 2 %}
+                            Media
+                        {% else %}
+                            Difficile
+                        {% endif %}<hr>
+                        <b>Giocatori:</b>
+                        {% for giocatore in partita.Giocatori.all %}
+                            <br>{{ giocatore.NickName }}
+                        {% endfor %}<hr>
+                        <a href="{% url 'RiskGame:partecipa' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Partecipa<br></a>
+                    </center>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 <style data-mode="XL" data-visited="true">@media (min-width: 1200px) {
+
+  .container {
+    display: flex;
+    flex-direction: row;
+    padding: 10px 0 40px 0px;
+  }
+
+  .tile-partita {
+      display: flex;
+      flex-direction: column;
+      margin-right: 10px;
+      min-width: 300px;
+      max-width: 300px;
+      border: 1px solid #e5e5e5;
+      border-radius: 5px;
+      background-color: rgba(255,255,255,0.5);
+      align: center;
+  }
+
   .u-block-702b-2 {
     min-height: 500px;
   }

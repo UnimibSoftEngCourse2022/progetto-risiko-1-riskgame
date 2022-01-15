@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import HomePageView, LoginView, RegistrazioneView, MenuView, CreazioneView, ImpostazioniView
+from .views import *
 from . import views
+
 app_name = "RiskGame"
 
 urlpatterns = [
@@ -11,5 +12,6 @@ urlpatterns = [
     path("crea-partita", CreazioneView.as_view(), name="creazione"),
     path("settings", ImpostazioniView.as_view(), name="impostazione"),
     path("registrazione-salvataggio", views.RegistrazioneView.saveUserData, name="saveUserData"),
-    path("login-control", views.controlUserData, name="controlUserData"),
+    path("login-control", views.LoginView.controlUserData, name="controlUserData"),
+    path("match-list", views.PartecipaView.loadPartite, name="partecipa")
 ]
