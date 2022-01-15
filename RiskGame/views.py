@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, reverse
 from django.views.generic import TemplateView
-from . import models
-
+from RiskGame.models import GiocatoreRegistrato, Mappa
+from django.contrib import messages
 
 # Create your views here.
 
@@ -17,7 +17,20 @@ class LoginView(TemplateView):
 class RegistrazioneView(TemplateView):
     template_name = "registrazione.html"
 
+    def saveUserData(request):
+        if request.method == "POST":
+            NickName = request.POST['nickname']
+            Nome = request.POST['nome']
+            Cognome = request.POST['cognome']
+            Email = request.POST['email']
+            Password = request.POST['password']
+            GiocatoreRegistrato.objects.create(Nome=Nome, Cognome=Cognome, NickName=NickName,
+                                                                      Email=Email,
+                                                                      Password=Password)
+            messages.success(request, 'I dati sono stati salvati')
+            return redirect(reverse('RiskGame:home'))
 
+        return render(request, 'registrazione.html')
 
 
 class MenuView(TemplateView):
@@ -38,14 +51,15 @@ class CreazioneView(TemplateView):
             return render(request, self.template_name, {'mappe': mappe})
 
 
-def saveUserData(request):
-        if request.method == "POST":
-            NickName = request.POST['nickname']
-            Nome = request.POST['nome']
-            Cognome = request.POST['cognome']
-            Email = request.POST['email']
-            Password = request.POST['password']
-            GiocatoreRegistrato.objects.create(Nome=Nome, Cognome=Cognome, NickName=NickName, Email=Email,
-                                               Password=Password)
-            messages.success(request, 'I dati sono stati salvati')
-        return render(request, 'registrazione.html')
+
+
+
+def controlUserData(request):
+    if request.method == "POST":
+        NickName = request.POST['nickname']
+        Password = request.POST['password']
+        if GiocatoreRegistrato.objects.filter(NickName=NickName,Password=Password).exists():
+            return render(request, 'menu.html')
+        else:
+            messages.warning(request, 'i dati sono errati')
+            return render(request, 'login.html')

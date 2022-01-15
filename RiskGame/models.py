@@ -12,6 +12,8 @@ class GiocatoreRegistrato(models.Model):
     Password = models.CharField(max_length=16)
 
 
+
+
 class Mappa(models.Model):
     IDMappa = models.IntegerField(primary_key=True)
     NomeMappa = models.CharField(max_length=45)
