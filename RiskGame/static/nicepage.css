@@ -4685,6 +4685,9 @@ ol {
 .u-btn.disabled,
 .u-btn[disabled] {
   opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #9c9c9c !important;
+  color: white !important;
 }
 .u-btn-circle {
   border-radius: 50%;
