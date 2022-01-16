@@ -7,9 +7,10 @@ urlpatterns = [
     path("", HomePageView.as_view(), name="home"),
     path("login", LoginView.as_view(), name="login"),
     path("registrazione", RegistrazioneView.as_view(), name="registrazione"),
+    path('registrazione/', views.register, name='register'),
     path("menu", MenuView.as_view(), name="menu"),
     path("crea-partita", CreazioneView.as_view(), name="creazione"),
     path("settings", ImpostazioniView.as_view(), name="impostazione"),
-    path("registrazione-salvataggio", views.saveUserData, name="saveUserData"),
+    # path("registrazione-salvataggio", views.saveUserData, name="saveUserData"),
 
 ]
