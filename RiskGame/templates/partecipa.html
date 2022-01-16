@@ -20,13 +20,6 @@ borders: top right !important
 }</style></header>
     <div class="u-clearfix u-sheet u-block-702b-2">
         <div class="container">
-            <table>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </table>
             {% for partita in partita_package %}
                 <div class="tile-partita">
                     <center>
@@ -62,6 +55,8 @@ borders: top right !important
   .container {
     display: flex;
     flex-direction: row;
+    flex: 1 1 auto;
+    overflow: auto;
     padding: 10px 0 40px 0px;
   }
 
