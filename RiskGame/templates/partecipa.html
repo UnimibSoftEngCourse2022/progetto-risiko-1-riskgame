@@ -24,7 +24,9 @@ borders: top right !important
                 <div class="tile-partita">
                     <center>
                         <font size="5" color="blue">Partita {{ partita.IDPartita }}</font><br>
-                        <img src="{{ partita.Mappa.PercorsoMappa }}"><hr>
+                        {% with 'mappe/'|add:partita.Mappa.PercorsoMappa as percorso %}
+                            <img src="{% static percorso %}" width="200" height="130"><hr>
+                        {% endwith %}
                         <b>Numero giocatori:</b> {{ partita.NumeroGiocatori }}/6<br>
                         <b>Difficoltà:</b>
                         {% if partita.Difficolta == 1 %}
@@ -51,6 +53,10 @@ borders: top right !important
         </div>
     </div>
 <style data-mode="XL" data-visited="true">@media (min-width: 1200px) {
+
+  img {
+    border: 1px solid white;
+  }
 
   .container {
     display: flex;
