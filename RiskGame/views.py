@@ -70,3 +70,6 @@ class PartecipaView(TemplateView):
         temp_data = Partita.objects.all()
         return render(request, "partecipa.html", {"partita_package": temp_data})
 
+
+class PartitaView(TemplateView):
+    template_name = "partita.html"

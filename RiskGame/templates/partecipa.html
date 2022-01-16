@@ -41,7 +41,7 @@ borders: top right !important
                             {% endfor %}
                         </div><hr>
                         {% if partita.NumeroGiocatori < 6 %}
-                            <a href="{% url 'RiskGame:partecipa' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Partecipa</a>
+                            <a href="{% url 'RiskGame:partita' partita.IDPartita %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Partecipa</a>
                         {% else %}
                             <div class="u-btn" disabled>Partecipa</div>
                         {% endif %}

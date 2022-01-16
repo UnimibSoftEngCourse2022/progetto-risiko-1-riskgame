@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from .views import *
 from . import views
 
@@ -13,5 +13,6 @@ urlpatterns = [
     path("settings", ImpostazioniView.as_view(), name="impostazione"),
     path("registrazione-salvataggio", views.RegistrazioneView.saveUserData, name="saveUserData"),
     path("login-control", views.LoginView.controlUserData, name="controlUserData"),
-    path("match-list", views.PartecipaView.loadPartite, name="partecipa")
+    path("match-list", views.PartecipaView.loadPartite, name="partecipa"),
+    path('partita<PartitaID>', PartitaView.as_view(), name="partita")
 ]
