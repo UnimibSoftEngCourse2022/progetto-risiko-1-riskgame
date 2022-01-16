@@ -1,246 +1,321 @@
 <!DOCTYPE html>
 <html style="font-size: 16px;">
 {% load static %}
+{% load crispy_forms_tags %}
+
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="utf-8">
-    <meta name="keywords" content=""><meta name="description" content=""><meta name="page_type" content="np-template-header-footer-from-plugin">
-    <title>Login</title>
-    <link rel="stylesheet" href="{% static 'nicepage.css' %}" media="screen">
-    <script class="u-script" type="text/javascript" src="{% static 'jquery.js' %}" defer=""></script>
-    <script class="u-script" type="text/javascript" src="{% static 'nicepage.js' %}" defer=""></script>
-<body class="u-body" background ="{% static 'SfondoMappa.png' %}" data-style="login-template-1" data-posts="" data-global-section-properties="{&quot;code&quot;:&quot;LOGIN&quot;,&quot;colorings&quot;:{&quot;light&quot;:[&quot;clean&quot;,&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;,&quot;clean&quot;,&quot;clean&quot;],&quot;dark&quot;:[&quot;clean&quot;,&quot;clean&quot;,&quot;clean&quot;]},&quot;isPreset&quot;:true}" data-source="fix" data-page-sections-style="[{&quot;name&quot;:&quot;login-form-1&quot;,&quot;margin&quot;:&quot;both&quot;,&quot;repeat&quot;:false}]" data-page-coloring-types="{&quot;light&quot;:[&quot;clean&quot;,&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;,&quot;clean&quot;,&quot;clean&quot;],&quot;dark&quot;:[&quot;clean&quot;,&quot;clean&quot;,&quot;clean&quot;]}" data-page-category="&quot;Login&quot;"><section class="u-align-center u-clearfix u-custom-color-1 u-block-06f6-1" custom-posts-hash="T" data-section-properties="{&quot;margin&quot;:&quot;both&quot;,&quot;stretch&quot;:true}" data-id="06f6" data-style="login-form-1" id="sec-cf98">
-    <header class="u-clearfix u-custom-color-1 u-header u-header" id="sec-3a71" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction="">
-        <div class="u-align-left u-clearfix u-sheet u-valign-middle u-sheet-1">
-        <a href="{%url 'home' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Ritorna alla Home<br>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="page_type" content="np-template-header-footer-from-plugin">
+  <title>Login</title>
+  <link rel="stylesheet" href="{% static 'nicepage.css' %}" media="screen">
+  <script class="u-script" type="text/javascript" src="{% static 'jquery.js' %}" defer=""></script>
+  <script class="u-script" type="text/javascript" src="{% static 'nicepage.js' %}" defer=""></script>
+
+<body class="u-body" background="{% static 'SfondoMappa.png' %}" data-style="login-template-1" data-posts=""
+  data-global-section-properties="{&quot;code&quot;:&quot;LOGIN&quot;,&quot;colorings&quot;:{&quot;light&quot;:[&quot;clean&quot;,&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;,&quot;clean&quot;,&quot;clean&quot;],&quot;dark&quot;:[&quot;clean&quot;,&quot;clean&quot;,&quot;clean&quot;]},&quot;isPreset&quot;:true}"
+  data-source="fix"
+  data-page-sections-style="[{&quot;name&quot;:&quot;login-form-1&quot;,&quot;margin&quot;:&quot;both&quot;,&quot;repeat&quot;:false}]"
+  data-page-coloring-types="{&quot;light&quot;:[&quot;clean&quot;,&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;,&quot;clean&quot;,&quot;clean&quot;],&quot;dark&quot;:[&quot;clean&quot;,&quot;clean&quot;,&quot;clean&quot;]}"
+  data-page-category="&quot;Login&quot;">
+  <section class="u-align-center u-clearfix u-custom-color-1 u-block-06f6-1" custom-posts-hash="T"
+    data-section-properties="{&quot;margin&quot;:&quot;both&quot;,&quot;stretch&quot;:true}" data-id="06f6"
+    data-style="login-form-1" id="sec-cf98">
+    <header class="u-clearfix u-custom-color-1 u-header u-header" id="sec-3a71" data-animation-name=""
+      data-animation-duration="0" data-animation-delay="0" data-animation-direction="">
+      <div class="u-align-left u-clearfix u-sheet u-valign-middle u-sheet-1">
+        <a href="{% url 'RiskGame:home' %}"
+          class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Ritorna alla
+          Home<br>
         </a>
-      </div><style class="u-sticky-style" data-style-id="038f">.u-sticky-fixed.u-sticky-038f:before, .u-body.u-sticky-fixed .u-sticky-038f:before {
-      borders: top left !important
-      }</style></header>
-  <div class="u-clearfix u-sheet u-block-06f6-2">
-    <div class="u-form u-login-control u-block-06f6-24">
-      <form action="#" method="POST" class="u-clearfix u-form-custom-backend u-form-spacing-10 u-form-vertical u-inner-form" source="custom" name="form" style="padding: 10px;">
-          {% csrf_token %}
-        <div class="u-form-group u-form-name u-block-06f6-25">
-          <label for="username-a30d" class="u-label u-block-06f6-26">Nickname</label>
-          <input type="text" placeholder="Inserisci il tuo Nickname" id="username-a30d" name="username" class="u-border-grey-30 u-input u-input-rectangle u-block-06f6-27" required="">
+      </div>
+      <style class="u-sticky-style" data-style-id="038f">
+        .u-sticky-fixed.u-sticky-038f:before,
+        .u-body.u-sticky-fixed .u-sticky-038f:before {
+          borders: top left !important
+        }
+      </style>
+    </header>
+
+
+    <div class="content-section">
+      <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+          <legend class="border-bottom mb-4">Login</legend>
+          {{ form|crispy }}
+        </fieldset>
+        <div class="form-group">
+          <button class="btn btn-outline-info" type="submit">Login</button>
         </div>
-        <div class="u-form-group u-form-password u-block-06f6-28">
-          <label for="password-a30d" class="u-label u-block-06f6-29">Password </label>
-          <input type="text" placeholder="Inserisci la tua Password" id="password-a30d" name="password" class="u-border-grey-30 u-input u-input-rectangle u-block-06f6-30" required="">
-        </div>
-        <div class="u-form-checkbox u-form-group u-block-06f6-31">
-          <input type="checkbox" id="checkbox-a30d" name="remember" value="On">
-          <label for="checkbox-a30d" class="u-label u-block-06f6-32">Remember me</label>
-        </div>
-        <div class="u-align-left u-form-group u-form-submit u-block-06f6-33">
-          <a href="#" class="u-btn u-btn-submit u-button-style u-block-06f6-34">Login</a>
-          <input type="submit" value="submit" class="u-form-control-hidden">
-        </div>
-        <input type="hidden" value="" name="recaptchaResponse">
-        
-        
       </form>
+      <div class="border-top pt-3">
+        <small class="text-muted">
+          Need An Account? <a class="ml-2" href="{% url 'RiskGame:registrazione' %}">Sign Up Now</a>
+        </small>
+      </div>
     </div>
-    
-    <a href="{% url 'registrazione' %}" class="u-border-1 u-border-active-palette-2-base u-border-hover-palette-1-base u-btn u-button-style u-login-control u-login-create-account u-none u-text-palette-1-base u-block-06f6-23">Non hai un account?</a>
+
+    <style data-mode="XL" data-visited="true">
+      @media (min-width: 1200px) {
+        .u-block-06f6-1 {
+          background-image: none;
+        }
+
+        .u-block-06f6-2 {
+          min-height: 493px;
+        }
+
+        .u-block-06f6-24 {
+          width: 570px;
+          margin-top: 80px;
+          margin-left: auto;
+          margin-right: auto;
+          margin-bottom: 0;
+        }
+
+        .u-block-06f6-27 {
+          background-image: none;
+        }
+
+        .u-block-06f6-30 {
+          background-image: none;
+        }
+
+        .u-block-06f6-34 {
+          width: 100%;
+          padding-top: 10px;
+          padding-right: 30px;
+          padding-bottom: 10px;
+          padding-left: 30px;
+        }
+
+        .u-block-06f6-23 {
+          border-style: none none solid;
+          margin-top: 30px;
+          margin-left: auto;
+          margin-right: auto;
+          margin-bottom: 0;
+          padding-top: 0;
+          padding-bottom: 0;
+          padding-left: 0;
+          padding-right: 0;
+        }
+      }
+    </style>
+    <style data-mode="LG" data-visited="true">
+      @media (max-width: 1199px) and (min-width: 992px) {
+        .u-block-06f6-1 {
+          background-image: none;
+        }
+
+        .u-block-06f6-2 {
+          min-height: 493px;
+        }
+
+        .u-block-06f6-24 {
+          width: 570px;
+          margin-top: 80px;
+          margin-right: auto;
+          margin-bottom: 0;
+          margin-left: auto;
+        }
+
+        .u-block-06f6-27 {
+          background-image: none;
+        }
+
+        .u-block-06f6-30 {
+          background-image: none;
+        }
+
+        .u-block-06f6-34 {
+          width: 100%;
+          padding-top: 10px;
+          padding-right: 30px;
+          padding-bottom: 10px;
+          padding-left: 30px;
+        }
+
+        .u-block-06f6-23 {
+          border-style: none none solid;
+          margin-top: 30px;
+          margin-right: 185px;
+          margin-bottom: 60px;
+          margin-left: auto;
+          padding-top: 0;
+          padding-bottom: 0;
+          padding-left: 0;
+          padding-right: 0;
+        }
+      }
+    </style>
+    <style data-mode="MD" data-visited="true">
+      @media (max-width: 991px) and (min-width: 768px) {
+        .u-block-06f6-1 {
+          background-image: none;
+        }
+
+        .u-block-06f6-2 {
+          min-height: 493px;
+        }
+
+        .u-block-06f6-24 {
+          width: 570px;
+          margin-top: 80px;
+          margin-right: auto;
+          margin-bottom: 0;
+          margin-left: auto;
+        }
+
+        .u-block-06f6-27 {
+          background-image: none;
+        }
+
+        .u-block-06f6-30 {
+          background-image: none;
+        }
+
+        .u-block-06f6-34 {
+          width: 100%;
+          padding-top: 10px;
+          padding-right: 30px;
+          padding-bottom: 10px;
+          padding-left: 30px;
+        }
+
+        .u-block-06f6-23 {
+          border-style: none none solid;
+          margin-top: 30px;
+          margin-right: 75px;
+          margin-bottom: 60px;
+          margin-left: auto;
+          padding-top: 0;
+          padding-bottom: 0;
+          padding-left: 0;
+          padding-right: 0;
+        }
+      }
+    </style>
+    <style data-mode="SM">
+      @media (max-width: 767px) and (min-width: 576px) {
+        .u-block-06f6-1 {
+          background-image: none;
+        }
+
+        .u-block-06f6-2 {
+          min-height: 493px;
+        }
+
+        .u-block-06f6-24 {
+          width: 540px;
+          margin-top: 80px;
+          margin-right: auto;
+          margin-bottom: 0;
+          margin-left: auto;
+        }
+
+        .u-block-06f6-27 {
+          background-image: none;
+        }
+
+        .u-block-06f6-30 {
+          background-image: none;
+        }
+
+        .u-block-06f6-34 {
+          width: 100%;
+          padding-top: 10px;
+          padding-right: 30px;
+          padding-bottom: 10px;
+          padding-left: 30px;
+        }
+
+        .u-block-06f6-23 {
+          border-style: none none solid;
+          margin-bottom: 60px;
+          margin-top: 30px;
+          padding-top: 0;
+          padding-bottom: 0;
+          padding-left: 0;
+          padding-right: 0;
+          margin-left: auto;
+          margin-right: auto;
+        }
+      }
+    </style>
+    <style data-mode="XS">
+      @media (max-width: 575px) {
+        .u-block-06f6-1 {
+          background-image: none;
+        }
+
+        .u-block-06f6-2 {
+          min-height: 493px;
+        }
+
+        .u-block-06f6-24 {
+          width: 340px;
+          margin-top: 80px;
+          margin-right: auto;
+          margin-bottom: 0;
+          margin-left: auto;
+        }
+
+        .u-block-06f6-27 {
+          background-image: none;
+        }
+
+        .u-block-06f6-30 {
+          background-image: none;
+        }
+
+        .u-block-06f6-34 {
+          width: 100%;
+          padding-top: 10px;
+          padding-right: 30px;
+          padding-bottom: 10px;
+          padding-left: 30px;
+        }
+
+        .u-block-06f6-23 {
+          border-style: none none solid;
+          margin-bottom: 60px;
+          margin-top: 30px;
+          padding-top: 0;
+          padding-bottom: 0;
+          padding-left: 0;
+          padding-right: 0;
+          margin-left: auto;
+          margin-right: auto;
+        }
+      }
+    </style>
+
+  </section>
+
+</body>
+
+</html>
+<!--
+
+<div class="content-section">
+  <form method="POST">
+    {% csrf_token %}
+    <fieldset class="form-group">
+      <legend class="border-bottom mb-4">Log In</legend>
+      {{ form }}
+    </fieldset>
+    <div class="form-group">
+      <button class="btn btn-outline-info" type="submit">Login</button>
+    </div>
+  </form>
+  <div class="border-top pt-3">
+    <small class="text-muted">
+      Need An Account? <a class="ml-2" href="{% url 'RiskGame:registrazione' %}">Sign Up Now</a>
+    </small>
   </div>
-  <style data-mode="XL" data-visited="true">@media (min-width: 1200px) {
-  .u-block-06f6-1 {
-    background-image: none;
-  }
-  .u-block-06f6-2 {
-    min-height: 493px;
-  }
-  .u-block-06f6-24 {
-    width: 570px;
-    margin-top: 80px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 0;
-  }
-  .u-block-06f6-27 {
-    background-image: none;
-  }
-  .u-block-06f6-30 {
-    background-image: none;
-  }
-  .u-block-06f6-34 {
-    width: 100%;
-    padding-top: 10px;
-    padding-right: 30px;
-    padding-bottom: 10px;
-    padding-left: 30px;
-  }
-  .u-block-06f6-23 {
-    border-style: none none solid;
-    margin-top: 30px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    padding-left: 0;
-    padding-right: 0;
-  }
-}</style>
-  <style data-mode="LG" data-visited="true">@media (max-width: 1199px) and (min-width: 992px) {
-  .u-block-06f6-1 {
-    background-image: none;
-  }
-  .u-block-06f6-2 {
-    min-height: 493px;
-  }
-  .u-block-06f6-24 {
-    width: 570px;
-    margin-top: 80px;
-    margin-right: auto;
-    margin-bottom: 0;
-    margin-left: auto;
-  }
-  .u-block-06f6-27 {
-    background-image: none;
-  }
-  .u-block-06f6-30 {
-    background-image: none;
-  }
-  .u-block-06f6-34 {
-    width: 100%;
-    padding-top: 10px;
-    padding-right: 30px;
-    padding-bottom: 10px;
-    padding-left: 30px;
-  }
-  .u-block-06f6-23 {
-    border-style: none none solid;
-    margin-top: 30px;
-    margin-right: 185px;
-    margin-bottom: 60px;
-    margin-left: auto;
-    padding-top: 0;
-    padding-bottom: 0;
-    padding-left: 0;
-    padding-right: 0;
-  }
-}</style>
-  <style data-mode="MD" data-visited="true">@media (max-width: 991px) and (min-width: 768px) {
-  .u-block-06f6-1 {
-    background-image: none;
-  }
-  .u-block-06f6-2 {
-    min-height: 493px;
-  }
-  .u-block-06f6-24 {
-    width: 570px;
-    margin-top: 80px;
-    margin-right: auto;
-    margin-bottom: 0;
-    margin-left: auto;
-  }
-  .u-block-06f6-27 {
-    background-image: none;
-  }
-  .u-block-06f6-30 {
-    background-image: none;
-  }
-  .u-block-06f6-34 {
-    width: 100%;
-    padding-top: 10px;
-    padding-right: 30px;
-    padding-bottom: 10px;
-    padding-left: 30px;
-  }
-  .u-block-06f6-23 {
-    border-style: none none solid;
-    margin-top: 30px;
-    margin-right: 75px;
-    margin-bottom: 60px;
-    margin-left: auto;
-    padding-top: 0;
-    padding-bottom: 0;
-    padding-left: 0;
-    padding-right: 0;
-  }
-}</style>
-  <style data-mode="SM">@media (max-width: 767px) and (min-width: 576px) {
-  .u-block-06f6-1 {
-    background-image: none;
-  }
-  .u-block-06f6-2 {
-    min-height: 493px;
-  }
-  .u-block-06f6-24 {
-    width: 540px;
-    margin-top: 80px;
-    margin-right: auto;
-    margin-bottom: 0;
-    margin-left: auto;
-  }
-  .u-block-06f6-27 {
-    background-image: none;
-  }
-  .u-block-06f6-30 {
-    background-image: none;
-  }
-  .u-block-06f6-34 {
-    width: 100%;
-    padding-top: 10px;
-    padding-right: 30px;
-    padding-bottom: 10px;
-    padding-left: 30px;
-  }
-  .u-block-06f6-23 {
-    border-style: none none solid;
-    margin-bottom: 60px;
-    margin-top: 30px;
-    padding-top: 0;
-    padding-bottom: 0;
-    padding-left: 0;
-    padding-right: 0;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}</style>
-  <style data-mode="XS">@media (max-width: 575px) {
-  .u-block-06f6-1 {
-    background-image: none;
-  }
-  .u-block-06f6-2 {
-    min-height: 493px;
-  }
-  .u-block-06f6-24 {
-    width: 340px;
-    margin-top: 80px;
-    margin-right: auto;
-    margin-bottom: 0;
-    margin-left: auto;
-  }
-  .u-block-06f6-27 {
-    background-image: none;
-  }
-  .u-block-06f6-30 {
-    background-image: none;
-  }
-  .u-block-06f6-34 {
-    width: 100%;
-    padding-top: 10px;
-    padding-right: 30px;
-    padding-bottom: 10px;
-    padding-left: 30px;
-  }
-  .u-block-06f6-23 {
-    border-style: none none solid;
-    margin-bottom: 60px;
-    margin-top: 30px;
-    padding-top: 0;
-    padding-bottom: 0;
-    padding-left: 0;
-    padding-right: 0;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}</style>
-
-</section>
-
-</body></html>
+</div>
+-->

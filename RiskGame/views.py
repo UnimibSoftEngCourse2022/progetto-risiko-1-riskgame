@@ -15,7 +15,7 @@ def register(request):
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}!')
-            return redirect('RiskGame:home')
+            return redirect('login')
     else:
         form = UserRegisterForm()
     return render(request, 'registrazione.html', {'form': form})
@@ -25,8 +25,8 @@ class HomePageView(TemplateView):
     template_name = "home.html"
 
 
-class LoginView(TemplateView):
-    template_name = "login.html"
+# class LoginView(TemplateView):
+ #   template_name = "login.html"
 
 
 class RegistrazioneView(TemplateView):
