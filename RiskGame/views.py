@@ -73,3 +73,27 @@ class StatisticheView(TemplateView):
             "statistiche": statistica
         }
         return render(request, template_name, stats)
+
+class CredenzialiView(TemplateView):
+    def draw(request):
+        template_name="credenziali.html"
+        credenziali = GiocatoreRegistrato.objects.all()
+        cred = {
+            "credenziali" : credenziali
+        }
+        return render(request, template_name, cred)
+    def updateData(request):
+        if request.method == "POST":
+            NickName = request.POST['nickname']
+            Nome = request.POST['nome']
+            Cognome = request.POST['cognome']
+            Email = request.POST['email']
+            Password = request.POST['password']
+            g = GiocatoreRegistrato.objects.get(NickName=NickName)
+            g.Nome=Nome
+            g.Cognome=Cognome
+            g.NickName=NickName
+            g.Email=Email
+            g.Password=Password
+            g.save()
+            return render(request, 'menu.html')

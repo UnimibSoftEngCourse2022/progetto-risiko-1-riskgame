@@ -13,4 +13,6 @@ urlpatterns = [
     path("registrazione-salvataggio", views.RegistrazioneView.saveUserData, name="saveUserData"),
     path("login-control", views.controlUserData, name="controlUserData"),
     path("statistiche", views.StatisticheView.draw, name="statistiche"),
+    path("credenziali", views.CredenzialiView.draw, name="credenziali"),
+    path("credenziali-aggiornamento", views.CredenzialiView.updateData, name="updateData"),
 ]
