@@ -63,3 +63,13 @@ def controlUserData(request):
         else:
             messages.warning(request, 'i dati sono errati')
             return render(request, 'login.html')
+
+
+class StatisticheView(TemplateView):
+    def draw(request):
+        template_name = "statistiche.html"
+        statistica = Statistiche.objects.all()
+        stats = {
+            "statistiche": statistica
+        }
+        return render(request, template_name, stats)
