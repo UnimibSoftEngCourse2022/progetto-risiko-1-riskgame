@@ -81,6 +81,10 @@ class PartecipaView(TemplateView):
         return render(request, "partecipa.html", {"partita_package": temp_data})
 
 
+class PartitaView(TemplateView):
+    template_name = "partita.html"
+
+
 class StatisticheView(TemplateView):
     def draw(request):
         template_name = "statistiche.html"
