@@ -11,6 +11,10 @@ urlpatterns = [
     path("menu", MenuView.as_view(), name="menu"),
     path("crea-partita", CreazioneView.as_view(), name="creazione"),
     path("settings", ImpostazioniView.as_view(), name="impostazione"),
-    # path("registrazione-salvataggio", views.saveUserData, name="saveUserData"),
-
+    # path("registrazione-salvataggio", views.RegistrazioneView.saveUserData, name="saveUserData"),
+    path("login-control", views.controlUserData, name="controlUserData"),
+    path("statistiche", views.StatisticheView.draw, name="statistiche"),
+    path("credenziali", views.CredenzialiView.draw, name="credenziali"),
+    path("credenziali-aggiornamento",
+         views.CredenzialiView.updateData, name="updateData"),
 ]

@@ -1,2 +1,57 @@
-<head></head>
-<body><h1>Homepage</h1></body>
+<!DOCTYPE html>
+<html style="font-size: 16px;">
+{% load static %}
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content=""><meta name="description" content=""><meta name="page_type" content="np-template-header-footer-from-plugin">
+    <title></title>
+    <link rel="stylesheet" href="{% static 'nicepage.css' %}" media="screen">
+    <script class="u-script" type="text/javascript" src="{% static 'jquery.js' %}" defer=""></script>
+    <script class="u-script" type="text/javascript" src="{% static 'nicepage.js' %}" defer=""></script>
+
+<body class="u-body" background="{% static 'SfondoMappa.png'%}" data-style="blank" data-posts="" data-global-section-properties="{&quot;colorings&quot;:{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}}" data-source="blank" data-page-sections-style="[]" data-page-coloring-types="{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}" data-page-category="&quot;Basic&quot;"><form class="u-clearfix u-custom-color-1 u-block-702b-1" custom-posts-hash="[]" data-style="blank" data-section-properties="{&quot;margin&quot;:&quot;none&quot;,&quot;stretch&quot;:true}" id="sec-341e" data-source="Blank" data-id="702b">
+  <header class="u-clearfix u-custom-color-1 u-header u-header" id="sec-3a71" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction=""><div class="u-align-left u-clearfix u-sheet u-valign-middle u-sheet-1">
+        <a href="{% url 'RiskGame:home' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Logout<br>
+        </a>
+      </div><style class="u-sticky-style" data-style-id="038f">.u-sticky-fixed.u-sticky-038f:before, .u-body.u-sticky-fixed .u-sticky-038f:before {
+borders: top right !important
+}</style></header>
+    <form action="{% url 'RiskGame:updateData' %}"method = "POST">
+        {% csrf_token %}
+        <div class="selection">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" value={{giocatore.Nome}}>
+            <br><br>
+            <label for="cognome">Cognome:</label>
+            <input type="text" id="cognome" value={{giocatore.Cognome}}>
+              <br>  <br>
+            <label for="email">Email:</label>
+            <input type="text" id="email" value={{giocatore.Email}}>
+              <br>  <br>
+            <label for="password">Password:</label>
+            <input type="text" id="password" value={{giocatore.Password}}>
+              <br>  <br>
+            <label for="nickname">Nickname:</label>
+            <input type="text" id="nickname" value={{giocatore.NickName}}>
+        </div>
+    </form>
+    <div class="u-align-center u-form-group u-form-submit u-block-16f1-13">
+          <a href="#" class="u-btn u-btn-submit u-button-style u-block-16f1-14">Conferma</a>
+          <input type="submit" value="submit" class="u-form-control-hidden">
+        </div>
+<style data-mode="XL" data-visited="true">@media (min-width: 1200px) {
+  div.selection {
+    letter-spacing: 1px;
+    border-style: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    background-image: none;
+    text-align: center;
+    margin-top: 78px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0;
+  }
+}</style>
+</body></html>
