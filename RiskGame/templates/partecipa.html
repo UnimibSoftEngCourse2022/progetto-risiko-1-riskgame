@@ -39,7 +39,7 @@ borders: top right !important
                         <div class="div-giocatori">
                             <b>Giocatori:</b>
                             {% for giocatore in partita.Giocatori.all %}
-                                <br>{{ giocatore.NickName }}
+                                <br>{{ giocatore.username }}
                             {% endfor %}
                         </div><hr>
                         {% if partita.NumeroGiocatori < 6 %}

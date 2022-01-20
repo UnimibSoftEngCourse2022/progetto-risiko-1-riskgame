@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 # Create your models here.
 
@@ -15,7 +16,11 @@ class GiocatoreRegistrato(models.Model):
 class Mappa(models.Model):
     IDMappa = models.IntegerField(primary_key=True)
     NomeMappa = models.CharField(max_length=45)
-    Autore = models.ForeignKey(GiocatoreRegistrato, on_delete=models.CASCADE)
+    # Autore = models.ForeignKey(GiocatoreRegistrato, on_delete=models.CASCADE)
+    Autore = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
     PercorsoMappa = models.CharField(max_length=100)
 
 
@@ -24,11 +29,14 @@ class Partita(models.Model):
     NumeroGiocatori = models.IntegerField()
     Difficolta = models.IntegerField()
     Mappa = models.ForeignKey(Mappa, on_delete=models.CASCADE)
-    Giocatori = models.ManyToManyField(GiocatoreRegistrato)
+    # Giocatori = models.ManyToManyField(GiocatoreRegistrato)
+    Giocatori = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
 
 class Statistiche(models.Model):
-    NicknameGiocatore = models.OneToOneField(GiocatoreRegistrato, primary_key=True, on_delete=models.CASCADE)
+    # NicknameGiocatore = models.OneToOneField(GiocatoreRegistrato, primary_key=True, on_delete=models.CASCADE)
+    IDGiocatore = models.OneToOneField(settings.AUTH_USER_MODEL, primary_key=True,
+                                       on_delete=models.CASCADE)
     NumeroPartiteVinte = models.IntegerField()
     NumeroPartitePerse = models.IntegerField()
     PercentualeVinte = models.FloatField()
