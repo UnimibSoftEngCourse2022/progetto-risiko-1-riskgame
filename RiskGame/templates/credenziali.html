@@ -12,12 +12,12 @@
 
 <body class="u-body" background="{% static 'SfondoMappa.png'%}" data-style="blank" data-posts="" data-global-section-properties="{&quot;colorings&quot;:{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}}" data-source="blank" data-page-sections-style="[]" data-page-coloring-types="{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}" data-page-category="&quot;Basic&quot;"><form class="u-clearfix u-custom-color-1 u-block-702b-1" custom-posts-hash="[]" data-style="blank" data-section-properties="{&quot;margin&quot;:&quot;none&quot;,&quot;stretch&quot;:true}" id="sec-341e" data-source="Blank" data-id="702b">
   <header class="u-clearfix u-custom-color-1 u-header u-header" id="sec-3a71" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction=""><div class="u-align-left u-clearfix u-sheet u-valign-middle u-sheet-1">
-        <a href="{% url 'RiskGame:home' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Logout<br>
+        <a href="{% url 'RiskGame:impostazione' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Impostazioni<br>
         </a>
       </div><style class="u-sticky-style" data-style-id="038f">.u-sticky-fixed.u-sticky-038f:before, .u-body.u-sticky-fixed .u-sticky-038f:before {
 borders: top right !important
 }</style></header>
-    <form action="{% url 'RiskGame:updateData' %}"method = "POST">
+    <form action="{% url 'RiskGame:updateData' %}" method = "POST">
         {% csrf_token %}
         <div class="selection">
             <label for="nome">Nome:</label>

@@ -50,7 +50,7 @@
         {% csrf_token %}
         <fieldset class="form-group">
           <legend class="border-bottom mb-4">Registrazione </legend>
-          {{ form.as_p }}
+          {{ form|crispy }}
         </fieldset>
         <div class="form-group">
           <button class="btn btn-outline-info" type="submit">Registrati!</button>
