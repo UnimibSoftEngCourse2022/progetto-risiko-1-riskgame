@@ -1,2 +1,9 @@
-<head></head>
-<body><h1>Homepage</h1></body>
+<!DOCTYPE html>
+    {% load static %}
+    <head>
+        <title>RiskGame - Partita {{ PartitaID }}</title>
+    </head>
+    <body>
+        Benvenuto {{ user.get_username }}
+    </body>
+</html>

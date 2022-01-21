@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.views.generic import TemplateView
 from django.contrib import messages
+from django.contrib.auth import logout
 from .forms import UserRegisterForm
 from RiskGame.models import *
 
@@ -144,3 +145,8 @@ def controlUserData(request):
         else:
             messages.warning(request, 'i dati sono errati')
             return render(request, 'login.html')
+
+
+def userLogout(request):
+    logout(request)
+    return render(request, 'home.html')

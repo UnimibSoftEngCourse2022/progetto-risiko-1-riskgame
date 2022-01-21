@@ -20,4 +20,5 @@ urlpatterns = [
     path("credenziali", views.CredenzialiView.draw, name="credenziali"),
     path("credenziali-aggiornamento",
          views.CredenzialiView.updateData, name="updateData"),
+    path("logout", views.userLogout, name="logout")
 ]
