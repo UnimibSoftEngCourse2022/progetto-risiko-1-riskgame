@@ -63,8 +63,11 @@ class Continente(models.Model):
 
 class Territorio(models.Model):
     IDTerritorio = models.IntegerField(primary_key=True)
-    NomeTerritorio = models.CharField(max_length=45)
+    NomeTerritorio = models.CharField(max_length=20)
     Continente = models.ForeignKey(Continente, on_delete=models.CASCADE)
+    Confini = models.ManyToManyField('self', blank=True)
+    # La riga sopra aggiunge anche il territorio come confine a se stesso,
+    # andranno fatti dei controlli dopo
 
 
 class Carta(models.Model):
