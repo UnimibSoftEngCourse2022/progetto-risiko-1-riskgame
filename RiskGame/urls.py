@@ -20,4 +20,5 @@ urlpatterns = [
     path("credenziali", views.CredenzialiView.draw, name="credenziali"),
     path("credenziali-aggiornamento",
          views.CredenzialiView.updateData, name="updateData"),
+    path("editor-mappa", MappaView.as_view(), name="editor")
 ]

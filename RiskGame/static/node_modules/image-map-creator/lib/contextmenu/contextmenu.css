@@ -1,0 +1,25 @@
+div.context-menu {
+	position : fixed;
+	border: 1px solid #ccc;
+	background-color: #eee;
+	min-width : 100px;
+	padding: 2px;
+	box-shadow : 2px 2px 4px #444;
+	display : inline-block;
+	z-index : 10002;
+	cursor : default;
+}
+
+div.context-menu>div {
+	padding : 5px 25px;
+	font-family: sans-serif;
+	font-size: 0.8em;
+}
+
+div.context-menu-item:hover {
+	background-color : #c3d6ee;
+}
+
+div.context-menu-item-disabled {
+	color : #aaa;
+}

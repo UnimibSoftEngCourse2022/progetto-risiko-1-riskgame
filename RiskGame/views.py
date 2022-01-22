@@ -144,3 +144,8 @@ def controlUserData(request):
         else:
             messages.warning(request, 'i dati sono errati')
             return render(request, 'login.html')
+
+
+
+class MappaView(TemplateView):
+    template_name="editor.html"

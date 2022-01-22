@@ -1,2 +1,38 @@
-<head></head>
-<body><h1>Homepage</h1></body>
+{% load static %}
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content=""><meta name="description" content=""><meta name="page_type" content="np-template-header-footer-from-plugin">
+    <title></title>
+    <link rel="stylesheet" href="{% static 'nicepage.css' %}" media="screen">
+    <script class="u-script" type="text/javascript" src="{% static 'jquery.js' %}" defer=""></script>
+    <script class="u-script" type="text/javascript" src="{% static 'nicepage.js' %}" defer=""></script>
+</head>
+<body class="u-body" background="{% static 'SfondoMappa.png'%}">
+<div id="id"></div>
+</body>
+<script src="{% static 'node_modules\image-map-creator\dist\image-map-creator.bundle.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/addons/p5.dom.min.js"></script>
+<script type="text/javascript">
+		let iMap = new imageMapCreator("id");
+</script>
+<style>
+	.qs_main {
+		position: absolute;
+    	top: 25% !important;
+    	left: 75% !important;
+   	 	margin-top: -50px;
+    	margin-left: -50px;
+
+	}
+	#defaultCanvas0 {
+	    position: absolute;
+    	top: 25% !important;
+    	left: 25% !important;
+   	 	margin-top: -50px;
+    	margin-left: -50px;
+    	width: 800px !important;
+    	height: 476px !important;
+	}
+</style>
