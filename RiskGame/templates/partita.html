@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
     {% load static %}
     <head>
         <title>RiskGame - Partita {{ PartitaID }}</title>
@@ -26,7 +26,7 @@
             };
 
             partitaSocket.onclose = function(e) {
-                console.error('Chat socket closed unexpectedly');
+                console.error('Socket della partita chiusa improvvisamente.');
             };
 
             document.querySelector('#chat-message-input').focus();

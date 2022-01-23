@@ -69,8 +69,7 @@ class CreazioneView(TemplateView):
 
     def loadMappe(self, request):
         if request.user.is_authenticated():
-            nickname = request.user.username
-            mappe = Mappa.objects.filter(Autore=nickname)
+            mappe = Mappa.objects.filter(Autore=request.user.username)
             return render(request, self.template_name, {'mappe': mappe})
 
 
@@ -84,6 +83,24 @@ class PartecipaView(TemplateView):
 
 class PartitaView(TemplateView):
     template_name = "partita.html"
+
+    def creaPartita(request):
+        # Crea la partita nel DB, aggiunge il nuovo giocatore e lo reindirizza alla partita
+        nuovoID = Partita.getNuovoID()
+        numGiocatori = request.GET['giocatori']
+        difficolta = request.GET['difficolta']
+        mappa = Mappa.objects.filter(IDMappa=request.GET['mappa']).first()
+
+        Partita.objects.create(IDPartita=nuovoID, NumeroGiocatori=numGiocatori,
+            Difficolta=difficolta, Mappa=mappa)
+        Partita.objects.filter(IDPartita=nuovoID).first().Giocatori.add(request.user)
+
+        return render(request, "partita.html", {"PartitaID": nuovoID})
+
+    def partecipaPartita(request, PartitaID):
+        # Aggiunge il giocatore alla lista giocatori e lo reindirizza alla partita
+        Partita.objects.filter(IDPartita=PartitaID).first().Giocatori.add(request.user)
+        return render(request, "partita.html", {"PartitaID": PartitaID})
 
 
 class StatisticheView(TemplateView):

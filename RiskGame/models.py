@@ -32,6 +32,10 @@ class Partita(models.Model):
     # Giocatori = models.ManyToManyField(GiocatoreRegistrato)
     Giocatori = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
+    def getNuovoID():
+        maxID = Partita.objects.latest('IDPartita').IDPartita
+        return maxID + 1
+
 
 class Statistiche(models.Model):
     # NicknameGiocatore = models.OneToOneField(GiocatoreRegistrato, primary_key=True, on_delete=models.CASCADE)
