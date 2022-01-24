@@ -3,9 +3,13 @@ from django.views.generic import TemplateView
 from django.contrib import messages
 from .forms import UserRegisterForm
 from RiskGame.models import *
+from django.db.models import Count
 import os
 import random
 from django.contrib.auth.models import User
+import json
+
+
 # Create your views here.
 def register(request):
     if request.method == 'POST':
@@ -65,9 +69,9 @@ class ImpostazioniView(TemplateView):
 
 class CreazioneView(TemplateView):
     def draw(request):
-        username = User.objects.get(username = request.user.username)
+        username = User.objects.get(username=request.user.username)
         template_name = "creazione.html"
-        mappe = Mappa.objects.filter(Autore = username)
+        mappe = Mappa.objects.filter(Autore=username)
         maps = {
             "mappe": mappe
         }
@@ -149,15 +153,39 @@ def controlUserData(request):
 
 class MappaView(TemplateView):
     template_name = "editor.html"
+
     def saveMappa(request):
-        template_name = "editor.html"
         if request.method == "POST":
-            n_random = random.randint(0,1000)
+            n_random = random.randint(0, 1000)
             nome_mappa = request.POST['nome-mappa']
-            username = User.objects.get(username = request.user.username)
+            username = User.objects.get(username=request.user.username)
             dirname = os.path.dirname(__file__)
             filename = os.path.join(dirname, 'static\Mappe')
-            while Mappa.objects.filter(IDMappa = n_random).exists():
+            while Mappa.objects.filter(IDMappa=n_random).exists():
                 n_random = random.randint(0, 1000)
-            Mappa.objects.create(IDMappa = n_random, NomeMappa = nome_mappa, Autore = username, PercorsoMappa = filename)
+            Mappa.objects.create(IDMappa=n_random, NomeMappa=nome_mappa, Autore=username, PercorsoMappa=filename)
+            return render(request, 'menu.html')
+
+    def loadMappa(request):
+        template_name = "editor.html"
+        if request.method == "POST":
+            nome_mappa = request.POST['mappa']
+            username = User.objects.get(username=request.user.username)
+            mappa = Mappa.objects.filter(NomeMappa=nome_mappa, Autore=username).first()
+            percorso = mappa.PercorsoMappa + "\\" + nome_mappa + ".map.json"
+            file = open(percorso)
+            data = json.load(file)
+            n_continente = 0
+            n_territorio = 0
+            for i in data['map']['areas']:
+                if not Continente.objects.filter(NomeContinente=i['group']).exists():
+                    Continente.objects.create(IDContinente=n_continente, NomeContinente=i['group'], NumeroTruppe=0,
+                                              Mappa=mappa)
+                    n_continente = n_continente + 1
+                continente = Continente.objects.filter(NomeContinente=i['group']).first()
+                Territorio.objects.create(IDTerritorio=n_territorio, NomeTerritorio=i['title'], Continente=continente)
+                n_territorio = n_territorio + 1
+
+
+            file.close()
             return render(request, 'menu.html')
