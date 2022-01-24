@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -35,6 +36,13 @@ class Partita(models.Model):
     def getNuovoID():
         maxID = Partita.objects.latest('IDPartita').IDPartita
         return maxID + 1
+
+    def disconnettiGiocatore(idPartita, username):
+        giocatore = User.objects.get(username=username)
+        partita = Partita.objects.get(IDPartita=idPartita)
+        partita.Giocatori.remove(giocatore)
+        if (partita.Giocatori.count() == 0):
+            Partita.objects.get(IDPartita=idPartita).delete()
 
 
 class Statistiche(models.Model):

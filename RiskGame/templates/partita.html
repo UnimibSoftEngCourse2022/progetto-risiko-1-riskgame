@@ -4,14 +4,14 @@
         <title>RiskGame - Partita {{ PartitaID }}</title>
     </head>
     <body>
-        <h1>Sala d'attesa (Giocatori: <span id="numGiocAtt">{{ Partita.Giocatori.count }}</span>/{{ Partita.NumeroGiocatori }})</h1>
+        <h1>Sala d'attesa (Giocatori: <a id="numGiocAtt">{{ Partita.Giocatori.count }}</a>/{{ Partita.NumeroGiocatori }})</h1>
         <textarea id="chat-log" cols="100" rows="20"></textarea><br>
         <input id="chat-message-input" type="text" size="100"><br>
-        <input id="chat-message-submit" type="button" value="Send">
+        <input id="chat-message-submit" type="button" value="Invia">
+        <input id="quit" type="button" value="Esci" onclick="abbandona();">
         {{ room_name|json_script:"room-name" }}
         <script>
             const roomName = JSON.parse(document.getElementById('room-name').textContent);
-            const numGiocatori = document.getElementById('numGiocAtt');
 
             const partitaSocket = new WebSocket(
                 'ws://'
@@ -29,15 +29,19 @@
 
             partitaSocket.onmessage = function(e) {
                 const data = JSON.parse(e.data);
-                console.log(data)
                 if (data.tipo == 'messaggio')
                     document.querySelector('#chat-log').value += ('[' + data.sender + ']: '
                         + data.message + '\n');
                 else if (data.tipo == 'nuovoGiocatore'){
                     document.querySelector('#chat-log').value += ('[' + data.sender
                         + ' si è unito alla partita.]' + '\n');
-                    numGiocAtt.textContent = '{{ Partita.Giocatori.count }}';
-                }                    
+                    document.querySelector('#numGiocAtt').innerText = '{{ Partita.Giocatori.count }}';
+                }         
+                else if (data.tipo == 'abbandona'){
+                    document.querySelector('#chat-log').value += ('[' + data.sender
+                        + ' ha abbandonato la partita.]' + '\n');
+                    document.querySelector('#numGiocAtt').innerText = '{{ Partita.Giocatori.count }}';
+                }           
             };
 
             partitaSocket.onclose = function(e) {
@@ -60,6 +64,14 @@
                 }));
                 messageInputDom.value = '';
             };
+
+            function abbandona(){
+                partitaSocket.send(JSON.stringify({
+                    'tipo': 'abbandona',
+                    'idPartita': '{{ PartitaID }}'
+                }));
+                location.href="/match-list"
+            }
         </script>
     </body>
 </html>

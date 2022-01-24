@@ -1,6 +1,7 @@
 import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
+from .models import Partita
 
 
 class PartitaConsumer(WebsocketConsumer):
@@ -33,7 +34,6 @@ class PartitaConsumer(WebsocketConsumer):
     def receive(self, text_data):
         # Chiamato alla ricezione di un messaggio (testo o bytes)
         text_data_json = json.loads(text_data)
-        print(text_data_json)
         tipo = text_data_json['tipo']
         mittente = self.scope['user'].username
 
@@ -58,6 +58,16 @@ class PartitaConsumer(WebsocketConsumer):
                     'sender': mittente
                 }
             )
+        elif (tipo == 'abbandona'):
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'tipo': 'abbandona',
+                    'sender': mittente
+                }
+            )
+            Partita.disconnettiGiocatore(text_data_json['idPartita'], self.scope['user'].username)
 
 
     # Riceve il messaggio dalla room group (locale)
@@ -73,6 +83,11 @@ class PartitaConsumer(WebsocketConsumer):
                 'sender': event['sender']
             }))
         elif (tipo == 'nuovoGiocatore'):
+            self.send(text_data=json.dumps({
+                'tipo': tipo,
+                'sender': event['sender']
+            }))
+        elif (tipo == 'abbandona'):
             self.send(text_data=json.dumps({
                 'tipo': tipo,
                 'sender': event['sender']

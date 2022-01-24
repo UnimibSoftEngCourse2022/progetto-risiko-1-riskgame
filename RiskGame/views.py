@@ -89,19 +89,18 @@ class PartitaView(TemplateView):
         nuovoID = Partita.getNuovoID()
         numGiocatori = request.GET['giocatori']
         difficolta = request.GET['difficolta']
-        mappa = Mappa.objects.filter(IDMappa=request.GET['mappa']).first()
+        mappa = Mappa.objects.get(IDMappa=request.GET['mappa'])
 
         Partita.objects.create(IDPartita=nuovoID, NumeroGiocatori=numGiocatori,
             Difficolta=difficolta, Mappa=mappa)
-        Partita.objects.filter(IDPartita=nuovoID).first().Giocatori.add(request.user)
-        nuovaPartita = Partita.objects.filter(IDPartita=nuovoID).first()
+        Partita.objects.get(IDPartita=nuovoID).Giocatori.add(request.user)
 
-        return render(request, "partita.html", {"Partita": nuovaPartita, "PartitaID": nuovoID})
+        return redirect(reverse('RiskGame:partecipaPartita', kwargs={'PartitaID': nuovoID}))
 
     def partecipaPartita(request, PartitaID):
         # Aggiunge il giocatore alla lista giocatori e lo reindirizza alla partita
-        Partita.objects.filter(IDPartita=PartitaID).first().Giocatori.add(request.user)
-        partita = Partita.objects.filter(IDPartita=PartitaID).first()
+        Partita.objects.get(IDPartita=PartitaID).Giocatori.add(request.user)
+        partita = Partita.objects.get(IDPartita=PartitaID)
         return render(request, "partita.html", {"Partita": partita, "PartitaID": PartitaID})
 
 
