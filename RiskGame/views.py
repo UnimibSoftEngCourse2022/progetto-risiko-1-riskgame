@@ -92,9 +92,9 @@ class PartitaView(TemplateView):
 
 class StatisticheView(TemplateView):
     def draw(request):
-        username = request.user.username
+        username = User.objects.get(username=request.user.username)
         template_name = "statistiche.html"
-        statistica = Statistiche.objects.all()
+        statistica = Statistiche.objects.filter(IDGiocatore = username)
         stats = {
             "statistiche": statistica
         }

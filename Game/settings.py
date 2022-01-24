@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'RiskGame',
+    "django_extensions"
 ]
 
 MIDDLEWARE = [
