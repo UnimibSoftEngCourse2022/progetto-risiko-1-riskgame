@@ -8,7 +8,7 @@ import os
 import random
 from django.contrib.auth.models import User
 import json
-
+import math
 
 # Create your views here.
 def register(request):
@@ -175,8 +175,12 @@ class MappaView(TemplateView):
             percorso = mappa.PercorsoMappa + "\\" + nome_mappa + ".map.json"
             file = open(percorso)
             data = json.load(file)
-            n_continente = 0
-            n_territorio = 0
+            if (Continente.objects.count() == 0) and (Territorio.objects.count() == 0):
+                n_continente = 0
+                n_territorio = 0
+            else:
+                n_continente = Continente.objects.latest('IDContinente').IDContinente + 1
+                n_territorio = Territorio.objects.latest('IDTerritorio').IDTerritorio + 1
             for i in data['map']['areas']:
                 if not Continente.objects.filter(NomeContinente=i['group']).exists():
                     Continente.objects.create(IDContinente=n_continente, NomeContinente=i['group'], NumeroTruppe=0,
@@ -185,7 +189,12 @@ class MappaView(TemplateView):
                 continente = Continente.objects.filter(NomeContinente=i['group']).first()
                 Territorio.objects.create(IDTerritorio=n_territorio, NomeTerritorio=i['title'], Continente=continente)
                 n_territorio = n_territorio + 1
-
-
+            print(n_territorio)
+            result = Continente.objects.filter(Mappa = mappa).order_by('IDContinente').annotate(count=Count('territorio'))
+            for x in result:
+                numero_truppe = int(math.floor(x.count/3))
+                if numero_truppe == 0:
+                    numero_truppe = 1
+                Continente.objects.filter(NomeContinente = x.NomeContinente).update(NumeroTruppe = numero_truppe)
             file.close()
             return render(request, 'menu.html')
