@@ -3,8 +3,9 @@ from django.views.generic import TemplateView
 from django.contrib import messages
 from .forms import UserRegisterForm
 from RiskGame.models import *
-
-
+import os
+import random
+from django.contrib.auth.models import User
 # Create your views here.
 def register(request):
     if request.method == 'POST':
@@ -22,9 +23,8 @@ def register(request):
 class HomePageView(TemplateView):
     template_name = "home.html"
 
-
-# class LoginView(TemplateView):
- #   template_name = "login.html"
+    # class LoginView(TemplateView):
+    #   template_name = "login.html"
 
     def controlUserData(request):
         if request.method == "POST":
@@ -64,13 +64,14 @@ class ImpostazioniView(TemplateView):
 
 
 class CreazioneView(TemplateView):
-    template_name = "creazione.html"
-
-    def loadMappe(self, request):
-        if request.user.is_authenticated():
-            nickname = request.user.username
-            mappe = Mappa.objects.filter(Autore=nickname)
-            return render(request, self.template_name, {'mappe': mappe})
+    def draw(request):
+        username = User.objects.get(username = request.user.username)
+        template_name = "creazione.html"
+        mappe = Mappa.objects.filter(Autore = username)
+        maps = {
+            "mappe": mappe
+        }
+        return render(request, template_name, maps)
 
 
 class PartecipaView(TemplateView):
@@ -146,6 +147,17 @@ def controlUserData(request):
             return render(request, 'login.html')
 
 
-
 class MappaView(TemplateView):
-    template_name="editor.html"
+    template_name = "editor.html"
+    def saveMappa(request):
+        template_name = "editor.html"
+        if request.method == "POST":
+            n_random = random.randint(0,1000)
+            nome_mappa = request.POST['nome-mappa']
+            username = User.objects.get(username = request.user.username)
+            dirname = os.path.dirname(__file__)
+            filename = os.path.join(dirname, 'static\Mappe')
+            while Mappa.objects.filter(IDMappa = n_random).exists():
+                n_random = random.randint(0, 1000)
+            Mappa.objects.create(IDMappa = n_random, NomeMappa = nome_mappa, Autore = username, PercorsoMappa = filename)
+            return render(request, 'menu.html')
