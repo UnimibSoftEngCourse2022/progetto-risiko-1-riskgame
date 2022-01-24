@@ -94,13 +94,15 @@ class PartitaView(TemplateView):
         Partita.objects.create(IDPartita=nuovoID, NumeroGiocatori=numGiocatori,
             Difficolta=difficolta, Mappa=mappa)
         Partita.objects.filter(IDPartita=nuovoID).first().Giocatori.add(request.user)
+        nuovaPartita = Partita.objects.filter(IDPartita=nuovoID).first()
 
-        return render(request, "partita.html", {"PartitaID": nuovoID})
+        return render(request, "partita.html", {"Partita": nuovaPartita, "PartitaID": nuovoID})
 
     def partecipaPartita(request, PartitaID):
         # Aggiunge il giocatore alla lista giocatori e lo reindirizza alla partita
         Partita.objects.filter(IDPartita=PartitaID).first().Giocatori.add(request.user)
-        return render(request, "partita.html", {"PartitaID": PartitaID})
+        partita = Partita.objects.filter(IDPartita=PartitaID).first()
+        return render(request, "partita.html", {"Partita": partita, "PartitaID": PartitaID})
 
 
 class StatisticheView(TemplateView):

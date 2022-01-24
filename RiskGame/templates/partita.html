@@ -4,13 +4,14 @@
         <title>RiskGame - Partita {{ PartitaID }}</title>
     </head>
     <body>
-        <!-- Benvenuto {{ user.get_username }} -->
+        <h1>Sala d'attesa (Giocatori: <span id="numGiocAtt">{{ Partita.Giocatori.count }}</span>/{{ Partita.NumeroGiocatori }})</h1>
         <textarea id="chat-log" cols="100" rows="20"></textarea><br>
         <input id="chat-message-input" type="text" size="100"><br>
         <input id="chat-message-submit" type="button" value="Send">
         {{ room_name|json_script:"room-name" }}
         <script>
             const roomName = JSON.parse(document.getElementById('room-name').textContent);
+            const numGiocatori = document.getElementById('numGiocAtt');
 
             const partitaSocket = new WebSocket(
                 'ws://'
@@ -20,9 +21,23 @@
                 + '/'
             );
 
+            partitaSocket.onopen = function() {
+                partitaSocket.send(JSON.stringify({
+                    'tipo': 'nuovoGiocatore'
+                }));
+            };
+
             partitaSocket.onmessage = function(e) {
                 const data = JSON.parse(e.data);
-                document.querySelector('#chat-log').value += (data.message + '\n');
+                console.log(data)
+                if (data.tipo == 'messaggio')
+                    document.querySelector('#chat-log').value += ('[' + data.sender + ']: '
+                        + data.message + '\n');
+                else if (data.tipo == 'nuovoGiocatore'){
+                    document.querySelector('#chat-log').value += ('[' + data.sender
+                        + ' si è unito alla partita.]' + '\n');
+                    numGiocAtt.textContent = '{{ Partita.Giocatori.count }}';
+                }                    
             };
 
             partitaSocket.onclose = function(e) {
@@ -40,6 +55,7 @@
                 const messageInputDom = document.querySelector('#chat-message-input');
                 const message = messageInputDom.value;
                 partitaSocket.send(JSON.stringify({
+                    'tipo': 'messaggio',
                     'message': message
                 }));
                 messageInputDom.value = '';

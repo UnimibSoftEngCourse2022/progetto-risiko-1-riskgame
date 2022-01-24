@@ -33,23 +33,47 @@ class PartitaConsumer(WebsocketConsumer):
     def receive(self, text_data):
         # Chiamato alla ricezione di un messaggio (testo o bytes)
         text_data_json = json.loads(text_data)
-        message = text_data_json['message']
+        print(text_data_json)
+        tipo = text_data_json['tipo']
+        mittente = self.scope['user'].username
 
-        # Send message to room group
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'message': message
-            }
-        )
+        # Metti messaggio in room group (locale)
+        if (tipo == 'messaggio'):
+            messaggio = text_data_json['message']
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'tipo': 'messaggio',
+                    'message': messaggio,
+                    'sender': mittente
+                }
+            )
+        elif (tipo == 'nuovoGiocatore'):
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'tipo': 'nuovoGiocatore',
+                    'sender': mittente
+                }
+            )
 
 
-    # Receive message from room group
+    # Riceve il messaggio dalla room group (locale)
     def chat_message(self, event):
-        message = event['message']
+        tipo = event['tipo']
 
-        # Send message to WebSocket
-        self.send(text_data=json.dumps({
-            'message': message
-        }))
+        # Invia esternamente alla WebSocket
+        if (tipo == 'messaggio'):
+            messaggio = event['message']
+            self.send(text_data=json.dumps({
+                'tipo': tipo,
+                'message': messaggio,
+                'sender': event['sender']
+            }))
+        elif (tipo == 'nuovoGiocatore'):
+            self.send(text_data=json.dumps({
+                'tipo': tipo,
+                'sender': event['sender']
+            }))
