@@ -99,8 +99,8 @@ class PartitaView(TemplateView):
 
     def partecipaPartita(request, PartitaID):
         # Aggiunge il giocatore alla lista giocatori e lo reindirizza alla partita
-        Partita.objects.get(IDPartita=PartitaID).Giocatori.add(request.user)
         partita = Partita.objects.get(IDPartita=PartitaID)
+        partita.Giocatori.add(request.user)
         return render(request, "partita.html", {"Partita": partita, "PartitaID": PartitaID})
 
 

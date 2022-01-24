@@ -34,8 +34,11 @@ class Partita(models.Model):
     Giocatori = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
     def getNuovoID():
-        maxID = Partita.objects.latest('IDPartita').IDPartita
-        return maxID + 1
+        if (Partita.objects.count() == 0):
+            return 1
+        else: 
+            maxID = Partita.objects.latest('IDPartita').IDPartita
+            return maxID + 1
 
     def disconnettiGiocatore(idPartita, username):
         giocatore = User.objects.get(username=username)
