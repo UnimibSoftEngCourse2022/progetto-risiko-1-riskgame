@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from django.shortcuts import render, redirect, reverse
 from django.views.generic import TemplateView
 from django.contrib import messages
@@ -27,7 +28,7 @@ class HomePageView(TemplateView):
 # class LoginView(TemplateView):
  #   template_name = "login.html"
 
-    def controlUserData(request):
+    """def controlUserData(request):
         if request.method == "POST":
             NickName = request.POST['nickname']
             Password = request.POST['password']
@@ -35,13 +36,13 @@ class HomePageView(TemplateView):
                 return render(request, 'menu.html')
             else:
                 messages.warning(request, 'i dati sono errati')
-                return render(request, 'login.html')
+                return render(request, 'login.html')"""
 
 
 class RegistrazioneView(TemplateView):
     template_name = "registrazione.html"
 
-    def saveUserData(request):
+    """def saveUserData(request):
         if request.method == "POST":
             NickName = request.POST['nickname']
             Nome = request.POST['nome']
@@ -53,11 +54,19 @@ class RegistrazioneView(TemplateView):
                                                Email=Email,
                                                Password=Password)
             messages.success(request, 'I dati sono stati salvati')
-            return redirect(reverse('RiskGame:home'))
+            return redirect(reverse('RiskGame:home'))"""
 
 
 class MenuView(TemplateView):
     template_name = "menu.html"
+
+    def drawMenu(request):
+        request.session['ospite'] = NULL
+        return render(request, "menu.html")
+    
+    def drawOspite(request):
+        request.session['ospite'] = Ospite.assegnaOspite()
+        return render(request, "menu.html")
 
 
 class ImpostazioniView(TemplateView):
@@ -68,7 +77,7 @@ class CreazioneView(TemplateView):
     template_name = "creazione.html"
 
     def loadMappe(self, request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             mappe = Mappa.objects.filter(Autore=request.user.username)
             return render(request, self.template_name, {'mappe': mappe})
 
@@ -100,8 +109,14 @@ class PartitaView(TemplateView):
     def partecipaPartita(request, PartitaID):
         # Aggiunge il giocatore alla lista giocatori e lo reindirizza alla partita
         partita = Partita.objects.get(IDPartita=PartitaID)
-        partita.Giocatori.add(request.user)
-        return render(request, "partita.html", {"Partita": partita, "PartitaID": PartitaID})
+        if request.user.is_authenticated:
+            partita.Giocatori.add(request.user)
+        else:
+            ospite = Ospite.objects.get(Nickname=request.session['ospite'])
+            partita.Ospiti.add(ospite)
+        return render(request, "partita.html", {"Partita": partita, "PartitaID": PartitaID,
+            "Ospite": request.session['ospite']})
+        
 
 
 class StatisticheView(TemplateView):
@@ -117,15 +132,15 @@ class StatisticheView(TemplateView):
 
 class CredenzialiView(TemplateView):
     def draw(request):
-        template_name = "credenziali.html"
+        """template_name = "credenziali.html"
         credenziali = GiocatoreRegistrato.objects.all()
         cred = {
             "credenziali": credenziali
         }
-        return render(request, template_name, cred)
+        return render(request, template_name, cred)"""
 
     def updateData(request):
-        if request.method == "POST":
+        """if request.method == "POST":
             NickName = request.POST['nickname']
             Nome = request.POST['nome']
             Cognome = request.POST['cognome']
@@ -138,7 +153,7 @@ class CredenzialiView(TemplateView):
             g.Email = Email
             g.Password = Password
             g.save()
-            return render(request, 'menu.html')
+            return render(request, 'menu.html')"""
 
 
 """def saveUserData(request):
@@ -155,14 +170,14 @@ class CredenzialiView(TemplateView):
 
 
 def controlUserData(request):
-    if request.method == "POST":
+    """if request.method == "POST":
         NickName = request.POST['nickname']
         Password = request.POST['password']
         if GiocatoreRegistrato.objects.filter(NickName=NickName, Password=Password).exists():
             return render(request, 'menu.html')
         else:
             messages.warning(request, 'i dati sono errati')
-            return render(request, 'login.html')
+            return render(request, 'login.html')"""
 
 
 def userLogout(request):

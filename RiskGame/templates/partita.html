@@ -4,15 +4,17 @@
         <title>RiskGame - Partita {{ PartitaID }}</title>
     </head>
     <body>
-        <h1>Sala d'attesa (Giocatori: <span id="numGiocAtt">{{ Partita.Giocatori.count }}</span>/{{ Partita.NumeroGiocatori }})</h1>
+        <h1>Sala d'attesa (Giocatori: <span id="numGiocAtt">{{ Partita.Giocatori.count|add:Partita.Ospiti.count }}</span>/{{ Partita.NumeroGiocatori }})</h1>
         <textarea id="chat-log" cols="100" rows="20"></textarea><br>
         <input id="chat-message-input" type="text" size="100"><br>
         <input id="chat-message-submit" type="button" value="Invia">
-        <input id="quit" type="button" value="Esci" onclick="abbandona();">
+        <input id="abbandona" type="button" value="Esci">
         {{ room_name|json_script:"room-name" }}
         <script>
             const roomName = JSON.parse(document.getElementById('room-name').textContent);
             const numGiocAtt = document.querySelector('#numGiocAtt');
+
+            var sender = "";
 
             const partitaSocket = new WebSocket(
                 'ws://'
@@ -23,8 +25,15 @@
             );
 
             partitaSocket.onopen = function() {
+                if ('{{ user.is_authenticated }}' == 'True'){
+                    sender = '{{ user.get_username }}';
+                }
+                else {
+                    sender = '{{ Ospite }}';
+                }
                 partitaSocket.send(JSON.stringify({
-                    'tipo': 'nuovoGiocatore'
+                    'tipo': 'nuovoGiocatore',
+                    'sender': sender
                 }));
             };
 
@@ -36,7 +45,7 @@
                 else if (data.tipo == 'nuovoGiocatore'){
                     document.querySelector('#chat-log').value += ('[' + data.sender
                         + ' si è unito alla partita.]' + '\n');
-                    if (data.sender != '{{ user.get_username }}')
+                    if (data.sender != sender)
                         numGiocAtt.innerText = parseInt(numGiocAtt.innerText) + 1;
                 }         
                 else if (data.tipo == 'abbandona'){
@@ -62,18 +71,26 @@
                 const message = messageInputDom.value;
                 partitaSocket.send(JSON.stringify({
                     'tipo': 'messaggio',
-                    'message': message
+                    'message': message,
+                    'sender': sender
                 }));
                 messageInputDom.value = '';
             };
 
-            function abbandona(){
+            document.querySelector('#abbandona').onclick = function(e) {
+                if ('{{ user.is_authenticated }}' == 'True'){ 
+                    tipo = 'abbandonaUtente';
+                }
+                else {
+                    tipo = 'abbandonaOspite';
+                }
                 partitaSocket.send(JSON.stringify({
-                    'tipo': 'abbandona',
-                    'idPartita': '{{ PartitaID }}'
+                    'tipo': tipo,
+                    'idPartita': '{{ PartitaID }}',
+                    'sender': sender
                 }));
                 location.href="/match-list"
-            }
+            };
         </script>
     </body>
 </html>

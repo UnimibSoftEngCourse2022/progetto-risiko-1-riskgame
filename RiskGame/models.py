@@ -1,17 +1,38 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your models here.
 
 
-class GiocatoreRegistrato(models.Model):
+"""class GiocatoreRegistrato(models.Model):
     # campi del modello
     NickName = models.CharField(max_length=16, primary_key=True)
     Nome = models.CharField(max_length=45)
     Cognome = models.CharField(max_length=45)
     Email = models.CharField(max_length=45)
-    Password = models.CharField(max_length=16)
+    Password = models.CharField(max_length=16)"""
+
+
+class Ospite(models.Model):
+    Nickname = models.CharField(max_length=16, primary_key=True)
+    Assegnato = models.IntegerField()
+
+    def assegnaOspite():
+        try:
+            ospite = Ospite.objects.get(Assegnato=0)
+            ospite.Assegnato = 1
+            ospite.save()
+        except ObjectDoesNotExist:
+            ospite = Ospite(Nickname='Ospite'+str(Ospite.objects.count()+1), Assegnato=1)
+            ospite.save()        
+        return ospite.Nickname
+
+    def rilasciaOspite(username):
+        ospite = Ospite.objects.get(Nickname=username)
+        ospite.Assegnato = 0
+        ospite.save()
 
 
 class Mappa(models.Model):
@@ -32,6 +53,7 @@ class Partita(models.Model):
     Mappa = models.ForeignKey(Mappa, on_delete=models.CASCADE)
     # Giocatori = models.ManyToManyField(GiocatoreRegistrato)
     Giocatori = models.ManyToManyField(settings.AUTH_USER_MODEL)
+    Ospiti = models.ManyToManyField(Ospite)
 
     def getNuovoID():
         if (Partita.objects.count() == 0):
@@ -40,11 +62,27 @@ class Partita(models.Model):
             maxID = Partita.objects.latest('IDPartita').IDPartita
             return maxID + 1
 
+    def getGiocatoriConnessi(idPartita):
+        partita = Partita.objects.get(IDPartita=idPartita)
+        return partita.Giocatori.count() + partita.Ospiti.count()
+
     def disconnettiGiocatore(idPartita, username):
         giocatore = User.objects.get(username=username)
         partita = Partita.objects.get(IDPartita=idPartita)
         partita.Giocatori.remove(giocatore)
-        if (partita.Giocatori.count() == 0):
+        if (partita.Giocatori.count() + partita.Ospiti.count() == 0):
+            Partita.objects.get(IDPartita=idPartita).delete()
+
+    def connettiOspite(idPartita, username):
+        ospite = Ospite.objects.get(Nickname=username)
+        partita = Partita.objects.get(IDPartita=idPartita)
+        partita.Giocatori.add(ospite)
+
+    def disconnettiOspite(idPartita, username):
+        ospite = Ospite.objects.get(Nickname=username)
+        partita = Partita.objects.get(IDPartita=idPartita)
+        partita.Ospiti.remove(ospite)
+        if (partita.Giocatori.count() + partita.Ospiti.count() == 0):
             Partita.objects.get(IDPartita=idPartita).delete()
 
 

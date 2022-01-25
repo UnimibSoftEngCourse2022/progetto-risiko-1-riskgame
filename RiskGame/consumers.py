@@ -1,6 +1,8 @@
+from asyncio.windows_events import NULL
 import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
+from django.contrib.auth.models import User
 from .models import Partita
 
 
@@ -35,9 +37,14 @@ class PartitaConsumer(WebsocketConsumer):
         # Chiamato alla ricezione di un messaggio (testo o bytes)
         text_data_json = json.loads(text_data)
         tipo = text_data_json['tipo']
-        mittente = self.scope['user'].username
 
-        # Metti messaggio in room group (locale)
+        #mittente = self.scope['user'].username
+        #if mittente == "" or mittente is NULL:
+        #    mittente = text_data_json['ospite']
+
+        mittente = text_data_json['sender']
+
+        # Metti messaggio in room group (locale) per gestire la richiesta
         if (tipo == 'messaggio'):
             messaggio = text_data_json['message']
             async_to_sync(self.channel_layer.group_send)(
@@ -58,7 +65,7 @@ class PartitaConsumer(WebsocketConsumer):
                     'sender': mittente
                 }
             )
-        elif (tipo == 'abbandona'):
+        elif (tipo == 'abbandonaUtente'):
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
@@ -68,6 +75,16 @@ class PartitaConsumer(WebsocketConsumer):
                 }
             )
             Partita.disconnettiGiocatore(text_data_json['idPartita'], self.scope['user'].username)
+        elif (tipo == 'abbandonaOspite'):
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'tipo': 'abbandona',
+                    'sender': mittente
+                }
+            )
+            Partita.disconnettiOspite(text_data_json['idPartita'], text_data_json['sender'])
 
 
     # Riceve il messaggio dalla room group (locale)
