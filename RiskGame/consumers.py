@@ -1,20 +1,38 @@
 from asyncio.windows_events import NULL
+from dataclasses import dataclass
 import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from django.contrib.auth.models import User
-from .models import Partita
+from .models import *
 
+@dataclass
+class classeGiocatore:
+    numTruppe = 0
+    territori = []
+    nickname = ""
+
+class classeTerritorio:
+    numTruppe = 0
+    giocatore = ""
+    nome = ""
+    continente = ""
 
 class PartitaConsumer(WebsocketConsumer):
  
     # Set to True to automatically port users from HTTP cookies
     # (you don't need channel_session_user, this implies it)
-    http_user = True 
+    http_user = True
+    global listaGiocatori, listaTerritori
+    listaGiocatori = []
+    listaTerritori = []
 
     def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['PartitaID']
         self.room_group_name = 'partita_%s' % self.room_name
+
+        global idPartita
+        idPartita = self.room_name
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -109,3 +127,28 @@ class PartitaConsumer(WebsocketConsumer):
                 'tipo': tipo,
                 'sender': event['sender']
             }))
+
+    def assegnazioneTerritoriTruppeIniziali():
+        mappa = Partita.getMappa(idPartita)
+        xlistaTerritori = Territorio.getListaTerritoriMappa(mappa)
+        xlistaGiocatori = Partita.getListaGiocatori(idPartita)
+        h = len(listaTerritori)/len(xlistaGiocatori)
+        k = 0
+        for i  in xlistaGiocatori:
+            listaGiocatori.append(classeGiocatore(14, [], i))
+            for j in range(k , h):
+                listaTerritori.append(classeTerritorio(0, i, j.NomeTerritorio,j.Continente))
+                i.territori.append(j.NomeTerritorio)
+                k = k + 1
+            h = h + h
+            
+        
+        
+
+
+    def chiamataMetodoAssegnazioneTruppeTerritorio(classeGiocatore, k):
+        xlistaTerritori = []
+        truppe = len(listaGiocatori.territori)/3
+        for i in listaTerritori:
+            if listaTerritori.giocatore == classeGiocatore.nickname:
+                xlistaTerritori.append(classeTerritorio(listaTerritori.numTruppe,listaTerritori.giocatore, listaTerritori.nome, listaTerritori.continente))

@@ -46,6 +46,7 @@ class Mappa(models.Model):
     PercorsoMappa = models.CharField(max_length=100)
 
 
+
 class Partita(models.Model):
     IDPartita = models.IntegerField(primary_key=True)
     NumeroGiocatori = models.IntegerField()
@@ -85,6 +86,20 @@ class Partita(models.Model):
         if (partita.Giocatori.count() + partita.Ospiti.count() == 0):
             Partita.objects.get(IDPartita=idPartita).delete()
 
+    def getMappa(idPartita):
+        return Partita.objects.get(IDPartita=idPartita).Mappa
+
+    def getListaGiocatori(idPartita):
+        partita = Partita.objects.get(IDPartita=idPartita)
+        listRegistrati = partita.Giocatori.all()
+        listOspiti = partita.Ospiti.all()
+        listaGiocatori = []
+        for giocatore in listRegistrati:
+            listaGiocatori.append(giocatore.NickName)
+        for ospite in listOspiti:
+            listaGiocatori.append(ospite.Nickname)
+        return listaGiocatori
+
 
 class Statistiche(models.Model):
     # NicknameGiocatore = models.OneToOneField(GiocatoreRegistrato, primary_key=True, on_delete=models.CASCADE)
@@ -113,6 +128,9 @@ class Continente(models.Model):
     NumeroTruppe = models.IntegerField()
     Mappa = models.ForeignKey(Mappa, on_delete=models.CASCADE)
 
+    def getListaContinentiMappa(mappa):
+        return Continente.objects.filter(Mappa=mappa)
+
 
 class Territorio(models.Model):
     IDTerritorio = models.IntegerField(primary_key=True)
@@ -121,6 +139,13 @@ class Territorio(models.Model):
     Confini = models.ManyToManyField('self', blank=True)
     # La riga sopra aggiunge anche il territorio come confine a se stesso,
     # andranno fatti dei controlli dopo
+
+    def getListaTerritoriMappa(mappa):
+        listaTerritori = []
+        listaContinenti = Continente.getListaContinentiMappa(mappa)
+        for continente in listaContinenti:
+            listaTerritori.append(Territorio.objects.filter(Continente=continente.IDContinente))
+        return listaTerritori
 
 
 class Carta(models.Model):
