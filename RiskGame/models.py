@@ -65,7 +65,7 @@ class Territorio(models.Model):
     IDTerritorio = models.IntegerField(primary_key=True)
     NomeTerritorio = models.CharField(max_length=45)
     Continente = models.ForeignKey(Continente, on_delete=models.CASCADE)
-
+    Confini = models.ManyToManyField('self', blank=True)
 
 class Carta(models.Model):
     Territorio = models.ForeignKey(Territorio, on_delete=models.CASCADE)

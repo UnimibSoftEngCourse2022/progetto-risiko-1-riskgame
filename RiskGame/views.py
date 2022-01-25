@@ -9,7 +9,7 @@ import random
 from django.contrib.auth.models import User
 import json
 import math
-
+from django.http import HttpResponse
 # Create your views here.
 def register(request):
     if request.method == 'POST':
@@ -186,15 +186,44 @@ class MappaView(TemplateView):
                     Continente.objects.create(IDContinente=n_continente, NomeContinente=i['group'], NumeroTruppe=0,
                                               Mappa=mappa)
                     n_continente = n_continente + 1
-                continente = Continente.objects.filter(NomeContinente=i['group']).first()
-                Territorio.objects.create(IDTerritorio=n_territorio, NomeTerritorio=i['title'], Continente=continente)
-                n_territorio = n_territorio + 1
-            print(n_territorio)
+                if not Territorio.objects.filter(NomeTerritorio=i['title']).exists():
+                    continente = Continente.objects.filter(NomeContinente=i['group']).first()
+                    Territorio.objects.create(IDTerritorio=n_territorio, NomeTerritorio=i['title'], Continente=continente)
+                    n_territorio = n_territorio + 1
             result = Continente.objects.filter(Mappa = mappa).order_by('IDContinente').annotate(count=Count('territorio'))
             for x in result:
                 numero_truppe = int(math.floor(x.count/3))
                 if numero_truppe == 0:
                     numero_truppe = 1
                 Continente.objects.filter(NomeContinente = x.NomeContinente).update(NumeroTruppe = numero_truppe)
+            MappaView.generaConfini(request, data)
             file.close()
             return render(request, 'menu.html')
+
+
+
+    def generaConfini(request, data):
+        for i in data['map']['areas']:
+            territorio1 = Territorio.objects.filter(NomeTerritorio = i['title']).first()
+            #print("Analisi confini territorio: " + territorio1.NomeTerritorio)
+            for j in data['map']['areas']:
+                stop = False
+                for h in i['coords']:
+                    for k in j['coords']:
+                        if h['x'] == k['x'] and h['y'] == k['y']:
+                            territorio2 = Territorio.objects.filter(NomeTerritorio = j['title']).first()
+                            territorio1.Confini.add(territorio2)
+                            #print(territorio1.NomeTerritorio + " confina con " + territorio2.NomeTerritorio)
+                            stop = True
+                            break
+                    if stop:
+                        break
+
+            #print(territorio1.Confini.all())
+
+
+
+
+
+
+
