@@ -5,20 +5,25 @@
     <meta name="keywords" content=""><meta name="description" content=""><meta name="page_type" content="np-template-header-footer-from-plugin">
     <title></title>
     <link rel="stylesheet" href="{% static 'nicepage.css' %}" media="screen">
+    <link rel="stylesheet" href="{% static 'Sfondo.css' %}" media="screen">
     <script class="u-script" type="text/javascript" src="{% static 'jquery.js' %}" defer=""></script>
     <script class="u-script" type="text/javascript" src="{% static 'nicepage.js' %}" defer=""></script>
 </head>
-<body class="u-body" background="{% static 'SfondoMappa.png'%}">
+<body class="body">
 
 <div id="id"></div>
 <br>
+<div class="light-text">
 <p class="text">Una volta generato il file Html, spostare l'immagine jpeg della mappa e il file generato all'interno della cartella Mappe; fare attenzione ad aver nominato entrambi i file con il nome della mappa presente nell'editor.<br>
                 Successivamente clicca il tasto "Conferma"</p>
+</div>
 <form action="{% url 'RiskGame:saveMappa' %}" method = "POST">
     {% csrf_token %}
     <div class="text">
-        <label for="nome-mappa">Nome mappa:</label>
-        <input type="text" onblur="getChecked()" id="nome-mappa" name="nome-mappa">
+        <div class="light-text">
+            <label for="nome-mappa">Nome mappa:</label>
+            <input type="text" onblur="getChecked()" id="nome-mappa" name="nome-mappa">
+            </div>
     </div>
     <br>
 <div class="button">
@@ -58,9 +63,14 @@
 	}
 	.text{
 	    text-align: center;
+	    filter: brightness(110%);
+	    font-weight: bold;
 	}
 	.button{
 	    text-align: center;
 	    bottom: 0 !important;
+	}
+	.light-text{
+	    text-shadow: -1px -1px 10px rgba(255, 255, 255, 1);
 	}
 </style>
