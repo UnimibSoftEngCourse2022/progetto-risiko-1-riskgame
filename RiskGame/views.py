@@ -10,6 +10,8 @@ from django.contrib.auth.models import User
 import json
 import math
 from django.http import HttpResponse
+
+
 # Create your views here.
 def register(request):
     if request.method == 'POST':
@@ -72,8 +74,14 @@ class CreazioneView(TemplateView):
         username = User.objects.get(username=request.user.username)
         template_name = "creazione.html"
         mappe = Mappa.objects.filter(Autore=username)
+        list_mappe = []
+        for i in mappe:
+            div = i.NomeMappa.split("-")
+            nome = div[0]
+            if not nome in list_mappe:
+                list_mappe.append(nome)
         maps = {
-            "mappe": mappe
+            "nomi": list_mappe
         }
         return render(request, template_name, maps)
 
@@ -94,7 +102,7 @@ class StatisticheView(TemplateView):
     def draw(request):
         username = User.objects.get(username=request.user.username)
         template_name = "statistiche.html"
-        statistica = Statistiche.objects.filter(IDGiocatore = username)
+        statistica = Statistiche.objects.filter(IDGiocatore=username)
         stats = {
             "statistiche": statistica
         }
@@ -103,12 +111,14 @@ class StatisticheView(TemplateView):
 
 class CredenzialiView(TemplateView):
     def draw(request):
-        template_name = "credenziali.html"
-        credenziali = GiocatoreRegistrato.objects.all()
-        cred = {
-            "credenziali": credenziali
-        }
-        return render(request, template_name, cred)
+        userprofile_form = UserRegisterForm(request.POST if request.POST else None,
+                                           instance=User.objects.get(username=request.user))
+        if request.method == 'POST':
+            if userprofile_form.is_valid():
+                userprofile_form.save()
+                return redirect('login')
+
+        return render(request, 'credenziali.html', context={'userprofile_form': userprofile_form})
 
     def updateData(request):
         if request.method == "POST":
@@ -163,13 +173,23 @@ class MappaView(TemplateView):
             filename = os.path.join(dirname, 'static\Mappe')
             while Mappa.objects.filter(IDMappa=n_random).exists():
                 n_random = random.randint(0, 1000)
-            Mappa.objects.create(IDMappa=n_random, NomeMappa=nome_mappa, Autore=username, PercorsoMappa=filename)
+            div = nome_mappa.split("-")
+            difficolta = div[1]
+            Mappa.objects.create(IDMappa=n_random, NomeMappa=nome_mappa, Autore=username, PercorsoMappa=filename, Difficolta = difficolta)
+            if difficolta == "Difficile":
+                MappaView.loadMappaDifficile(request)
+            if difficolta == "Media":
+                MappaView.loadMappaDifficile(request)
+            if difficolta == "Semplice":
+                MappaView.loadMappaDifficile(request)
             return render(request, 'menu.html')
 
-    def loadMappa(request):
+    def loadMappaDifficile(request):
         template_name = "editor.html"
+        mappa = None
+        data = None
         if request.method == "POST":
-            nome_mappa = request.POST['mappa']
+            nome_mappa = request.POST['nome-mappa']
             username = User.objects.get(username=request.user.username)
             mappa = Mappa.objects.filter(NomeMappa=nome_mappa, Autore=username).first()
             percorso = mappa.PercorsoMappa + "\\" + nome_mappa + ".map.json"
@@ -182,48 +202,41 @@ class MappaView(TemplateView):
                 n_continente = Continente.objects.latest('IDContinente').IDContinente + 1
                 n_territorio = Territorio.objects.latest('IDTerritorio').IDTerritorio + 1
             for i in data['map']['areas']:
-                if not Continente.objects.filter(NomeContinente=i['group']).exists():
-                    Continente.objects.create(IDContinente=n_continente, NomeContinente=i['group'], NumeroTruppe=0,
-                                              Mappa=mappa)
+                if not Continente.objects.filter(NomeContinente=i['group'], Mappa = mappa).exists():
+                    Continente.objects.create(IDContinente=n_continente, NomeContinente=i['group'], NumeroTruppe=0, Mappa=mappa)
                     n_continente = n_continente + 1
-                if not Territorio.objects.filter(NomeTerritorio=i['title']).exists():
-                    continente = Continente.objects.filter(NomeContinente=i['group']).first()
-                    Territorio.objects.create(IDTerritorio=n_territorio, NomeTerritorio=i['title'], Continente=continente)
-                    n_territorio = n_territorio + 1
-            result = Continente.objects.filter(Mappa = mappa).order_by('IDContinente').annotate(count=Count('territorio'))
+                continente = Continente.objects.filter(NomeContinente=i['group'], Mappa=mappa).first()
+                if not Territorio.objects.filter(NomeTerritorio=i['title'], Continente = continente).exists():
+                     Territorio.objects.create(IDTerritorio=n_territorio, NomeTerritorio=i['title'], Continente=continente, Mappa = mappa)
+                     n_territorio = n_territorio + 1
+            result = Continente.objects.filter(Mappa=mappa).order_by('IDContinente').annotate(
+                count=Count('territorio'))
             for x in result:
-                numero_truppe = int(math.floor(x.count/3))
+                numero_truppe = int(math.floor(x.count / 3))
                 if numero_truppe == 0:
                     numero_truppe = 1
-                Continente.objects.filter(NomeContinente = x.NomeContinente).update(NumeroTruppe = numero_truppe)
-            MappaView.generaConfini(request, data)
+                Continente.objects.filter(NomeContinente=x.NomeContinente).update(NumeroTruppe=numero_truppe)
+            MappaView.generaConfini(data, mappa)
             file.close()
             return render(request, 'menu.html')
 
 
-
-    def generaConfini(request, data):
+    def generaConfini(data, mappa):
         for i in data['map']['areas']:
-            territorio1 = Territorio.objects.filter(NomeTerritorio = i['title']).first()
-            #print("Analisi confini territorio: " + territorio1.NomeTerritorio)
+            territorio1 = Territorio.objects.filter(NomeTerritorio=i['title'], Mappa = mappa).first()
             for j in data['map']['areas']:
                 stop = False
                 for h in i['coords']:
                     for k in j['coords']:
                         if h['x'] == k['x'] and h['y'] == k['y']:
-                            territorio2 = Territorio.objects.filter(NomeTerritorio = j['title']).first()
+                            territorio2 = Territorio.objects.filter(NomeTerritorio=j['title'], Mappa = mappa).first()
                             territorio1.Confini.add(territorio2)
-                            #print(territorio1.NomeTerritorio + " confina con " + territorio2.NomeTerritorio)
                             stop = True
                             break
                     if stop:
                         break
 
-            #print(territorio1.Confini.all())
-
-
-
-
-
-
-
+    def findContinenteJson(data, name):
+        for i in data['map']['areas']:
+            if i['title'] == name:
+                return i['group']

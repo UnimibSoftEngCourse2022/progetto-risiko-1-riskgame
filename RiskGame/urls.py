@@ -22,5 +22,5 @@ urlpatterns = [
          views.CredenzialiView.updateData, name="updateData"),
     path("editor-mappa", MappaView.as_view(), name="editor"),
     path("save-mappa", views.MappaView.saveMappa, name="saveMappa"),
-    path("load-mappa", views.MappaView.loadMappa, name="loadMappa"),
+    #path("load-mappa", views.MappaView.loadMappaDifficile, name="loadMappa"),
 ]

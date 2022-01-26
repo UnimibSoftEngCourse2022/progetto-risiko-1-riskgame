@@ -18,7 +18,7 @@
       </div><style class="u-sticky-style" data-style-id="038f">.u-sticky-fixed.u-sticky-038f:before, .u-body.u-sticky-fixed .u-sticky-038f:before {
 borders: top right !important
 }</style></header>
-    <form action="{% url 'RiskGame:loadMappa' %}" method="POST">
+    <form action="" method="POST">
         {% csrf_token %}
         <div class="selection">
         <label for="giocatori">Seleziona il numero di giocatori:</label>
@@ -36,8 +36,8 @@ borders: top right !important
             <select id="mappa" name="mappa">
                 <option value="">----------</option>
                 {% if user.is_authenticated %}
-                    {% for mappa in mappe %}
-                    <option value="{{ mappa.NomeMappa }}">{{ mappa.NomeMappa }}</option>
+                    {% for nome in nomi %}
+                    <option value="{{ nome }}">{{ nome }}</option>
                     {% endfor %}
                 {% endif %}
             </select>

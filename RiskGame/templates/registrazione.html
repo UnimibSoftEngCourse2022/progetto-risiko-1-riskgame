@@ -46,26 +46,35 @@
     {% load crispy_forms_tags %}
 
 
-    <div class="content-section">
+    <div class="selection">
       <form method="post">
         {% csrf_token %}
-        <fieldset class="form-group">
-          <legend class="border-bottom mb-4">Registrazione </legend>
           {{ form|crispy }}
-        </fieldset>
         <div class="form-group">
           <button class="btn btn-outline-info" type="submit">Registrati!</button>
         </div>
       </form>
       <div class="border-top pt-3">
         <small class="text-muted">
-          Hai già un Account?<a class="ml-2" href="{% url 'login' %}">Sign In</a>
+          Hai già un Account?<a class="ml-2" href="{% url 'login' %}">Accedi</a>
         </small>
       </div>
     </div>
 
 
     <style data-mode="XL" data-visited="true">
+        div.selection {
+    letter-spacing: 1px;
+    border-style: none;
+    background-image: none;
+    text-align: center;
+    margin-top: 78px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0;
+    position: relative;
+    }
+
       @media (min-width: 1200px) {
         .u-block-16f1-1 {
           background-image: none;
