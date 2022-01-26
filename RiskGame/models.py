@@ -63,9 +63,23 @@ class Partita(models.Model):
             maxID = Partita.objects.latest('IDPartita').IDPartita
             return maxID + 1
 
+    def getMappa(idPartita):
+        return Partita.objects.get(IDPartita=idPartita).Mappa
+
     def getGiocatoriConnessi(idPartita):
         partita = Partita.objects.get(IDPartita=idPartita)
         return partita.Giocatori.count() + partita.Ospiti.count()
+
+    def getListaGiocatori(idPartita):
+        partita = Partita.objects.get(IDPartita=idPartita)
+        listRegistrati = partita.Giocatori.all()
+        listOspiti = partita.Ospiti.all()
+        listaGiocatori = []
+        for giocatore in listRegistrati:
+            listaGiocatori.append(giocatore.username)
+        for ospite in listOspiti:
+            listaGiocatori.append(ospite.Nickname)
+        return listaGiocatori
 
     def disconnettiGiocatore(idPartita, username):
         giocatore = User.objects.get(username=username)

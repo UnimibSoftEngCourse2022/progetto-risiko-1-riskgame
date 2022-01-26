@@ -102,7 +102,11 @@ class PartitaView(TemplateView):
 
         Partita.objects.create(IDPartita=nuovoID, NumeroGiocatori=numGiocatori,
             Difficolta=difficolta, Mappa=mappa)
-        Partita.objects.get(IDPartita=nuovoID).Giocatori.add(request.user)
+        if (request.user.is_authenticated):
+            Partita.objects.get(IDPartita=nuovoID).Giocatori.add(request.user)
+        else:
+            ospite = Ospite.objects.get(Nickname=request.session['ospite'])
+            Partita.objects.get(IDPartita=nuovoID).Ospiti.add(ospite)
 
         return redirect(reverse('RiskGame:partecipaPartita', kwargs={'PartitaID': nuovoID}))
 

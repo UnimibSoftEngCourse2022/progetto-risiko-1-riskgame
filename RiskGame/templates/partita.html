@@ -4,7 +4,8 @@
         <title>RiskGame - Partita {{ PartitaID }}</title>
     </head>
     <body>
-        <h1>Sala d'attesa (Giocatori: <span id="numGiocAtt">{{ Partita.Giocatori.count|add:Partita.Ospiti.count }}</span>/{{ Partita.NumeroGiocatori }})</h1>
+        <h1 id='titolo'>Sala d'attesa (Giocatori: <span id="numGiocAtt">{{ Partita.Giocatori.count|add:Partita.Ospiti.count }}</span>/{{ Partita.NumeroGiocatori }})</h1>
+        <div id="tabella-giocatori"></div>
         <textarea id="chat-log" cols="100" rows="20"></textarea><br>
         <input id="chat-message-input" type="text" size="100"><br>
         <input id="chat-message-submit" type="button" value="Invia">
@@ -45,14 +46,52 @@
                 else if (data.tipo == 'nuovoGiocatore'){
                     document.querySelector('#chat-log').value += ('[' + data.sender
                         + ' si è unito alla partita.]' + '\n');
-                    if (data.sender != sender)
+                    if (data.sender != sender){
                         numGiocAtt.innerText = parseInt(numGiocAtt.innerText) + 1;
-                }         
+                        if (numGiocAtt.innerText == '{{ Partita.NumeroGiocatori }}')
+                            iniziaPartita();
+                    }
+                }
                 else if (data.tipo == 'abbandona'){
                     document.querySelector('#chat-log').value += ('[' + data.sender
                         + ' ha abbandonato la partita.]' + '\n');
                         numGiocAtt.innerText = parseInt(numGiocAtt.innerText) - 1;
-                }           
+                }
+                else if (data.tipo == 'rappresentazionePartita'){
+                    var listaGiocatori = JSON.parse(data.listaGiocatori);
+
+                    document.getElementById('titolo').remove();
+                    document.getElementById('chat-message-submit').remove();
+                    document.getElementById('chat-message-input').remove();
+                    document.getElementById('chat-log').remove();
+
+                    // Qui viene fatta apparire la mappa e il giuoco
+                    var tabellaGiocatori = document.getElementById('tabella-giocatori');
+
+                    listaGiocatori.forEach(giocatore => {
+                        var infoGiocatore = document.createElement('div');
+
+                        var nomeGiocatore = document.createElement('span');
+                        nomeGiocatore.setAttribute('id', 'span_nome_' + giocatore.nickname);
+                        nomeGiocatore.innerText = giocatore.nickname;
+                        infoGiocatore.appendChild(nomeGiocatore);
+
+                        infoGiocatore.appendChild(document.createElement('br'));
+                        
+                        var numTruppe = document.createElement('span');
+                        numTruppe.setAttribute('id', 'span_num_truppe_' + giocatore.nickname);
+                        numTruppe.innerText = 'Truppe totali: ' + giocatore.numTruppe;
+                        infoGiocatore.appendChild(numTruppe);
+
+                        tabellaGiocatori.appendChild(infoGiocatore);
+                    })
+                }
+                else if (data.tipo == 'scontro'){
+
+                }
+                else if (data.tipo == 'assegnaTruppe'){
+
+                }
             };
 
             partitaSocket.onclose = function(e) {
@@ -91,6 +130,54 @@
                 }));
                 location.href="/match-list"
             };
+
+            function iniziaPartita(){
+                partitaSocket.send(JSON.stringify({
+                    'tipo': 'iniziaPartita',
+                    'idPartita': '{{ PartitaID }}',
+                    'sender': 'gioco'
+                }));
+            }
+
+            function finePartita(){
+                partitaSocket.send(JSON.stringify({
+                    'tipo': 'finePartita',
+                    'idPartita': '{{ PartitaID }}',
+                    'sender': 'gioco'
+                }));
+            }
+
+            function conquistaTerritorio(territorio, nuovoProprietario){
+                partitaSocket.send(JSON.stringify({
+                    'tipo': 'conquistaTerritorio',
+                    'idPartita': '{{ PartitaID }}',
+                    'sender': 'gioco',
+                    'territorio': territorio,
+                    'nuovoProprietario': nuovoProprietario
+                }));
+            }
+
+            function scontro(territorio, attaccante, difensore, truppeAttaccante, truppeDifensore){
+                partitaSocket.send(JSON.stringify({
+                    'tipo': 'scontro',
+                    'idPartita': '{{ PartitaID }}',
+                    'sender': 'gioco',
+                    'territorio': territorio,
+                    'attaccante': attaccante,
+                    'difensore': difensore,
+                    'truppeAttaccante': truppeAttaccante,
+                    'truppeDifensore': truppeDifensore
+                }));
+            }
+
+            function assegnaTruppe(giocatore){
+                partitaSocket.send(JSON.stringify({
+                    'tipo': 'assegnaTruppe',
+                    'idPartita': '{{ PartitaID }}',
+                    'sender': 'gioco',
+                    'giocatore': giocatore
+                }));
+            }
         </script>
     </body>
 </html>
