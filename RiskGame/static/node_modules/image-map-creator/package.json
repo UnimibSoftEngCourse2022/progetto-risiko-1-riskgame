@@ -1,0 +1,57 @@
+{
+  "name": "image-map-creator",
+  "version": "1.1.10",
+  "description": "This is a simple map creator tool made with the p5.js library. I want it\r to be easy to use for both the end user and the developper.",
+  "main": "dist/image-map-creator.bundle.js",
+  "types": "dist/src/p5.image-map-creator.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "webpack --env dev --watch",
+    "build": "webpack --env dev",
+    "dist": "npm run clean && webpack --env prod",
+    "clean": "rm -rf dist",
+    "release": "dotenv release-it"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n-peugnet/image-map-creator.git"
+  },
+  "release-it": {
+    "hooks": {
+      "after:bump": "npm run dist"
+    },
+    "npm": {
+      "publish": true
+    },
+    "github": {
+      "release": true,
+      "assets": [
+        "dist/*.js"
+      ]
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/n-peugnet/image-map-creator/issues"
+  },
+  "homepage": "https://github.com/n-peugnet/image-map-creator#readme",
+  "devDependencies": {
+    "@types/downloadjs": "^1.4.2",
+    "@types/p5": "^0.7.3",
+    "css-loader": "^1.0.1",
+    "dotenv-cli": "^2.0.1",
+    "release-it": "^14.0.2",
+    "style-loader": "^0.23.1",
+    "ts-loader": "^5.4.5",
+    "typescript": "^3.9.7",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {
+    "downloadjs": "^1.4.7",
+    "quicksettings": "^3.0.1",
+    "undo-manager": "^1.0.5"
+  }
+}

@@ -10,7 +10,7 @@ urlpatterns = [
     path('registrazione', views.register, name='register'),
     path("registrazione", RegistrazioneView.as_view(), name="registrazione"),
     path("menu", MenuView.as_view(), name="menu"),
-    path("crea-partita", CreazioneView.as_view(), name="creazione"),
+    path("crea-partita", views.CreazioneView.draw, name="creazione"),
     path("settings", ImpostazioniView.as_view(), name="impostazione"),
     path("match-list", views.PartecipaView.loadPartite, name="partecipa"),
     path('partita<PartitaID>', PartitaView.as_view(), name="partita"),
@@ -20,4 +20,7 @@ urlpatterns = [
     path("credenziali", views.CredenzialiView.draw, name="credenziali"),
     path("credenziali-aggiornamento",
          views.CredenzialiView.updateData, name="updateData"),
+    path("editor-mappa", MappaView.as_view(), name="editor"),
+    path("save-mappa", views.MappaView.saveMappa, name="saveMappa"),
+    #path("load-mappa", views.MappaView.loadMappaDifficile, name="loadMappa"),
 ]

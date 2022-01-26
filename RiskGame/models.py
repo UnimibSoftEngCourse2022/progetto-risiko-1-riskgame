@@ -22,7 +22,7 @@ class Mappa(models.Model):
         on_delete=models.CASCADE,
     )
     PercorsoMappa = models.CharField(max_length=100)
-
+    Difficolta = models.CharField(max_length = 20, default="")
 
 class Partita(models.Model):
     IDPartita = models.IntegerField(primary_key=True)
@@ -66,8 +66,7 @@ class Territorio(models.Model):
     NomeTerritorio = models.CharField(max_length=20)
     Continente = models.ForeignKey(Continente, on_delete=models.CASCADE)
     Confini = models.ManyToManyField('self', blank=True)
-    # La riga sopra aggiunge anche il territorio come confine a se stesso,
-    # andranno fatti dei controlli dopo
+    Mappa = models.ForeignKey(Mappa, on_delete=models.CASCADE, null = True)
 
 
 class Carta(models.Model):

@@ -7,51 +7,41 @@
     <meta name="keywords" content=""><meta name="description" content=""><meta name="page_type" content="np-template-header-footer-from-plugin">
     <title></title>
     <link rel="stylesheet" href="{% static 'nicepage.css' %}" media="screen">
+    <link rel="stylesheet" href="{% static 'Sfondo.css' %}" media="screen">
     <script class="u-script" type="text/javascript" src="{% static 'jquery.js' %}" defer=""></script>
     <script class="u-script" type="text/javascript" src="{% static 'nicepage.js' %}" defer=""></script>
 
-<body class="u-body" background="{% static 'SfondoMappa.png'%}" data-style="blank" data-posts="" data-global-section-properties="{&quot;colorings&quot;:{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}}" data-source="blank" data-page-sections-style="[]" data-page-coloring-types="{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}" data-page-category="&quot;Basic&quot;"><form class="u-clearfix u-custom-color-1 u-block-702b-1" custom-posts-hash="[]" data-style="blank" data-section-properties="{&quot;margin&quot;:&quot;none&quot;,&quot;stretch&quot;:true}" id="sec-341e" data-source="Blank" data-id="702b">
+<body class="body" data-style="blank" data-posts="" data-global-section-properties="{&quot;colorings&quot;:{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}}" data-source="blank" data-page-sections-style="[]" data-page-coloring-types="{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}" data-page-category="&quot;Basic&quot;">
   <header class="u-clearfix u-custom-color-1 u-header u-header" id="sec-3a71" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction=""><div class="u-align-left u-clearfix u-sheet u-valign-middle u-sheet-1">
         <a href="{% url 'RiskGame:impostazione' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Impostazioni<br>
         </a>
       </div><style class="u-sticky-style" data-style-id="038f">.u-sticky-fixed.u-sticky-038f:before, .u-body.u-sticky-fixed .u-sticky-038f:before {
 borders: top right !important
 }</style></header>
-    <form action="{% url 'RiskGame:updateData' %}" method = "POST">
+    {% load crispy_forms_tags %}
+    <div class="selection">
+      <form method="post">
         {% csrf_token %}
-        <div class="selection">
-            <label for="nome">Nome:</label>
-            <input type="text" id="nome" value={{giocatore.Nome}}>
-            <br><br>
-            <label for="cognome">Cognome:</label>
-            <input type="text" id="cognome" value={{giocatore.Cognome}}>
-              <br>  <br>
-            <label for="email">Email:</label>
-            <input type="text" id="email" value={{giocatore.Email}}>
-              <br>  <br>
-            <label for="password">Password:</label>
-            <input type="text" id="password" value={{giocatore.Password}}>
-              <br>  <br>
-            <label for="nickname">Nickname:</label>
-            <input type="text" id="nickname" value={{giocatore.NickName}}>
+          {{ userprofile_form|crispy }}
+        <div class="form-group">
+          <button class="btn btn-outline-info" type="submit">Modifica le tue credenziali</button>
         </div>
-    </form>
-    <div class="u-align-center u-form-group u-form-submit u-block-16f1-13">
-          <a href="#" class="u-btn u-btn-submit u-button-style u-block-16f1-14">Conferma</a>
-          <input type="submit" value="submit" class="u-form-control-hidden">
-        </div>
-<style data-mode="XL" data-visited="true">@media (min-width: 1200px) {
+      </form>
+    </div>
+
+<style>
   div.selection {
     letter-spacing: 1px;
     border-style: none;
-    font-weight: 700;
-    text-transform: uppercase;
     background-image: none;
     text-align: center;
     margin-top: 78px;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 0;
-  }
-}</style>
-</body></html>
+    position: relative;
+    }
+
+</style>
+</body>
+</html>
