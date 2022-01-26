@@ -112,10 +112,17 @@ class PartitaView(TemplateView):
         nuovoID = Partita.getNuovoID()
         numGiocatori = request.GET['giocatori']
         difficolta = request.GET['difficolta']
-        mappa = Mappa.objects.get(IDMappa=request.GET['mappa'])
+        mappa = Mappa.objects.get(NomeMappa=request.GET['mappa']+'-'+difficolta)
+
+        if (difficolta=='Semplice'):
+            intDiff = 1
+        elif (difficolta=='Media'):
+            intDiff = 2
+        elif (difficolta=='Difficile'):
+            intDiff = 3
 
         Partita.objects.create(IDPartita=nuovoID, NumeroGiocatori=numGiocatori,
-            Difficolta=difficolta, Mappa=mappa)
+            Difficolta=intDiff, Mappa=mappa)
         if (request.user.is_authenticated):
             Partita.objects.get(IDPartita=nuovoID).Giocatori.add(request.user)
         else:

@@ -14,7 +14,7 @@
   <header class="u-clearfix u-custom-color-1 u-header u-header" id="sec-3a71" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction="">
     <div class="u-align-left u-clearfix u-sheet u-valign-middle u-sheet-1">
       {% if user.is_authenticated %}
-        <a href="{% url 'RiskGame:logout' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Logout</a>
+        <a href="{% url 'logout' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Logout</a>
       {% else %}
         <a href="{% url 'RiskGame:home' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Home<br></a>
       {% endif %}

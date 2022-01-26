@@ -203,7 +203,7 @@ class PartitaConsumer(WebsocketConsumer):
                     j = i
 
 
-    def inizializzaPartita():
+    def inizializzaPartita(self):
         listaTemp = Partita.getListaGiocatori(idPartita)
         for giocatore in listaTemp:
             listaGiocatori.append(dataclasses.asdict(ClasseGiocatore(giocatore, 0, [])))

@@ -2,15 +2,24 @@
     {% load static %}
     <head>
         <title>RiskGame - Partita {{ PartitaID }}</title>
+        <link rel="stylesheet" href="{% static 'Sfondo.css' %}" media="screen">
+        <style>
+            div.appearance {
+                position: relative;
+            }
+        </style>
     </head>
-    <body>
+    <body class='body'>
         <h1 id='titolo'>Sala d'attesa (Giocatori: <span id="numGiocAtt">{{ Partita.Giocatori.count|add:Partita.Ospiti.count }}</span>/{{ Partita.NumeroGiocatori }})</h1>
-        <div id="tabella-giocatori"></div>
-        <textarea id="chat-log" cols="100" rows="20"></textarea><br>
-        <input id="chat-message-input" type="text" size="100"><br>
-        <input id="chat-message-submit" type="button" value="Invia">
-        <input id="abbandona" type="button" value="Esci">
-        {{ room_name|json_script:"room-name" }}
+        <div id='appearance' class='appearance'>
+            <div id='mappa'></div>
+            <div id="tabella-giocatori"></div>
+            <textarea id="chat-log" cols="100" rows="20"></textarea><br>
+            <input id="chat-message-input" type="text" size="100"><br>
+            <input id="chat-message-submit" type="button" value="Invia">
+            <input id="abbandona" type="button" value="Esci">
+            {{ room_name|json_script:"room-name" }}
+        </div>
         <script>
             const roomName = JSON.parse(document.getElementById('room-name').textContent);
             const numGiocAtt = document.querySelector('#numGiocAtt');

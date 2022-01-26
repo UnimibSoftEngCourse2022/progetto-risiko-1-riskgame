@@ -109,7 +109,7 @@ class Partita(models.Model):
         listOspiti = partita.Ospiti.all()
         listaGiocatori = []
         for giocatore in listRegistrati:
-            listaGiocatori.append(giocatore.NickName)
+            listaGiocatori.append(giocatore.username)
         for ospite in listOspiti:
             listaGiocatori.append(ospite.Nickname)
         return listaGiocatori
