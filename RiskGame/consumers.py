@@ -11,6 +11,7 @@ class classeGiocatore:
     numTruppe = 0
     territori = []
     nickname = ""
+    numeroTruppeTurno = 0
 
 class classeTerritorio:
     numTruppe = 0
@@ -103,6 +104,16 @@ class PartitaConsumer(WebsocketConsumer):
                 }
             )
             Partita.disconnettiOspite(text_data_json['idPartita'], text_data_json['sender'])
+        elif (tipo == 'assegnaTruppe'):
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'evento_gioco',
+                    'tipo': 'assegnaTruppe',
+                    'sender': mittente,
+                }
+            )
+        
 
 
     # Riceve il messaggio dalla room group (locale)
@@ -146,9 +157,19 @@ class PartitaConsumer(WebsocketConsumer):
         
 
 
-    def chiamataMetodoAssegnazioneTruppeTerritorio(classeGiocatore, k):
+    def chiamataMetodoAssegnazioneTruppeTerritorio(classeGiocatore):
         xlistaTerritori = []
-        truppe = len(listaGiocatori.territori)/3
+        listaGiocatori.numeroTruppeTurno = len(listaGiocatori.territori)/3
         for i in listaTerritori:
             if listaTerritori.giocatore == classeGiocatore.nickname:
                 xlistaTerritori.append(classeTerritorio(listaTerritori.numTruppe,listaTerritori.giocatore, listaTerritori.nome, listaTerritori.continente))
+        
+        return xlistaTerritori
+
+
+    def metodoAssegnazioneTruppeTerritorio(listaTerritoriSocket):
+        for i in listaTerritoriSocket:
+            for j in listaTerritori:
+                if listaTerritori.nome == listaTerritoriSocket.nome:
+                    j = i
+
