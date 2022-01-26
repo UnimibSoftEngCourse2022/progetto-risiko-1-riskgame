@@ -18,8 +18,12 @@
       </div><style class="u-sticky-style" data-style-id="038f">.u-sticky-fixed.u-sticky-038f:before, .u-body.u-sticky-fixed .u-sticky-038f:before {
 borders: top right !important
 }</style></header>
+<<<<<<< HEAD
     <form action="" method="POST">
         {% csrf_token %}
+=======
+    <form action="{% url 'RiskGame:creaPartita' %}" method="GET">
+>>>>>>> 57782c4e0acca43f6362520f91461deaf624d3ac
         <div class="selection">
         <label for="giocatori">Seleziona il numero di giocatori:</label>
             <select id="giocatori" name="giocatori">
@@ -30,6 +34,7 @@ borders: top right !important
                 <option value="6">6</option>
             </select>
         </div>
+<<<<<<< HEAD
     <br>
     <div class="selection">
         <label>Seleziona la mappa:</label>

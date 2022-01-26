@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.views.generic import TemplateView
 from django.contrib import messages
+from django.contrib.auth import logout
 from .forms import UserRegisterForm
 from RiskGame.models import *
 from django.db.models import Count
@@ -32,7 +33,7 @@ class HomePageView(TemplateView):
     # class LoginView(TemplateView):
     #   template_name = "login.html"
 
-    def controlUserData(request):
+    """def controlUserData(request):
         if request.method == "POST":
             NickName = request.POST['nickname']
             Password = request.POST['password']
@@ -40,13 +41,13 @@ class HomePageView(TemplateView):
                 return render(request, 'menu.html')
             else:
                 messages.warning(request, 'i dati sono errati')
-                return render(request, 'login.html')
+                return render(request, 'login.html')"""
 
 
 class RegistrazioneView(TemplateView):
     template_name = "registrazione.html"
 
-    def saveUserData(request):
+    """def saveUserData(request):
         if request.method == "POST":
             NickName = request.POST['nickname']
             Nome = request.POST['nome']
@@ -58,11 +59,19 @@ class RegistrazioneView(TemplateView):
                                                Email=Email,
                                                Password=Password)
             messages.success(request, 'I dati sono stati salvati')
-            return redirect(reverse('RiskGame:home'))
+            return redirect(reverse('RiskGame:home'))"""
 
 
 class MenuView(TemplateView):
     template_name = "menu.html"
+
+    def drawMenu(request):
+        request.session['ospite'] = 'null'
+        return render(request, "menu.html")
+    
+    def drawOspite(request):
+        request.session['ospite'] = Ospite.assegnaOspite()
+        return render(request, "menu.html")
 
 
 class ImpostazioniView(TemplateView):
@@ -86,6 +95,7 @@ class CreazioneView(TemplateView):
         return render(request, template_name, maps)
 
 
+
 class PartecipaView(TemplateView):
     template_name = "partecipa.html"
 
@@ -96,6 +106,35 @@ class PartecipaView(TemplateView):
 
 class PartitaView(TemplateView):
     template_name = "partita.html"
+
+    def creaPartita(request):
+        # Crea la partita nel DB, aggiunge il nuovo giocatore e lo reindirizza alla partita
+        nuovoID = Partita.getNuovoID()
+        numGiocatori = request.GET['giocatori']
+        difficolta = request.GET['difficolta']
+        mappa = Mappa.objects.get(IDMappa=request.GET['mappa'])
+
+        Partita.objects.create(IDPartita=nuovoID, NumeroGiocatori=numGiocatori,
+            Difficolta=difficolta, Mappa=mappa)
+        if (request.user.is_authenticated):
+            Partita.objects.get(IDPartita=nuovoID).Giocatori.add(request.user)
+        else:
+            ospite = Ospite.objects.get(Nickname=request.session['ospite'])
+            Partita.objects.get(IDPartita=nuovoID).Ospiti.add(ospite)
+
+        return redirect(reverse('RiskGame:partecipaPartita', kwargs={'PartitaID': nuovoID}))
+
+    def partecipaPartita(request, PartitaID):
+        # Aggiunge il giocatore alla lista giocatori e lo reindirizza alla partita
+        partita = Partita.objects.get(IDPartita=PartitaID)
+        if request.user.is_authenticated:
+            partita.Giocatori.add(request.user)
+        else:
+            ospite = Ospite.objects.get(Nickname=request.session['ospite'])
+            partita.Ospiti.add(ospite)
+        return render(request, "partita.html", {"Partita": partita, "PartitaID": PartitaID,
+            "Ospite": request.session['ospite']})
+        
 
 
 class StatisticheView(TemplateView):
@@ -120,22 +159,6 @@ class CredenzialiView(TemplateView):
 
         return render(request, 'credenziali.html', context={'userprofile_form': userprofile_form})
 
-    def updateData(request):
-        if request.method == "POST":
-            NickName = request.POST['nickname']
-            Nome = request.POST['nome']
-            Cognome = request.POST['cognome']
-            Email = request.POST['email']
-            Password = request.POST['password']
-            g = GiocatoreRegistrato.objects.get(NickName=NickName)
-            g.Nome = Nome
-            g.Cognome = Cognome
-            g.NickName = NickName
-            g.Email = Email
-            g.Password = Password
-            g.save()
-            return render(request, 'menu.html')
-
 
 """def saveUserData(request):
     if request.method == "POST":
@@ -150,7 +173,7 @@ class CredenzialiView(TemplateView):
     return render(request, 'registrazione.html')"""
 
 
-def controlUserData(request):
+"""def controlUserData(request):
     if request.method == "POST":
         NickName = request.POST['nickname']
         Password = request.POST['password']
@@ -158,7 +181,8 @@ def controlUserData(request):
             return render(request, 'menu.html')
         else:
             messages.warning(request, 'i dati sono errati')
-            return render(request, 'login.html')
+
+            return render(request, 'login.html')"""
 
 
 class MappaView(TemplateView):
@@ -240,3 +264,4 @@ class MappaView(TemplateView):
         for i in data['map']['areas']:
             if i['title'] == name:
                 return i['group']
+
