@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 from django.shortcuts import render, redirect, reverse
 from django.views.generic import TemplateView
 from django.contrib import messages
@@ -61,7 +60,7 @@ class MenuView(TemplateView):
     template_name = "menu.html"
 
     def drawMenu(request):
-        request.session['ospite'] = NULL
+        request.session['ospite'] = 'null'
         return render(request, "menu.html")
     
     def drawOspite(request):

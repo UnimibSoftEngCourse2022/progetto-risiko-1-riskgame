@@ -18,7 +18,7 @@ class ClasseTerritorio:
 class ClasseGiocatore:
     nickname: str = ""
     numTruppe: int = 0
-    territori: List[str] = []
+    territori: List[str] = None
     numeroTruppeTurno: int = 0
 
 # per far si che questi sopra siano serializzabili 
