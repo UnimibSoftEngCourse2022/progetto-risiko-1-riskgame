@@ -18,9 +18,10 @@ class registerTest (TestCase):
 class statsTest (TestCase):
     def setUp(self):
         self.client=Client()
-        #self.user = User.objects.create_user(username="userTestName",password="userTestPass",)
+        self.user = User.objects.create_user(username="userTestName",password="userTestPass",)
 
     def test_view_url_exists_at_desired_location(self):
+        self.client.login(username='userTestName', password='userTestPass')
         response = self.client.get('/statistiche')
         self.assertEqual(response.status_code, 200)
 
@@ -93,14 +94,16 @@ class credenzialiTest (TestCase):
         self.user = User.objects.create_user(username="userTestName", password="userTestPass",)
 
     def test_view_url_exists_at_desired_location(self):
+        self.client.login(username='userTestName', password='userTestPass')
         response = self.client.get('/credenziali')
         self.assertEqual(response.status_code, 200)
 
 class creazioneTest (TestCase):
     def setUp(self):
         self.client=Client()
-        self.user = User.objects.create_user(username="userTestName",)
+        self.user = User.objects.create_user(username="userTestName", password="userTestPass")
 
     def test_view_url_exists_at_desired_location(self):
+        self.client.login(username='userTestName', password='userTestPass')
         response = self.client.get('/crea-partita')
         self.assertEqual(response.status_code, 200)
