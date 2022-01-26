@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 import json
 import math
 from django.http import HttpResponse
-
+import pytest
 
 # Create your views here.
 def register(request):
