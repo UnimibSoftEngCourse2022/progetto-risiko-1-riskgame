@@ -21,7 +21,7 @@ urlpatterns = [
     path("editor-mappa", MappaView.as_view(), name="editor"),
     path("save-mappa", views.MappaView.saveMappa, name="saveMappa"),
     #path("load-mappa", views.MappaView.loadMappaDifficile, name="loadMappa"),
-    path("logout", views.userLogout, name="logout"),
+    #path("logout", views.userLogout, name="logout"),
     path('creaPartita', views.PartitaView.creaPartita, name="creaPartita"),
     path('partecipaPartita<PartitaID>', views.PartitaView.partecipaPartita, name="partecipaPartita")
 ]
