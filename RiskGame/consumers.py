@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 from dataclasses import dataclass
 import dataclasses, json, math
 from asgiref.sync import async_to_sync
@@ -18,7 +17,7 @@ class ClasseTerritorio:
 class ClasseGiocatore:
     nickname: str = ""
     numTruppe: int = 0
-    territori: List[str] = None
+    territori: List[ClasseTerritorio] = None
     numeroTruppeTurno: int = 0
 
 # per far si che questi sopra siano serializzabili 
@@ -177,21 +176,24 @@ class PartitaConsumer(WebsocketConsumer):
 
     def assegnazioneTerritoriTruppeIniziali(self):
         xlistaTerritori = Territorio.getListaTerritoriMappa(nomeMappa)
+
+        for territorio in xlistaTerritori:
+            listaTerritori.append(ClasseTerritorio(numTruppe=0, giocatore="",
+                nome=territorio.NomeTerritorio, continente=territorio.Continente.NomeContinente))
+
         xlistaGiocatori = Partita.getListaGiocatori(idPartita)
-        h = math.floor(len(listaTerritori)/len(xlistaGiocatori))
-        print(h)
-        print('stop')
+
+        h = math.floor(len(xlistaTerritori)/len(xlistaGiocatori))
         k = 0
         for i in xlistaGiocatori:
             listaGiocatori.append(ClasseGiocatore(nickname=i,
                 numTruppe=14, territori=[], numeroTruppeTurno=0))
             for j in range(k , h):
-                print(j)
                 listaTerritori.append(ClasseTerritorio(numTruppe=0, giocatore=i,
-                    nome=xlistaTerritori[j].NomeTerritorio,
-                    continente=xlistaTerritori[j].Continente))
-                i.territori.append(xlistaTerritori[j].NomeTerritorio)
-                k = k + 1
+                    nome=listaTerritori[j].nome,
+                    continente=listaTerritori[j].continente))
+                listaGiocatori[len(listaGiocatori)-1].territori.append(listaTerritori[j])
+            k = h
             h = h + h
             
 

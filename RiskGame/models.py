@@ -157,7 +157,9 @@ class Territorio(models.Model):
         listaTerritori = []
         listaContinenti = Continente.getListaContinentiMappa(mappa)
         for continente in listaContinenti:
-            listaTerritori.append(Territorio.objects.filter(Continente=continente.IDContinente))
+            territoriContinente = Territorio.objects.filter(Continente=continente.IDContinente)
+            for territorio in territoriContinente:
+                listaTerritori.append(territorio)
         return listaTerritori
 
 
