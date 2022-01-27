@@ -17,7 +17,6 @@ class ClasseTerritorio:
 class ClasseGiocatore:
     nickname: str = ""
     numTruppe: int = 0
-    territori: List[ClasseTerritorio] = None
     numeroTruppeTurno: int = 0
 
 # per far si che questi sopra siano serializzabili 
@@ -28,9 +27,10 @@ class PartitaConsumer(WebsocketConsumer):
     # Set to True to automatically port users from HTTP cookies
     # (you don't need channel_session_user, this implies it)
     http_user = True
-    global listaGiocatori, listaTerritori
+    global listaGiocatori, listaTerritori, giocatoreAttivo
     listaGiocatori = []
     listaTerritori = []
+    giocatoreAttivo = ""
 
     def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['PartitaID']
@@ -97,7 +97,8 @@ class PartitaConsumer(WebsocketConsumer):
                     'sender': mittente
                 }
             )
-            Partita.disconnettiGiocatore(text_data_json['idPartita'], self.scope['user'].username)
+            # Partita.disconnettiGiocatore(text_data_json['idPartita'], self.scope['user'].username)
+            Partita.disconnettiGiocatore(text_data_json['idPartita'], mittente)
         elif (tipo == 'abbandonaOspite'):
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
@@ -118,7 +119,15 @@ class PartitaConsumer(WebsocketConsumer):
                     'sender': mittente
                 }
             )
-        elif (tipo == 'assegnaTruppe'):
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'evento_gioco',
+                    'tipo': 'iniziaTurno',
+                    'sender': mittente
+                }
+            )
+        elif (tipo == 'iniziaTurno'):
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
@@ -161,8 +170,17 @@ class PartitaConsumer(WebsocketConsumer):
                 'tipo': tipo,
                 'sender': mittente,
                 'listaGiocatori': self.serializzaLista(listaGiocatori),
+                'listaTerritori': self.serializzaLista(listaTerritori),
                 'mappa': jsonMappa,
                 'nomeMappa': nomeMappa
+            }))
+        elif (tipo == 'iniziaTurno'):
+            self.send(text_data=json.dumps({
+                'tipo': tipo,
+                'sender': mittente,
+                'giocatoreAttivo': giocatoreAttivo,
+                'listaGiocatori': self.serializzaLista(listaGiocatori),
+                'listaTerritori': self.serializzaLista(listaTerritori)
             }))
 
     # Eventi di gioco
@@ -187,12 +205,9 @@ class PartitaConsumer(WebsocketConsumer):
         k = 0
         for i in xlistaGiocatori:
             listaGiocatori.append(ClasseGiocatore(nickname=i,
-                numTruppe=14, territori=[], numeroTruppeTurno=0))
+                numTruppe=14, numeroTruppeTurno=0))
             for j in range(k , h):
-                listaTerritori.append(ClasseTerritorio(numTruppe=0, giocatore=i,
-                    nome=listaTerritori[j].nome,
-                    continente=listaTerritori[j].continente))
-                listaGiocatori[len(listaGiocatori)-1].territori.append(listaTerritori[j])
+                listaTerritori[j].giocatore = i
             k = h
             h = h + h
             

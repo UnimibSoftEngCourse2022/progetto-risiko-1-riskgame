@@ -71,9 +71,10 @@
             const roomName = JSON.parse(document.getElementById('room-name').textContent);
             const numGiocAtt = document.querySelector('#numGiocAtt');
 
-            var sender = "";
+            var nomeGiocatore = "";
             var listaGiocatori = [];
             var divMappa = document.getElementById('map');
+            var statoPartita = 0;
 
             const partitaSocket = new WebSocket(
                 'ws://'
@@ -85,14 +86,14 @@
 
             partitaSocket.onopen = function() {
                 if ('{{ user.is_authenticated }}' == 'True'){
-                    sender = '{{ user.get_username }}';
+                    nomeGiocatore = '{{ user.get_username }}';
                 }
                 else {
-                    sender = '{{ Ospite }}';
+                    nomeGiocatore = '{{ Ospite }}';
                 }
                 partitaSocket.send(JSON.stringify({
                     'tipo': 'nuovoGiocatore',
-                    'sender': sender
+                    'sender': nomeGiocatore
                 }));
             };
 
@@ -104,7 +105,7 @@
                 else if (data.tipo == 'nuovoGiocatore'){
                     document.querySelector('#chat-log').value += ('[' + data.sender
                         + ' si è unito alla partita.]' + '\n');
-                    if (data.sender != sender){
+                    if (data.sender != nomeGiocatore){
                         numGiocAtt.innerText = parseInt(numGiocAtt.innerText) + 1;
                         if (numGiocAtt.innerText >= '{{ Partita.NumeroGiocatori }}')
                             iniziaPartita();
@@ -203,11 +204,12 @@
 
                         var ul = document.createElement('ul'); 
                         ul.setAttribute('id', 'ul_territori_' + giocatore.nickname);                       
-                        giocatore.territori.forEach(territorio => {
-                            console.log(territorio);
-                            var li = document.createElement('li');
-                            li.innerText = territorio.nome + ' (' + territorio.numTruppe + ' truppe)';
-                            ul.appendChild(li);
+                        data.listaTerritori.forEach(territorio => {
+                            if (giocatore.nickname == territorio.giocatore){
+                                var li = document.createElement('li');
+                                li.innerText = territorio.nome + ' (' + territorio.numTruppe + ' truppe)';
+                                ul.appendChild(li);
+                            }
                         })
                         elencoTerritori.appendChild(ul);
 
@@ -216,8 +218,36 @@
                         varTG.appendChild(infoGiocatore);
                     })
                 }
-                else if (data.tipo == 'assegnaTruppe'){
-                    
+                else if (data.tipo == 'iniziaTurno'){
+                    if (data.giocatoreAttivo == nomeGiocatore){
+                        territoriGiocatore = [];
+                        data.listaTerritori.forEach(territorio => {
+                            if (territorio.giocatore == nomeGiocatore)
+                                territoriGiocatore.push(territorio);
+                        });
+
+                        // Assegnare truppe ai territori
+                        var formDiv = document.createElement('div');
+                        formDiv.setAttribute('class', 'form-popup');
+                        formDiv.setAttribute('id', 'formTruppe');
+
+                        var form = document.createElement('form');
+                        form.action = '#';
+                        form.setAttribute('class', 'form-container');
+
+                        // La roba del form
+
+                        form.appendChild(document.createElement('h1').innerText = 'Assegna Truppe');
+
+                        territoriGiocatore.forEach(territorio => {
+                            
+                        });
+
+
+                        //
+
+                        formDiv.appendChild(form);
+                    }
                 }
             };
 
@@ -238,7 +268,7 @@
                 partitaSocket.send(JSON.stringify({
                     'tipo': 'messaggio',
                     'message': message,
-                    'sender': sender
+                    'sender': nomeGiocatore
                 }));
                 messageInputDom.value = '';
             };
@@ -253,7 +283,7 @@
                 partitaSocket.send(JSON.stringify({
                     'tipo': tipo,
                     'idPartita': '{{ PartitaID }}',
-                    'sender': sender
+                    'sender': nomeGiocatore
                 }));
                 location.href="/match-list"
             };
