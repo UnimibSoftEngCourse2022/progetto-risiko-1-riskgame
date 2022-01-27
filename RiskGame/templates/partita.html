@@ -8,11 +8,13 @@
                 position: relative;
             }
         </style>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/imagemapster/1.5.4/jquery.imagemapster.min.js"></script>
     </head>
     <body class='body'>
         <h1 id='titolo'>Sala d'attesa (Giocatori: <span id="numGiocAtt">{{ Partita.Giocatori.count|add:Partita.Ospiti.count }}</span>/{{ Partita.NumeroGiocatori }})</h1>
         <div id='appearance' class='appearance'>
-            <div id='mappa'></div>
+            <div id='map' style="width: 100%; text-align: center;"></div>
             <div id="tabella-giocatori"></div>
             <textarea id="chat-log" cols="100" rows="20"></textarea><br>
             <input id="chat-message-input" type="text" size="100"><br>
@@ -25,6 +27,8 @@
             const numGiocAtt = document.querySelector('#numGiocAtt');
 
             var sender = "";
+            var listaGiocatori = [];
+            var divMappa = document.getElementById('map');
 
             const partitaSocket = new WebSocket(
                 'ws://'
@@ -57,7 +61,7 @@
                         + ' si è unito alla partita.]' + '\n');
                     if (data.sender != sender){
                         numGiocAtt.innerText = parseInt(numGiocAtt.innerText) + 1;
-                        if (numGiocAtt.innerText == '{{ Partita.NumeroGiocatori }}')
+                        if (numGiocAtt.innerText >= '{{ Partita.NumeroGiocatori }}')
                             iniziaPartita();
                     }
                 }
@@ -66,15 +70,49 @@
                         + ' ha abbandonato la partita.]' + '\n');
                         numGiocAtt.innerText = parseInt(numGiocAtt.innerText) - 1;
                 }
-                else if (data.tipo == 'rappresentazionePartita'){
-                    var listaGiocatori = JSON.parse(data.listaGiocatori);
-
+                else if (data.tipo == 'iniziaPartita'){
+                    // Rimozione degli elementi della sala d'attesa
                     document.getElementById('titolo').remove();
                     document.getElementById('chat-message-submit').remove();
                     document.getElementById('chat-message-input').remove();
                     document.getElementById('chat-log').remove();
 
-                    // Qui viene fatta apparire la mappa e il giuoco
+                    // Rappresentazione degli elementi della partita
+                    listaGiocatori = data.listaGiocatori;
+                    mappa = data.mappa.map; // contiene i dati della mappa in JSON
+                    
+                    var imgMappa = document.createElement('img');
+                    imgMappa.setAttribute('src', 'static/Mappe/' + mappa.name);
+                    imgMappa.setAttribute('width', mappa.width);
+                    imgMappa.setAttribute('height', mappa.height);
+                    imgMappa.setAttribute('usemap', '#' + data.nomeMappa);
+                    imgMappa.setAttribute('class', 'map maphilighted');
+                    divMappa.appendChild(imgMappa);
+
+                    var mapTag = document.createElement('map');
+                    mapTag.setAttribute('name', data.nomeMappa);
+                    mapTag.setAttribute('id', mappa.name);
+
+                    mappa.areas.forEach(area => {
+                        var tagArea = document.createElement('area');
+                        tagArea.setAttribute('shape', area.shape)
+                        tagArea.setAttribute('title', area.title);
+                        tagArea.setAttribute('group', area.group);
+                        tagArea.setAttribute('href', '#');
+
+                        var strCoords = "";
+                        area.coords.forEach(coordinata => {
+                            strCoords += Math.round(coordinata.x) + ',' + Math.round(coordinata.y) + ',';
+                        });
+                        tagArea.setAttribute('coords', strCoords);
+
+                        mapTag.appendChild(tagArea);
+                    });
+
+                    divMappa.appendChild(mapTag);
+
+                    $('img[usemap]').mapster();
+                    
                     var tabellaGiocatori = document.getElementById('tabella-giocatori');
 
                     listaGiocatori.forEach(giocatore => {
@@ -94,9 +132,6 @@
 
                         tabellaGiocatori.appendChild(infoGiocatore);
                     })
-                }
-                else if (data.tipo == 'scontro'){
-
                 }
                 else if (data.tipo == 'assegnaTruppe'){
 

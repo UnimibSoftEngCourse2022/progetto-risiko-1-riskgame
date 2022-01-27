@@ -1,11 +1,11 @@
 from asyncio.windows_events import NULL
 from dataclasses import dataclass
-import dataclasses
-import json
+import dataclasses, json, math
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from .models import *
 from typing import List
+from pathlib import Path
 
 @dataclass
 class ClasseTerritorio:
@@ -37,8 +37,12 @@ class PartitaConsumer(WebsocketConsumer):
         self.room_name = self.scope['url_route']['kwargs']['PartitaID']
         self.room_group_name = 'partita_%s' % self.room_name
 
-        global idPartita
+        global idPartita, nomeMappa, jsonMappa
         idPartita = self.room_name
+        nomeMappa = Partita.getMappa(idPartita)
+
+        with open(str(Path(__file__).absolute().parent) +'/static/Mappe/' + nomeMappa + '.map.json') as json_file:
+            jsonMappa = json.load(json_file)
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -106,16 +110,7 @@ class PartitaConsumer(WebsocketConsumer):
             )
             Partita.disconnettiOspite(text_data_json['idPartita'], text_data_json['sender'])
         elif (tipo == 'iniziaPartita'):
-            self.inizializzaPartita()
-            async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name,
-                {
-                    'type': 'evento_gioco',
-                    'tipo': 'rappresentazionePartita',
-                    'sender': mittente
-                }
-            )
-        elif(tipo == 'assegnazioneTruppe'):
+            self.assegnazioneTerritoriTruppeIniziali()
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
@@ -162,48 +157,58 @@ class PartitaConsumer(WebsocketConsumer):
         tipo = event['tipo']
         mittente = event['sender']
 
-        if (tipo == 'rappresentazionePartita'): # Dice agli utenti di togliere la chat e disegnare il gioco
+        if (tipo == 'iniziaPartita'): # Dice agli utenti di togliere la chat e disegnare il gioco
             self.send(text_data=json.dumps({
                 'tipo': tipo,
                 'sender': mittente,
-                'listaGiocatori': json.dumps(listaGiocatori)
+                'listaGiocatori': self.serializzaLista(listaGiocatori),
+                'mappa': jsonMappa,
+                'nomeMappa': nomeMappa
             }))
 
     # Eventi di gioco
 
-    def assegnazioneTerritoriTruppeIniziali():
-        mappa = Partita.getMappa(idPartita)
-        xlistaTerritori = Territorio.getListaTerritoriMappa(mappa)
+    def serializzaLista(self, lista):
+        nuovaLista = []
+        for elemento in lista:
+            nuovaLista.append(dataclasses.asdict(elemento))
+        return nuovaLista
+
+
+    def assegnazioneTerritoriTruppeIniziali(self):
+        xlistaTerritori = Territorio.getListaTerritoriMappa(nomeMappa)
         xlistaGiocatori = Partita.getListaGiocatori(idPartita)
-        h = len(listaTerritori)/len(xlistaGiocatori)
+        h = math.floor(len(listaTerritori)/len(xlistaGiocatori))
+        print(h)
+        print('stop')
         k = 0
-        for i  in xlistaGiocatori:
-            listaGiocatori.append(ClasseGiocatore(14, [], i))
+        for i in xlistaGiocatori:
+            listaGiocatori.append(ClasseGiocatore(nickname=i,
+                numTruppe=14, territori=[], numeroTruppeTurno=0))
             for j in range(k , h):
-                listaTerritori.append(ClasseTerritorio(0, i, j.NomeTerritorio,j.Continente))
-                i.territori.append(j.NomeTerritorio)
+                print(j)
+                listaTerritori.append(ClasseTerritorio(numTruppe=0, giocatore=i,
+                    nome=xlistaTerritori[j].NomeTerritorio,
+                    continente=xlistaTerritori[j].Continente))
+                i.territori.append(xlistaTerritori[j].NomeTerritorio)
                 k = k + 1
             h = h + h
             
 
-    def chiamataMetodoAssegnazioneTruppeTerritorio(classeGiocatore):
+    def chiamataMetodoAssegnazioneTruppeTerritorio(self, classeGiocatore):
         xlistaTerritori = []
-        listaGiocatori.numeroTruppeTurno = len(listaGiocatori.territori)/3
+        for giocatore in listaGiocatori:
+            if giocatore.nickname == classeGiocatore.nickname:
+                giocatore.numeroTruppeTurno = len(giocatore.territori)/3
+            break
         for i in listaTerritori:
-            if listaTerritori.giocatore == classeGiocatore.nickname:
-                xlistaTerritori.append(ClasseTerritorio(listaTerritori.numTruppe,listaTerritori.giocatore, listaTerritori.nome, listaTerritori.continente))
-        
+            if i.giocatore == classeGiocatore.nickname:
+                xlistaTerritori.append(ClasseTerritorio(i.numTruppe, i.giocatore, i.nome, i.continente))
         return xlistaTerritori
 
 
-    def metodoAssegnazioneTruppeTerritorio(listaTerritoriSocket):
+    def metodoAssegnazioneTruppeTerritorio(self, listaTerritoriSocket):
         for i in listaTerritoriSocket:
             for j in listaTerritori:
                 if listaTerritori.nome == listaTerritoriSocket.nome:
                     j = i
-
-
-    def inizializzaPartita(self):
-        listaTemp = Partita.getListaGiocatori(idPartita)
-        for giocatore in listaTemp:
-            listaGiocatori.append(dataclasses.asdict(ClasseGiocatore(giocatore, 0, [])))

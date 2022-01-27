@@ -112,7 +112,7 @@ class PartitaView(TemplateView):
         nuovoID = Partita.getNuovoID()
         numGiocatori = request.GET['giocatori']
         difficolta = request.GET['difficolta']
-        mappa = Mappa.objects.get(NomeMappa=request.GET['mappa']+'-'+difficolta)
+        mappa = Mappa.objects.filter(NomeMappa=request.GET['mappa']+'-'+difficolta).first()
 
         if (difficolta=='Semplice'):
             intDiff = 1

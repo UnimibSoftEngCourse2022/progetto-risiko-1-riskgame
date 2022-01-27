@@ -101,7 +101,7 @@ class Partita(models.Model):
             Partita.objects.get(IDPartita=idPartita).delete()
 
     def getMappa(idPartita):
-        return Partita.objects.get(IDPartita=idPartita).Mappa
+        return Partita.objects.get(IDPartita=idPartita).Mappa.NomeMappa
 
     def getListaGiocatori(idPartita):
         partita = Partita.objects.get(IDPartita=idPartita)
@@ -138,12 +138,12 @@ class Statistiche(models.Model):
 class Continente(models.Model):
     IDContinente = models.IntegerField(primary_key=True)
     NomeContinente = models.CharField(max_length=45)
-    Colore = models.CharField(max_length=45)
     NumeroTruppe = models.IntegerField()
     Mappa = models.ForeignKey(Mappa, on_delete=models.CASCADE)
 
     def getListaContinentiMappa(mappa):
-        return Continente.objects.filter(Mappa=mappa)
+        objMappa = Mappa.objects.filter(NomeMappa=mappa).first()
+        return Continente.objects.filter(Mappa=objMappa.IDMappa)
 
 
 class Territorio(models.Model):

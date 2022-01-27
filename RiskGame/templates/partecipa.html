@@ -26,7 +26,7 @@ borders: top right !important
                 <div class="tile-partita">
                   <center>
                     <font size="5" color="blue">Partita {{ partita.IDPartita }}</font><br>
-                      {% with 'mappe/'|add:partita.Mappa.PercorsoMappa as percorso %}
+                      {% with 'Mappe/'|add:partita.Mappa.NomeMappa as percorso %}
                         <img src="{% static percorso %}" width="200" height="130"><hr>
                       {% endwith %}
                       <b>Numero giocatori:</b> {{ totGiocatori }}/{{ partita.NumeroGiocatori }}<br>
