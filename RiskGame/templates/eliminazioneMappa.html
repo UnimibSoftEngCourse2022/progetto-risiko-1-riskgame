@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html style="font-size: 16px;">
+{% load static %}
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content=""><meta name="description" content=""><meta name="page_type" content="np-template-header-footer-from-plugin">
+    <title></title>
+    <link rel="stylesheet" href="{% static 'nicepage.css' %}" media="screen">
+    <link rel="stylesheet" href="{% static 'Sfondo.css' %}" media="screen">
+    <script class="u-script" type="text/javascript" src="{% static 'jquery.js' %}" defer=""></script>
+    <script class="u-script" type="text/javascript" src="{% static 'nicepage.js' %}" defer=""></script>
+</head>
+<body class="body" data-style="blank" data-posts="" data-global-section-properties="{&quot;colorings&quot;:{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}}" data-source="blank" data-page-sections-style="[]" data-page-coloring-types="{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}" data-page-category="&quot;Basic&quot;"><section class="u-clearfix u-custom-color-1 u-block-702b-1" custom-posts-hash="[]" data-style="blank" data-section-properties="{&quot;margin&quot;:&quot;none&quot;,&quot;stretch&quot;:true}" id="sec-341e" data-source="Blank" data-id="702b">
+  <header class="u-clearfix u-custom-color-1 u-header u-header" id="sec-3a71" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction=""><div class="u-align-left u-clearfix u-sheet u-valign-middle u-sheet-1">
+        <a href="{% url 'RiskGame:menu' %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Menu<br>
+        </a>
+      </div><style class="u-sticky-style" data-style-id="038f">.u-sticky-fixed.u-sticky-038f:before, .u-body.u-sticky-fixed .u-sticky-038f:before {
+borders: top right !important
+}</style></header>
+    <form action="{% url 'RiskGame:eliminazioneMappa' %}" method="POST">
+        {% csrf_token %}
+    <br>
+    <div class="selection">
+        <label>Seleziona la mappa:</label>
+            <select id="mappa" name="mappa">
+                <option value="">----------</option>
+                {% if user.is_authenticated %}
+                    {% for nome in nomi %}
+                    <option value="{{ nome }}">{{ nome }}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+    </div>
+        <br>
+    <div class="selection">
+        <label for="difficolta">Seleziona la difficoltà:</label>
+            <select id="difficolta" name="difficolta">
+                <option value="Semplice">Semplice</option>
+                <option value="Media">Media</option>
+                <option value="Difficile">Difficile</option>
+            </select>
+    </div>
+    <div class="u-align-center u-form-group u-form-submit u-block-16f1-13">
+        <br>
+        <button type="submit" class="btn btn-outline-info">Conferma</button>
+    </div>
+    </form>
+<style data-mode="XL" data-visited="true">@media (min-width: 1200px) {
+  div.selection {
+    letter-spacing: 1px;
+    border-style: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    background-image: none;
+    text-align: center;
+    margin-top: 78px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0;
+  }
+}</style>
+</body></html>

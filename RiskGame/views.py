@@ -272,3 +272,36 @@ class MappaView(TemplateView):
             if i['title'] == name:
                 return i['group']
 
+
+class MenuMappaView(TemplateView):
+    template_name = "menumappa.html"
+
+class EliminazioneMappaView(TemplateView):
+    def draw(request):
+        username = User.objects.get(username=request.user.username)
+        template_name = "eliminazioneMappa.html"
+        mappe = Mappa.objects.filter(Autore=username)
+        list_mappe = []
+        for i in mappe:
+            div = i.NomeMappa.split("-")
+            nome = div[0]
+            if not nome in list_mappe:
+                list_mappe.append(nome)
+        maps = {
+            "nomi": list_mappe
+        }
+        return render(request, template_name, maps)
+
+    def eliminazioneMappa(request):
+        if request.method == "POST":
+            nome = request.POST['mappa']
+            difficolta = request.POST['difficolta']
+            nome_mappa = nome + "-" + difficolta
+            username = User.objects.get(username=request.user.username)
+            mappa = Mappa.objects.filter(NomeMappa=nome_mappa, Autore=username).first()
+            percorso = mappa.PercorsoMappa + "\\" + nome_mappa + ".map.json"
+            if os.path.exist(percorso):
+                os.remove(percorso)
+            mappa.delete()
+            return render(request, 'impostazione.html')
+
