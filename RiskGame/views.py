@@ -153,7 +153,7 @@ class PartitaView(TemplateView):
             difficolta = request.GET['difficolta']
             nome_mappa = request.GET['mappa'] + "-" + difficolta
             mappa = Mappa.objects.get(NomeMappa=request.GET['mappa']+'-'+difficolta)
-
+            n_continenti = Continente.objects.filter(Mappa=mappa).count()
             intDiff = 0
             if (difficolta=='Semplice'):
                 intDiff = 1
@@ -162,15 +162,19 @@ class PartitaView(TemplateView):
             elif (difficolta=='Difficile'):
                 intDiff = 3
 
-            Partita.objects.create(IDPartita=nuovoID, NumeroGiocatori=numGiocatori,
-                Difficolta=intDiff, Mappa=mappa)
-            if (request.user.is_authenticated):
-                Partita.objects.get(IDPartita=nuovoID).Giocatori.add(request.user)
-            else:
-                ospite = Ospite.objects.get(Nickname=request.session['ospite'])
-                Partita.objects.get(IDPartita=nuovoID).Ospiti.add(ospite)
+            if int(numGiocatori) <= n_continenti:
+                Partita.objects.create(IDPartita=nuovoID, NumeroGiocatori=numGiocatori,
+                    Difficolta=intDiff, Mappa=mappa)
+                if (request.user.is_authenticated):
+                    Partita.objects.get(IDPartita=nuovoID).Giocatori.add(request.user)
+                else:
+                    ospite = Ospite.objects.get(Nickname=request.session['ospite'])
+                    Partita.objects.get(IDPartita=nuovoID).Ospiti.add(ospite)
 
-            return redirect(reverse('RiskGame:partecipaPartita', kwargs={'PartitaID': nuovoID}))
+                return redirect(reverse('RiskGame:partecipaPartita', kwargs={'PartitaID': nuovoID}))
+            else:
+                messages.info(request, "Il numero di giocatori inserito non è compatibile con la mappa")
+                return render(request, 'creazione.html')
 
 
     def partecipaPartita(request, PartitaID):

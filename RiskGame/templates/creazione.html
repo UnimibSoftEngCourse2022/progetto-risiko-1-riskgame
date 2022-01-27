@@ -19,6 +19,13 @@
 borders: top right !important
 }</style></header>
     <form action="{% url 'RiskGame:creaPartita' %}" method="GET">
+        {% if messages %}
+            <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
         <div class="selection">
         <label for="giocatori">Seleziona il numero di giocatori:</label>
             <select id="giocatori" name="giocatori">
@@ -56,6 +63,9 @@ borders: top right !important
     </div>
     </form>
 <style data-mode="XL" data-visited="true">@media (min-width: 1200px) {
+    .messages{
+       text-align: center;
+    }
   div.selection {
     letter-spacing: 1px;
     border-style: none;
