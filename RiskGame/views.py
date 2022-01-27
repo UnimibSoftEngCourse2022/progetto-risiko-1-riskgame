@@ -13,6 +13,7 @@ import math
 from django.http import HttpResponse
 import pytest
 
+
 # Create your views here.
 def register(request):
     if request.method == 'POST':
@@ -68,7 +69,7 @@ class MenuView(TemplateView):
     def drawMenu(request):
         request.session['ospite'] = 'null'
         return render(request, "menu.html")
-    
+
     def drawOspite(request):
         request.session['ospite'] = Ospite.assegnaOspite()
         return render(request, "menu.html")
@@ -95,7 +96,6 @@ class CreazioneView(TemplateView):
         return render(request, template_name, maps)
 
 
-
 class PartecipaView(TemplateView):
     template_name = "partecipa.html"
 
@@ -108,7 +108,7 @@ class PartitaView(TemplateView):
     template_name = "partita.html"
 
     def creaPartita(request):
-        # Crea la partita nel DB, aggiunge il nuovo giocatore e lo reindirizza alla partita
+        """# Crea la partita nel DB, aggiunge il nuovo giocatore e lo reindirizza alla partita
         nuovoID = Partita.getNuovoID()
         numGiocatori = request.GET['giocatori']
         difficolta = request.GET['difficolta']
@@ -129,7 +129,22 @@ class PartitaView(TemplateView):
             ospite = Ospite.objects.get(Nickname=request.session['ospite'])
             Partita.objects.get(IDPartita=nuovoID).Ospiti.add(ospite)
 
-        return redirect(reverse('RiskGame:partecipaPartita', kwargs={'PartitaID': nuovoID}))
+        return redirect(reverse('RiskGame:partecipaPartita', kwargs={'PartitaID': nuovoID}))"""
+        nome = request.GET['mappa']
+        difficolta = request.GET['difficolta']
+        nome_mappa = nome + "-" + difficolta
+        username = User.objects.get(username=request.user.username)
+        mappa = Mappa.objects.filter(NomeMappa=nome_mappa, Autore=username).first()
+        percorso = mappa.PercorsoMappa + "\\" + nome_mappa + ".map.json"
+        file = open(percorso)
+        data = json.load(file)
+        MappaView.collassaConfini(data, mappa)
+        percorso = mappa.PercorsoMappa + "\\" + "mappa-semplice.map.json"
+        with open(percorso, "w") as jsonFile:
+            json.dump(data, jsonFile)
+        file.close()
+        return render(request, "menu.html")
+
 
     def partecipaPartita(request, PartitaID):
         # Aggiunge il giocatore alla lista giocatori e lo reindirizza alla partita
@@ -140,8 +155,7 @@ class PartitaView(TemplateView):
             ospite = Ospite.objects.get(Nickname=request.session['ospite'])
             partita.Ospiti.add(ospite)
         return render(request, "partita.html", {"Partita": partita, "PartitaID": PartitaID,
-            "Ospite": request.session['ospite']})
-        
+                                                "Ospite": request.session['ospite']})
 
 
 class StatisticheView(TemplateView):
@@ -158,39 +172,13 @@ class StatisticheView(TemplateView):
 class CredenzialiView(TemplateView):
     def draw(request):
         userprofile_form = UserRegisterForm(request.POST if request.POST else None,
-                                           instance=User.objects.get(username=request.user))
+                                            instance=User.objects.get(username=request.user))
         if request.method == 'POST':
             if userprofile_form.is_valid():
                 userprofile_form.save()
                 return redirect('login')
 
         return render(request, 'credenziali.html', context={'userprofile_form': userprofile_form})
-
-
-"""def saveUserData(request):
-    if request.method == "POST":
-        NickName = request.POST['nickname']
-        Nome = request.POST['nome']
-        Cognome = request.POST['cognome']
-        Email = request.POST['email']
-        Password = request.POST['password']
-        GiocatoreRegistrato.objects.create(Nome=Nome, Cognome=Cognome, NickName=NickName, Email=Email,
-                                           Password=Password)
-        messages.success(request, 'I dati sono stati salvati')
-    return render(request, 'registrazione.html')"""
-
-
-"""def controlUserData(request):
-    if request.method == "POST":
-        NickName = request.POST['nickname']
-        Password = request.POST['password']
-        if GiocatoreRegistrato.objects.filter(NickName=NickName, Password=Password).exists():
-            return render(request, 'menu.html')
-        else:
-            messages.warning(request, 'i dati sono errati')
-
-            return render(request, 'login.html')"""
-
 
 class MappaView(TemplateView):
     template_name = "editor.html"
@@ -206,7 +194,8 @@ class MappaView(TemplateView):
                 n_random = random.randint(0, 1000)
             div = nome_mappa.split("-")
             difficolta = div[1]
-            Mappa.objects.create(IDMappa=n_random, NomeMappa=nome_mappa, Autore=username, PercorsoMappa=filename, Difficolta = difficolta)
+            Mappa.objects.create(IDMappa=n_random, NomeMappa=nome_mappa, Autore=username, PercorsoMappa=filename,
+                                 Difficolta=difficolta)
             if difficolta == "Difficile":
                 MappaView.loadMappaDifficile(request)
             if difficolta == "Media":
@@ -233,13 +222,15 @@ class MappaView(TemplateView):
                 n_continente = Continente.objects.latest('IDContinente').IDContinente + 1
                 n_territorio = Territorio.objects.latest('IDTerritorio').IDTerritorio + 1
             for i in data['map']['areas']:
-                if not Continente.objects.filter(NomeContinente=i['group'], Mappa = mappa).exists():
-                    Continente.objects.create(IDContinente=n_continente, NomeContinente=i['group'], NumeroTruppe=0, Mappa=mappa)
+                if not Continente.objects.filter(NomeContinente=i['group'], Mappa=mappa).exists():
+                    Continente.objects.create(IDContinente=n_continente, NomeContinente=i['group'], NumeroTruppe=0,
+                                              Mappa=mappa)
                     n_continente = n_continente + 1
                 continente = Continente.objects.filter(NomeContinente=i['group'], Mappa=mappa).first()
-                if not Territorio.objects.filter(NomeTerritorio=i['title'], Continente = continente).exists():
-                     Territorio.objects.create(IDTerritorio=n_territorio, NomeTerritorio=i['title'], Continente=continente, Mappa = mappa)
-                     n_territorio = n_territorio + 1
+                if not Territorio.objects.filter(NomeTerritorio=i['title'], Continente=continente).exists():
+                    Territorio.objects.create(IDTerritorio=n_territorio, NomeTerritorio=i['title'],
+                                              Continente=continente, Mappa=mappa)
+                    n_territorio = n_territorio + 1
             result = Continente.objects.filter(Mappa=mappa).order_by('IDContinente').annotate(
                 count=Count('territorio'))
             for x in result:
@@ -251,16 +242,15 @@ class MappaView(TemplateView):
             file.close()
             return render(request, 'menu.html')
 
-
     def generaConfini(data, mappa):
         for i in data['map']['areas']:
-            territorio1 = Territorio.objects.filter(NomeTerritorio=i['title'], Mappa = mappa).first()
+            territorio1 = Territorio.objects.filter(NomeTerritorio=i['title'], Mappa=mappa).first()
             for j in data['map']['areas']:
                 stop = False
                 for h in i['coords']:
                     for k in j['coords']:
                         if h['x'] == k['x'] and h['y'] == k['y']:
-                            territorio2 = Territorio.objects.filter(NomeTerritorio=j['title'], Mappa = mappa).first()
+                            territorio2 = Territorio.objects.filter(NomeTerritorio=j['title'], Mappa=mappa).first()
                             territorio1.Confini.add(territorio2)
                             stop = True
                             break
@@ -272,9 +262,49 @@ class MappaView(TemplateView):
             if i['title'] == name:
                 return i['group']
 
+    def collassaConfini(data, mappa):
+        selected=[]
+        for i in data['map']['areas']:
+            if not i['title'] in selected:
+                selected.append(i['title'])
+                territorio1 = Territorio.objects.filter(NomeTerritorio=i['title'], Mappa=mappa).first()
+                temp_i = i['coords']
+                temp_i.append(i['coords'][0])
+                for j in data['map']['areas']:
+                    if i['title'] != j['title'] and not j['title'] in selected:
+                        selected.append(j['title'])
+                        territorio2 = Territorio.objects.filter(NomeTerritorio=j['title'], Mappa=mappa).first()
+                        if territorio2 in territorio1.Confini.all():
+                            coordinate = []
+                            temp_j = j['coords']
+                            temp_j.append(j['coords'][0])
+                            for h in temp_i:
+                                copia = h.copy()
+                                coordinate.append(copia)
+                            for k in temp_j:
+                                copia = k.copy()
+                                coordinate.append(copia)
+                            i['coords'] = coordinate
+                    i['coords'] = i['coords'] + j['coords']
+        temp = data['map']['areas']
+        for i in range(0, len(data['map']['areas'])):
+            for j in range(0, len(data['map']['areas']) - 1):
+                if temp[i]['group'] == temp[j]['group'] and temp[i]['title'] != temp[j]['title']:
+                    print("Ho superato l'if")
+                    print("Lunghezza i:" + str(len(temp[i]['coords'])))
+                    print("Lunghezza j:" + str(len(temp[j]['coords'])))
+                    if len(temp[i]['coords']) < len(temp[j]['coords']):
+                        temp.remove(temp[i])
+                    elif len(temp[i]['coords']) == len(temp[j]['coords']):
+                        temp.remove(temp[i])
+                    else:
+                        temp.remove(temp[j])
+        data['map']['areas'] = temp
+
 
 class MenuMappaView(TemplateView):
     template_name = "menumappa.html"
+
 
 class EliminazioneMappaView(TemplateView):
     def draw(request):
@@ -300,8 +330,7 @@ class EliminazioneMappaView(TemplateView):
             username = User.objects.get(username=request.user.username)
             mappa = Mappa.objects.filter(NomeMappa=nome_mappa, Autore=username).first()
             percorso = mappa.PercorsoMappa + "\\" + nome_mappa + ".map.json"
-            if os.path.exist(percorso):
+            if os.path.exists(percorso):
                 os.remove(percorso)
             mappa.delete()
             return render(request, 'impostazione.html')
-
