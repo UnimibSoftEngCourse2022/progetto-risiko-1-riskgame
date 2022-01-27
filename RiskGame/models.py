@@ -42,6 +42,8 @@ class Mappa(models.Model):
     Autore = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        blank = True,
+        null = True
     )
     PercorsoMappa = models.CharField(max_length=100)
     Difficolta = models.CharField(max_length = 20, default="")

@@ -108,42 +108,69 @@ class PartitaView(TemplateView):
     template_name = "partita.html"
 
     def creaPartita(request):
-        """# Crea la partita nel DB, aggiunge il nuovo giocatore e lo reindirizza alla partita
-        nuovoID = Partita.getNuovoID()
-        numGiocatori = request.GET['giocatori']
-        difficolta = request.GET['difficolta']
-        mappa = Mappa.objects.get(NomeMappa=request.GET['mappa']+'-'+difficolta)
-
-        if (difficolta=='Semplice'):
-            intDiff = 1
-        elif (difficolta=='Media'):
-            intDiff = 2
-        elif (difficolta=='Difficile'):
-            intDiff = 3
-
-        Partita.objects.create(IDPartita=nuovoID, NumeroGiocatori=numGiocatori,
-            Difficolta=intDiff, Mappa=mappa)
-        if (request.user.is_authenticated):
-            Partita.objects.get(IDPartita=nuovoID).Giocatori.add(request.user)
-        else:
-            ospite = Ospite.objects.get(Nickname=request.session['ospite'])
-            Partita.objects.get(IDPartita=nuovoID).Ospiti.add(ospite)
-
-        return redirect(reverse('RiskGame:partecipaPartita', kwargs={'PartitaID': nuovoID}))"""
+        #Crea la partita nel DB, aggiunge il nuovo giocatore e lo reindirizza alla partita
         nome = request.GET['mappa']
         difficolta = request.GET['difficolta']
-        nome_mappa = nome + "-" + difficolta
-        username = User.objects.get(username=request.user.username)
-        mappa = Mappa.objects.filter(NomeMappa=nome_mappa, Autore=username).first()
-        percorso = mappa.PercorsoMappa + "\\" + nome_mappa + ".map.json"
-        file = open(percorso)
-        data = json.load(file)
-        MappaView.collassaConfini(data, mappa)
-        percorso = mappa.PercorsoMappa + "\\" + "mappa-semplice.map.json"
-        with open(percorso, "w") as jsonFile:
-            json.dump(data, jsonFile)
-        file.close()
-        return render(request, "menu.html")
+        nome_mappa = nome + "-" + "Difficile"
+        if nome == "MappaDefault" and difficolta == "Semplice":
+            mappa = Mappa.objects.filter(NomeMappa=nome_mappa).first()
+            print(mappa)
+            percorso = mappa.PercorsoMappa + "\\" + nome + "-Difficile.map.json"
+            file = open(percorso)
+            data = json.load(file)
+            MappaView.collassaConfini(data, mappa)
+            percorso = mappa.PercorsoMappa
+            if not os.path.exists(percorso):
+                os.makedirs(percorso)
+            filename = "MappaDefault-Semplice.map.json"
+            with open(os.path.join(percorso, filename), "w") as jsonFile:
+                json.dump(data, jsonFile)
+            file.close()
+            nuovoID = Partita.getNuovoID()
+            numGiocatori = request.GET['giocatori']
+
+            intDiff = 0
+            if (difficolta == 'Semplice'):
+                intDiff = 1
+            elif (difficolta == 'Media'):
+                intDiff = 2
+            elif (difficolta == 'Difficile'):
+                intDiff = 3
+
+            Partita.objects.create(IDPartita=nuovoID, NumeroGiocatori=numGiocatori,
+                                   Difficolta=intDiff, Mappa=mappa)
+            if (request.user.is_authenticated):
+                Partita.objects.get(IDPartita=nuovoID).Giocatori.add(request.user)
+            else:
+                ospite = Ospite.objects.get(Nickname=request.session['ospite'])
+                Partita.objects.get(IDPartita=nuovoID).Ospiti.add(ospite)
+
+            return redirect(reverse('RiskGame:partecipaPartita', kwargs={'PartitaID': nuovoID}))
+
+        else:
+            nuovoID = Partita.getNuovoID()
+            numGiocatori = request.GET['giocatori']
+            difficolta = request.GET['difficolta']
+            nome_mappa = request.GET['mappa'] + "-" + difficolta
+            mappa = Mappa.objects.get(NomeMappa=request.GET['mappa']+'-'+difficolta)
+
+            intDiff = 0
+            if (difficolta=='Semplice'):
+                intDiff = 1
+            elif (difficolta=='Media'):
+                intDiff = 2
+            elif (difficolta=='Difficile'):
+                intDiff = 3
+
+            Partita.objects.create(IDPartita=nuovoID, NumeroGiocatori=numGiocatori,
+                Difficolta=intDiff, Mappa=mappa)
+            if (request.user.is_authenticated):
+                Partita.objects.get(IDPartita=nuovoID).Giocatori.add(request.user)
+            else:
+                ospite = Ospite.objects.get(Nickname=request.session['ospite'])
+                Partita.objects.get(IDPartita=nuovoID).Ospiti.add(ospite)
+
+            return redirect(reverse('RiskGame:partecipaPartita', kwargs={'PartitaID': nuovoID}))
 
 
     def partecipaPartita(request, PartitaID):
@@ -196,15 +223,10 @@ class MappaView(TemplateView):
             difficolta = div[1]
             Mappa.objects.create(IDMappa=n_random, NomeMappa=nome_mappa, Autore=username, PercorsoMappa=filename,
                                  Difficolta=difficolta)
-            if difficolta == "Difficile":
-                MappaView.loadMappaDifficile(request)
-            if difficolta == "Media":
-                MappaView.loadMappaDifficile(request)
-            if difficolta == "Semplice":
-                MappaView.loadMappaDifficile(request)
+            MappaView.loadMappa(request)
             return render(request, 'menu.html')
 
-    def loadMappaDifficile(request):
+    def loadMappa(request):
         template_name = "editor.html"
         mappa = None
         data = None
@@ -240,7 +262,6 @@ class MappaView(TemplateView):
                 Continente.objects.filter(NomeContinente=x.NomeContinente).update(NumeroTruppe=numero_truppe)
             MappaView.generaConfini(data, mappa)
             file.close()
-            return render(request, 'menu.html')
 
     def generaConfini(data, mappa):
         for i in data['map']['areas']:
@@ -271,9 +292,9 @@ class MappaView(TemplateView):
                 temp_i = i['coords']
                 temp_i.append(i['coords'][0])
                 for j in data['map']['areas']:
-                    if i['title'] != j['title'] and not j['title'] in selected:
+                    if i['title'] != j['title'] and j['group'] == territorio1.Continente.NomeContinente and not j['title'] in selected:
                         selected.append(j['title'])
-                        territorio2 = Territorio.objects.filter(NomeTerritorio=j['title'], Mappa=mappa).first()
+                        territorio2 = Territorio.objects.filter(NomeTerritorio=j['title'], Continente = territorio1.Continente, Mappa=mappa).first()
                         if territorio2 in territorio1.Confini.all():
                             coordinate = []
                             temp_j = j['coords']
@@ -285,20 +306,22 @@ class MappaView(TemplateView):
                                 copia = k.copy()
                                 coordinate.append(copia)
                             i['coords'] = coordinate
-                    i['coords'] = i['coords'] + j['coords']
-        temp = data['map']['areas']
-        for i in range(0, len(data['map']['areas'])):
-            for j in range(0, len(data['map']['areas']) - 1):
-                if temp[i]['group'] == temp[j]['group'] and temp[i]['title'] != temp[j]['title']:
-                    print("Ho superato l'if")
-                    print("Lunghezza i:" + str(len(temp[i]['coords'])))
-                    print("Lunghezza j:" + str(len(temp[j]['coords'])))
-                    if len(temp[i]['coords']) < len(temp[j]['coords']):
-                        temp.remove(temp[i])
-                    elif len(temp[i]['coords']) == len(temp[j]['coords']):
-                        temp.remove(temp[i])
+                        i['coords'] = i['coords'] + j['coords']
+
+        temp = data['map']['areas'].copy()
+        length = len(data['map']['areas'])
+        for i in range(0, length - 1):
+            for j in range(0, length):
+                if data['map']['areas'][i]['group'] == data['map']['areas'][j]['group'] and data['map']['areas'][i]['title'] != data['map']['areas'][j]['title']:
+                    if len(data['map']['areas'][i]['coords']) < len(data['map']['areas'][j]['coords']):
+                        if data['map']['areas'][i] in temp:
+                            temp.remove(data['map']['areas'][i])
+                    elif len(data['map']['areas'][i]['coords']) == len(data['map']['areas'][j]['coords']):
+                        if data['map']['areas'][i] in temp:
+                            temp.remove(data['map']['areas'][i])
                     else:
-                        temp.remove(temp[j])
+                        if data['map']['areas'][j] in temp:
+                            temp.remove(data['map']['areas'][j])
         data['map']['areas'] = temp
 
 
