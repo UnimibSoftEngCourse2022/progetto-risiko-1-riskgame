@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html style="font-size: 16px;">
+<html style="font-size: 16px;" xml:lang>
 {% load static %}
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,13 +24,12 @@ borders: top right !important
             {% for partita in partita_package %}
               {% with partita.Giocatori.count|add:partita.Ospiti.count as totGiocatori %}
                 <div class="tile-partita">
-                  <center>
-                    <font size="5" color="blue">Partita {{ partita.IDPartita }}</font><br>
+                    Partita {{ partita.IDPartita }}<br>
                       {% with 'mappe/'|add:partita.Mappa.PercorsoMappa as percorso %}
-                        <img src="{% static percorso %}" width="200" height="130"><hr>
+                        <img src="{% static percorso %}" width="200" height="130" alt="Immagine mappa"><hr>
                       {% endwith %}
-                      <b>Numero giocatori:</b> {{ totGiocatori }}/{{ partita.NumeroGiocatori }}<br>
-                      <b>Difficoltà:</b>
+                      <strong>Numero giocatori:</strong> {{ totGiocatori }}/{{ partita.NumeroGiocatori }}<br>
+                      <strong>Difficoltà:</strong>
                       {% if partita.Difficolta == 1 %}
                         Semplice
                       {% elif partita.Difficolta == 2 %}
@@ -39,7 +38,7 @@ borders: top right !important
                         Difficile
                       {% endif %}<hr>
                       <div class="div-giocatori">
-                        <b>Giocatori:</b>
+                        <strong>Giocatori:</strong>
                         {% for giocatore in partita.Giocatori.all %}
                           <br>{{ giocatore.username }}
                         {% endfor %}
@@ -52,7 +51,6 @@ borders: top right !important
                       {% else %}
                         <div class="u-btn" disabled>Partecipa</div>
                       {% endif %}
-                  </center>
                 </div>
               {% endwith %}
             {% endfor %}

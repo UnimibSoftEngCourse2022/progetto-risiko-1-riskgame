@@ -12,14 +12,14 @@ from django.core.exceptions import ObjectDoesNotExist
     Nome = models.CharField(max_length=45)
     Cognome = models.CharField(max_length=45)
     Email = models.CharField(max_length=45)
-    Password = models.CharField(max_length=16)"""
+    Password = models.CharFielTerritorio.objects.count()d(max_length=16)"""
 
 
 class Ospite(models.Model):
     Nickname = models.CharField(max_length=16, primary_key=True)
     Assegnato = models.IntegerField()
 
-    def assegnaOspite():
+    def assegnaOspite(self):
         try:
             ospite = Ospite.objects.get(Assegnato=0)
             ospite.Assegnato = 1
@@ -29,7 +29,7 @@ class Ospite(models.Model):
             ospite.save()        
         return ospite.Nickname
 
-    def rilasciaOspite(username):
+    def rilasciaOspite(self, username):
         ospite = Ospite.objects.get(Nickname=username)
         ospite.Assegnato = 0
         ospite.save()
@@ -56,7 +56,7 @@ class Partita(models.Model):
     Giocatori = models.ManyToManyField(settings.AUTH_USER_MODEL)
     Ospiti = models.ManyToManyField(Ospite)
 
-    def getNuovoID():
+    def getNuovoID(self):
         if (Partita.objects.count() == 0):
             return 1
         else: 
@@ -66,7 +66,7 @@ class Partita(models.Model):
     def getMappa(idPartita):
         return Partita.objects.get(IDPartita=idPartita).Mappa
 
-    def getGiocatoriConnessi(idPartita):
+    def getGiocatoriConnessi(self, idPartita):
         partita = Partita.objects.get(IDPartita=idPartita)
         return partita.Giocatori.count() + partita.Ospiti.count()
 
@@ -81,19 +81,19 @@ class Partita(models.Model):
             listaGiocatori.append(ospite.Nickname)
         return listaGiocatori
 
-    def disconnettiGiocatore(idPartita, username):
+    def disconnettiGiocatore(self, idPartita, username):
         giocatore = User.objects.get(username=username)
         partita = Partita.objects.get(IDPartita=idPartita)
         partita.Giocatori.remove(giocatore)
         if (partita.Giocatori.count() + partita.Ospiti.count() == 0):
             Partita.objects.get(IDPartita=idPartita).delete()
 
-    def connettiOspite(idPartita, username):
+    def connettiOspite(self, idPartita, username):
         ospite = Ospite.objects.get(Nickname=username)
         partita = Partita.objects.get(IDPartita=idPartita)
         partita.Giocatori.add(ospite)
 
-    def disconnettiOspite(idPartita, username):
+    def disconnettiOspite(self, idPartita, username):
         ospite = Ospite.objects.get(Nickname=username)
         partita = Partita.objects.get(IDPartita=idPartita)
         partita.Ospiti.remove(ospite)
@@ -142,7 +142,7 @@ class Continente(models.Model):
     NumeroTruppe = models.IntegerField()
     Mappa = models.ForeignKey(Mappa, on_delete=models.CASCADE)
 
-    def getListaContinentiMappa(mappa):
+    def getListaContinentiMappa(self, mappa):
         return Continente.objects.filter(Mappa=mappa)
 
 
@@ -153,7 +153,7 @@ class Territorio(models.Model):
     Confini = models.ManyToManyField('self', blank=True)
     Mappa = models.ForeignKey(Mappa, on_delete=models.CASCADE, null = True)
 
-    def getListaTerritoriMappa(mappa):
+    def getListaTerritoriMappa(self, mappa):
         listaTerritori = []
         listaContinenti = Continente.getListaContinentiMappa(mappa)
         for continente in listaContinenti:

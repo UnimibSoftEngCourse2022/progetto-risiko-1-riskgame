@@ -171,7 +171,7 @@ class PartitaConsumer(WebsocketConsumer):
 
     # Eventi di gioco
 
-    def assegnazioneTerritoriTruppeIniziali():
+    def assegnazioneTerritoriTruppeIniziali(self):
         mappa = Partita.getMappa(idPartita)
         xlistaTerritori = Territorio.getListaTerritoriMappa(mappa)
         xlistaGiocatori = Partita.getListaGiocatori(idPartita)
@@ -186,7 +186,7 @@ class PartitaConsumer(WebsocketConsumer):
             h = h + h
             
 
-    def chiamataMetodoAssegnazioneTruppeTerritorio(classeGiocatore):
+    def chiamataMetodoAssegnazioneTruppeTerritorio(self, classeGiocatore):
         xlistaTerritori = []
         listaGiocatori.numeroTruppeTurno = len(listaGiocatori.territori)/3
         for i in listaTerritori:
@@ -196,7 +196,7 @@ class PartitaConsumer(WebsocketConsumer):
         return xlistaTerritori
 
 
-    def metodoAssegnazioneTruppeTerritorio(listaTerritoriSocket):
+    def metodoAssegnazioneTruppeTerritorio(self, listaTerritoriSocket):
         for i in listaTerritoriSocket:
             for j in listaTerritori:
                 if listaTerritori.nome == listaTerritoriSocket.nome:

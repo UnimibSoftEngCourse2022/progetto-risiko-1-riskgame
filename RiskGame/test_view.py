@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 class registerTest (TestCase):
     def setUp(self):
         self.client=Client()
-        self.user = User.objects.create_user(username="userTestName",password="userTestPass",email="userTestEmail",pk="00000",)
+        self.user = User.objects.create_user("userTestName", "userTestPass", "userTestEmail", "00000",)
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get('/registrazione')
@@ -18,17 +18,17 @@ class registerTest (TestCase):
 class statsTest (TestCase):
     def setUp(self):
         self.client=Client()
-        self.user = User.objects.create_user(username="userTestName",password="userTestPass",)
+        self.user = User.objects.create_user("userTestName", "userTestPass",)
 
     def test_view_url_exists_at_desired_location(self):
-        self.client.login(username='userTestName', password='userTestPass')
+        self.client.login('userTestName', 'userTestPass')
         response = self.client.get('/statistiche')
         self.assertEqual(response.status_code, 200)
 
 class matchListTest (TestCase):
     def setUp(self):
         self.client=Client()
-        self.user = User.objects.create_user(username="userTestName",)
+        self.user = User.objects.create_user("userTestName",)
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get('/match-list')
@@ -37,7 +37,7 @@ class matchListTest (TestCase):
 class menuTest (TestCase):
     def setUp(self):
         self.client=Client()
-        self.user = User.objects.create_user(username="userTestName",)
+        self.user = User.objects.create_user("userTestName",)
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get('/menu')
@@ -46,7 +46,7 @@ class menuTest (TestCase):
 class logOutTest (TestCase):
     def setUp(self):
         self.client=Client()
-        self.user = User.objects.create_user(username="userTestName",)
+        self.user = User.objects.create_user("userTestName",)
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get('/logout/')
@@ -55,7 +55,7 @@ class logOutTest (TestCase):
 class logInTest (TestCase):
     def setUp(self):
         self.client=Client()
-        self.user = User.objects.create_user(username="userTestName", password="userTestPass",)
+        self.user = User.objects.create_user("userTestName", "userTestPass",)
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get('/login/')
@@ -64,7 +64,7 @@ class logInTest (TestCase):
 class impostazioniTest (TestCase):
     def setUp(self):
         self.client=Client()
-        self.user = User.objects.create_user(username="userTestName",)
+        self.user = User.objects.create_user("userTestName",)
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get('/settings')
@@ -73,7 +73,7 @@ class impostazioniTest (TestCase):
 class homeTest (TestCase):
     def setUp(self):
         self.client=Client()
-        self.user = User.objects.create_user(username="userTestName", password="userTestPass",)
+        self.user = User.objects.create_user("userTestName", "userTestPass",)
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get('/')
@@ -91,19 +91,19 @@ class homeTest (TestCase):
 class credenzialiTest (TestCase):
     def setUp(self):
         self.client=Client()
-        self.user = User.objects.create_user(username="userTestName", password="userTestPass",)
+        self.user = User.objects.create_user("userTestName", "userTestPass",)
 
     def test_view_url_exists_at_desired_location(self):
-        self.client.login(username='userTestName', password='userTestPass')
+        self.client.login('userTestName', 'userTestPass')
         response = self.client.get('/credenziali')
         self.assertEqual(response.status_code, 200)
 
 class creazioneTest (TestCase):
     def setUp(self):
         self.client=Client()
-        self.user = User.objects.create_user(username="userTestName", password="userTestPass")
+        self.user = User.objects.create_user("userTestName", "userTestPass")
 
     def test_view_url_exists_at_desired_location(self):
-        self.client.login(username='userTestName', password='userTestPass')
+        self.client.login('userTestName', 'userTestPass')
         response = self.client.get('/crea-partita')
         self.assertEqual(response.status_code, 200)
