@@ -114,6 +114,8 @@ class Partita(models.Model):
             listaGiocatori.append(ospite.Nickname)
         return listaGiocatori
 
+    
+
 
 class Statistiche(models.Model):
     # NicknameGiocatore = models.OneToOneField(GiocatoreRegistrato, primary_key=True, on_delete=models.CASCADE)
@@ -129,7 +131,7 @@ class Statistiche(models.Model):
     NumeroScontriVintiDEF = models.IntegerField()
     NumeroScontriPersiDEF = models.IntegerField()
     PercentualeScontriVintiATK = models.FloatField()
-    TempoDiGioco = models.TimeField()
+    TempoDiGioco = models.TimeField(null= True)
     NumeroTruppeGenerate = models.IntegerField()
     NumeroTruppePerse = models.IntegerField()
     NumeroPartiteGiocate = models.IntegerField()
@@ -140,10 +142,12 @@ class Continente(models.Model):
     NomeContinente = models.CharField(max_length=45)
     NumeroTruppe = models.IntegerField()
     Mappa = models.ForeignKey(Mappa, on_delete=models.CASCADE)
-
+    
     def getListaContinentiMappa(mappa):
         objMappa = Mappa.objects.filter(NomeMappa=mappa).first()
         return Continente.objects.filter(Mappa=objMappa.IDMappa)
+
+    
 
 
 class Territorio(models.Model):
