@@ -3,7 +3,7 @@ import dataclasses, json, math, random
 from xmlrpc.client import boolean
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-from .models import Partita, Territorio
+from .models import Partita, Territorio, Continente
 from typing import List
 from pathlib import Path
 
@@ -14,12 +14,19 @@ class ClasseTerritorio:
     nome: str = ""
     continente: str = ""
 
+
+@dataclass
+class ClasseContinente:
+    IDContinente : int = 0
+    NomeContinente : str = ""
+    NumeroTruppe : int = 0
+
 @dataclass
 class ClasseGiocatore:
     nickname: str = ""
     numTruppe: int = 0
     numeroTruppeTurno: int = 0
-    carte : list = []
+    carte : List[int] = None
     ingioco : boolean = True
     vittoriaPartita : boolean = False
 
@@ -33,6 +40,7 @@ class PartitaConsumer(WebsocketConsumer):
     http_user = True
     listaGiocatori = []
     listaTerritori = []
+    listaContinenti = []
     giocatoreAttivo = ""
     indexGiocatoreAttivo = 0
     numeroTurno = 0
@@ -206,22 +214,25 @@ class PartitaConsumer(WebsocketConsumer):
 
     def assegnazioneTerritoriTruppeIniziali(self):
         xlistaTerritori = Territorio.getListaTerritoriMappa(nomeMappa)
+        xlistaGiocatori = Partita.getListaGiocatori(idPartita)
+        xlistaContinenti = Continente.getListaContinentiMappa(nomeMappa)
 
         for territorio in xlistaTerritori:
             self.listaTerritori.append(ClasseTerritorio(numTruppe=0, giocatore="",
                 nome=territorio.NomeTerritorio, continente=territorio.Continente.NomeContinente))
-
-        xlistaGiocatori = Partita.getListaGiocatori(idPartita)
-
         h = math.floor(len(xlistaTerritori)/len(xlistaGiocatori))
         k = 0
+
         for i in xlistaGiocatori:
             self.listaGiocatori.append(ClasseGiocatore(nickname=i,
-                numTruppe=14, numeroTruppeTurno=0))
+                numTruppe = 35, numeroTruppeTurno=0))
             for j in range(k , h):
                 self.listaTerritori[j].giocatore = i
             k = h
             h = h + h
+
+        for continente in xlistaContinenti:
+            self.listaContinenti.append(ClasseContinente(continente.IDContinente, continente.NomeContinente, continente.NumeroTruppe))
             
 
     def chiamataAssegnazioneTruppeTerritorio(self, classeGiocatore):
@@ -267,7 +278,18 @@ class PartitaConsumer(WebsocketConsumer):
             giocatore.carte.remove(1)
             k=4
 
-        #aggiungi calcolo continenti
+#calcolo truppe continente
+        for i in self.listaContinenti:
+            territoriContinente = 0
+            territoriPosseduti = 0
+            for j in self.listaTerritori:
+                if i.NomeContinente == j.continente:
+                    territoriContinente = territoriContinente + 1
+                    if j.giocatore == xgiocatore.nickname:
+                        territoriPosseduti = territoriPosseduti + 1
+            if territoriContinente == territoriPosseduti:
+                k = k + i.NumeroTruppe
+
 
 
         for i in self.listaTerritori:
@@ -307,6 +329,7 @@ class PartitaConsumer(WebsocketConsumer):
         territorioATK : ClasseTerritorio
         territorioDEF : ClasseTerritorio
         vittoria : boolean = False
+        totTerritori : int = 0
 
         for giocatore in self.listaGiocatori:
             if giocatore.nickname == attacante.giocatore:
@@ -353,19 +376,70 @@ class PartitaConsumer(WebsocketConsumer):
         if giocatoreDEF.numTruppe == 0:
             giocatoreDEF.ingioco = False
 
-        #aggiungi controllo vittoriaPartita
 
         if vittoria :
             giocatoreATK.carte.append(random.randint(1,4))
 
         
-
         for i in self.listaTerritori:
             for j in self.listaTerritori:
                 if self.listaTerritori.nome == territorioATK.nome:
                     j = territorioATK
                 if self.listaTerritori.nome == territorioDEF.nome:
                     j = territorioDEF
+
+        #controllo vittoriaPartita
+
+        for i in self.listaTerritori:
+            for j in self.listaGiocatori:
+                if i.giocatore == j.nickname:
+                    totTerritori = totTerritori + 1
+
+        if totTerritori >= len(self.listaTerritori):
+            giocatoreATK.vittoriaPartita = True
+        
+        for giocatore in self.listaGiocatori:
+            if giocatore.nickname == attacante.giocatore:
+                giocatore = giocatoreATK
+            if giocatore.nickname == difensore.giocatore:
+                giocatore = giocatoreDEF
+
+
+
+    def chiamataSpostamento(self, postinoSocket, mittenteSocket, riceventeSocket, numeroTruppeSocket):
+        postino : ClasseGiocatore
+        mittente : ClasseTerritorio
+        ricevente : ClasseTerritorio
+        operazione : boolean = False
+
+        for giocatore in self.listaGiocatori:
+            if giocatore.nickname == postinoSocket.giocatore:
+                postino = giocatore
+
+        for territorio in self.listaTerritori:
+            if territorio.nome == mittenteSocket.nome:
+                mittente = territorio
+            if territorio.nome == riceventeSocket.nome:
+                ricevente = territorio
+
+        if (mittente.numTruppe -1) >= numeroTruppeSocket :
+            mittente.numTruppe = mittente.numTruppe - numeroTruppeSocket
+            ricevente.numTruppe = ricevente.numTruppe + numeroTruppeSocket
+            operazione = True
+
+        for territorio in self.listaTerritori:
+            if territorio.nome == mittenteSocket.nome:
+                territorio = mittente
+            if territorio.nome == riceventeSocket.nome:
+                territorio = ricevente
+
+        return operazione
+
+
+
+
+
+        
 
 
 """assegna truppe, sposta truppe, attacca, termina turno"""
