@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import dataclasses, json, math
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-from .models import *
+from .models import Partita, Territorio
 from typing import List
 from pathlib import Path
 
@@ -27,10 +27,11 @@ class PartitaConsumer(WebsocketConsumer):
     # Set to True to automatically port users from HTTP cookies
     # (you don't need channel_session_user, this implies it)
     http_user = True
-    global listaGiocatori, listaTerritori, giocatoreAttivo
     listaGiocatori = []
     listaTerritori = []
     giocatoreAttivo = ""
+    indexGiocatoreAttivo = 0
+    numeroTurno = 0
 
     def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['PartitaID']
@@ -119,6 +120,7 @@ class PartitaConsumer(WebsocketConsumer):
                     'sender': mittente
                 }
             )
+            self.giocatoreAttivo = self.listaGiocatori[0].nickname
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
@@ -127,6 +129,10 @@ class PartitaConsumer(WebsocketConsumer):
                     'sender': mittente
                 }
             )
+            self.indexGiocatoreAttivo += 1
+            if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
+                self.indexGiocatoreAttivo = 0
+                self.numeroTurno += 1
         elif (tipo == 'iniziaTurno'):
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
@@ -169,8 +175,8 @@ class PartitaConsumer(WebsocketConsumer):
             self.send(text_data=json.dumps({
                 'tipo': tipo,
                 'sender': mittente,
-                'listaGiocatori': self.serializzaLista(listaGiocatori),
-                'listaTerritori': self.serializzaLista(listaTerritori),
+                'listaGiocatori': self.serializzaLista(self.listaGiocatori),
+                'listaTerritori': self.serializzaLista(self.listaTerritori),
                 'mappa': jsonMappa,
                 'nomeMappa': nomeMappa
             }))
@@ -178,10 +184,12 @@ class PartitaConsumer(WebsocketConsumer):
             self.send(text_data=json.dumps({
                 'tipo': tipo,
                 'sender': mittente,
-                'giocatoreAttivo': giocatoreAttivo,
-                'listaGiocatori': self.serializzaLista(listaGiocatori),
-                'listaTerritori': self.serializzaLista(listaTerritori)
+                'giocatoreAttivo': self.giocatoreAttivo,
+                'listaGiocatori': self.serializzaLista(self.listaGiocatori),
+                'listaTerritori': self.serializzaLista(self.listaTerritori),
+                'numeroTurno': self.numeroTurno
             }))
+
 
     # Eventi di gioco
 
@@ -196,7 +204,7 @@ class PartitaConsumer(WebsocketConsumer):
         xlistaTerritori = Territorio.getListaTerritoriMappa(nomeMappa)
 
         for territorio in xlistaTerritori:
-            listaTerritori.append(ClasseTerritorio(numTruppe=0, giocatore="",
+            self.listaTerritori.append(ClasseTerritorio(numTruppe=0, giocatore="",
                 nome=territorio.NomeTerritorio, continente=territorio.Continente.NomeContinente))
 
         xlistaGiocatori = Partita.getListaGiocatori(idPartita)
@@ -204,21 +212,21 @@ class PartitaConsumer(WebsocketConsumer):
         h = math.floor(len(xlistaTerritori)/len(xlistaGiocatori))
         k = 0
         for i in xlistaGiocatori:
-            listaGiocatori.append(ClasseGiocatore(nickname=i,
+            self.listaGiocatori.append(ClasseGiocatore(nickname=i,
                 numTruppe=14, numeroTruppeTurno=0))
             for j in range(k , h):
-                listaTerritori[j].giocatore = i
+                self.listaTerritori[j].giocatore = i
             k = h
             h = h + h
             
 
     def chiamataMetodoAssegnazioneTruppeTerritorio(self, classeGiocatore):
         xlistaTerritori = []
-        for giocatore in listaGiocatori:
+        for giocatore in self.listaGiocatori:
             if giocatore.nickname == classeGiocatore.nickname:
                 giocatore.numeroTruppeTurno = len(giocatore.territori)/3
             break
-        for i in listaTerritori:
+        for i in self.listaTerritori:
             if i.giocatore == classeGiocatore.nickname:
                 xlistaTerritori.append(ClasseTerritorio(i.numTruppe, i.giocatore, i.nome, i.continente))
         return xlistaTerritori
@@ -226,6 +234,6 @@ class PartitaConsumer(WebsocketConsumer):
 
     def metodoAssegnazioneTruppeTerritorio(self, listaTerritoriSocket):
         for i in listaTerritoriSocket:
-            for j in listaTerritori:
-                if listaTerritori.nome == listaTerritoriSocket.nome:
+            for j in self.listaTerritori:
+                if self.listaTerritori.nome == listaTerritoriSocket.nome:
                     j = i

@@ -7,10 +7,12 @@
             div.appearance {
                 position: relative;
             }
+
             .container {
                 width: 100%;
                 display: flex;
             }
+
             .divmap {
                 text-align: center;
                 flex-grow: 1;
@@ -25,9 +27,9 @@
                 padding: 10px 10px 5px 10px;
                 flex-direction: column;
                 border: 3px solid rgba(255, 255, 255, 0.5);
-                border-radius: 10px;
                 background-color: rgba(0, 0, 0, 0.5);
             }
+
             #mapster_wrap_0 {
                 margin: 0 auto;
             }
@@ -47,6 +49,23 @@
                 padding: 2px 4px 2px 4px;
             }
 
+            .form-popup {
+                width: 300px;
+                display: none;
+                position: fixed;
+                align-self: center;
+                align-content: center;
+                align-items: center;
+                border: 3px solid #f1f1f1;
+                border-radius: 7px;
+                z-index: 9;
+                background-color: rgba(255, 255, 255, 0.5);
+                left: 50%;
+                margin-left: -150px;
+                margin-top: -25%;
+                padding: 0px 15px 10px 10px
+            }
+
             hr {
                 margin-right: 0;
                 margin-left: 0;
@@ -54,6 +73,23 @@
                 margin-bottom: 3px;
                 align-self: stretch;
             }
+
+            .tabella-assegna-truppe {
+                display: flex;
+                width: 90%;
+                float: right;
+                overflow-x: hidden;
+                overflow-y: scroll;
+                padding: 10px 10px 5px 10px;
+                flex-direction: column;
+                border: 1px solid rgba(0, 0, 0, 0.5);
+                background-color: rgba(170, 170, 170, 0.5);
+                align-self: center;
+                align-content: center;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            
         </style>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/imagemapster/1.5.4/jquery.imagemapster.min.js"></script>
@@ -232,24 +268,60 @@
                         formDiv.setAttribute('id', 'formTruppe');
 
                         var form = document.createElement('form');
-                        form.action = '#';
+                        form.action = 'javascript:confermaTruppe(\'formTruppe\''+ data + ')';
                         form.setAttribute('class', 'form-container');
 
                         // La roba del form
 
-                        form.appendChild(document.createElement('h1').innerText = 'Assegna Truppe');
+                        var h = document.createElement('h1');
+                        h.innerHTML = '<center>Assegna Truppe</center>';
+                        form.appendChild(h);
+
+                        var terrDiv = document.createElement('div');
+                        terrDiv.setAttribute('class', 'tabella-assegna-truppe');
 
                         territoriGiocatore.forEach(territorio => {
-                            
+                            var campoDiv = document.createElement('div');
+                            campoDiv.setAttribute('id', 'terr_' + territorio.nome);
+                            campoDiv.innerHTML = '<b>' + territorio.nome + '</b>: ';
+
+                            var campoNumber = document.createElement('input');
+                            campoNumber.setAttribute('type', 'number');
+                            campoNumber.setAttribute('id', 'num_' + territorio.nome);
+                            campoNumber.setAttribute('min', territorio.numTruppe);
+                            campoNumber.setAttribute('value', '0');
+
+                            campoDiv.appendChild(campoNumber);
+                            terrDiv.appendChild(campoDiv);
                         });
+                        form.appendChild(terrDiv);
 
-
-                        //
+                        var btnConferma = document.createElement('button');
+                        btnConferma.setAttribute('type', 'submit');
+                        btnConferma.innerText = 'Conferma';
+                        form.appendChild(btnConferma);
 
                         formDiv.appendChild(form);
+
+                        document.getElementById('appearance').appendChild(formDiv);
+
+                        formDiv.style.display = 'flex';
+
+                        if (data.numeroTurno > 0){ // Se non è il turno di setup
+                            // Attacco, spostamento, passare turno
+                        }
                     }
                 }
             };
+
+            function confermaTruppe(formTruppe, data) {
+                var territori = formTruppe.children;
+                var truppeDisponibili = data.giocatoreAttivo.numeroTruppeTurno;
+
+                // Controllare se la somma delle truppe aggiunte non supera il massimo
+                    // Se supera, non cancellare form e mettere scritta errore
+                    // Se non supera, cancellare form, send con aggiornamento truppe e passare turno
+            }
 
             partitaSocket.onclose = function(e) {
                 console.error('Socket della partita chiusa improvvisamente.');
@@ -335,6 +407,11 @@
                     'giocatore': giocatore
                 }));
             }
+
+            // Assegna truppe
+            // Spostamento truppe
+            // Attacco (se vince almeno uno scontro al turno dopo riceve una carta)
+            // Passare turno
         </script>
     </body>
 </html>
