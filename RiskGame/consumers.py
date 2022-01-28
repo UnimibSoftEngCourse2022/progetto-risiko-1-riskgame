@@ -64,9 +64,6 @@ class PartitaConsumer(WebsocketConsumer):
     numeroTurno = 0
     operazione : boolean = False
 
-
-
-
     def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['PartitaID']
         self.room_group_name = 'partita_%s' % self.room_name
@@ -205,7 +202,6 @@ class PartitaConsumer(WebsocketConsumer):
             self.chiamataSpostamento(json.loads(text_data_json['postinoSocket'], json.loads(text_data_json['mittenteSocket'], json.loads(text_data_json['riceventeSocket'], json.loads(text_data_json['numeroTruppeSocket'])))))
 
 
-
     # Riceve il messaggio dalla room group (locale)
     def chat_message(self, event):
         tipo = event['tipo']
@@ -259,6 +255,7 @@ class PartitaConsumer(WebsocketConsumer):
                 'sender': mittente,
                 # 'giocatoreAttivo': self.giocatoreAttivo,
                 'listaTerritori': self.serializzaLista(self.listaTerritori),
+                'listaGiocatori': self.serializzaLista(self.listaGiocatori),
                 'numeroTurno': self.numeroTurno
             }))
         elif (tipo == 'chiamataAttacco'):
@@ -379,8 +376,6 @@ class PartitaConsumer(WebsocketConsumer):
             if territoriContinente == territoriPosseduti:
                 k = k + i.NumeroTruppe
 
-
-
         for i in self.listaTerritori:
             if xgiocatore.nickname == i.giocatore:
                 cont = cont + 1
@@ -403,11 +398,10 @@ class PartitaConsumer(WebsocketConsumer):
 
 
     def ricezioneAssegnazioneTruppeTerritorio(self, listaTerritoriSocket):
-        print(listaTerritoriSocket)
         for i in listaTerritoriSocket:
             for j in self.listaTerritori:
-                if j.nome == i.nome:
-                    j = i
+                if j.nome == i['nome']:
+                    j.numTruppe = i['numTruppe']
                     break
     
 
@@ -439,8 +433,7 @@ class PartitaConsumer(WebsocketConsumer):
             if statistiche.IDGiocatore == giocatoreATK.nickname:
                 statisticheATK = statistiche
             if statistiche.IDGiocatore == giocatoreDEF.nickname:
-                statisticheDEF = statistiche
-            
+                statisticheDEF = statistiche            
         
         for i in truppeATK:
             valATK[i] = random.randint(0,5)
@@ -493,10 +486,8 @@ class PartitaConsumer(WebsocketConsumer):
         if giocatoreDEF.numTruppe == 0:
             giocatoreDEF.ingioco = False
 
-
         if vittoria :
             giocatoreATK.carte.append(random.randint(1,4))
-
         
         for i in self.listaTerritori:
             for j in self.listaTerritori:
@@ -515,7 +506,6 @@ class PartitaConsumer(WebsocketConsumer):
         if totTerritori >= len(self.listaTerritori):
             giocatoreATK.vittoriaPartita = True
             self.aggiornaStatisticheVittora(giocatoreATK)
-
         
         for giocatore in self.listaGiocatori:
             if giocatore.nickname == attaccante.giocatore:
@@ -524,12 +514,10 @@ class PartitaConsumer(WebsocketConsumer):
                 giocatore = giocatoreDEF
 
 
-
     def chiamataSpostamento(self, postinoSocket, mittenteSocket, riceventeSocket, numeroTruppeSocket):
         postino : ClasseGiocatore
         mittente : ClasseTerritorio
-        ricevente : ClasseTerritorio
-        
+        ricevente : ClasseTerritorio        
 
         for giocatore in self.listaGiocatori:
             if giocatore.nickname == postinoSocket.giocatore:
@@ -563,21 +551,8 @@ class PartitaConsumer(WebsocketConsumer):
                 i.PercentualeVinte = i.NumeroPartiteVinte / (i.NumeroPartiteVinte + i.NumeroPartitePerse) * 100
             else:
                 i.NumeroPartitePerse = i.NumeroPartitePerse + 1
-            i.NumeroPartiteGiocate = i.NumeroPartiteGiocate + 1
-            
-
-            
+            i.NumeroPartiteGiocate = i.NumeroPartiteGiocate + 1        
 
 
-
-
-
-
-
-
-        
-
-
-"""assegna truppe, sposta truppe, attacca, termina turno"""
-                    
+"""assegna truppe, sposta truppe, attacca, termina turno"""                    
                 

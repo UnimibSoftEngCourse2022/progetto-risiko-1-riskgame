@@ -185,8 +185,6 @@
                 varContainer.appendChild(varTG);
                 document.getElementById('appearance').appendChild(varContainer);
 
-                listaGiocatori = data.listaGiocatori;
-                listaTerritori = data.listaTerritori;
                 mappa = data.mappa.map; // contiene i dati della mappa in JSON
 
                 var imgMappa = document.createElement('img');
@@ -229,7 +227,6 @@
                 disegnaTabella();
             }
             else if (data.tipo == 'iniziaTurno') {
-                console.log(data.giocatoreAttivo);
                 if (data.giocatoreAttivo == nomeGiocatore) {
                     territoriGiocatore = [];
                     listaTerritori.forEach(territorio => {
