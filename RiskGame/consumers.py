@@ -21,6 +21,7 @@ class ClasseGiocatore:
     numeroTruppeTurno: int = 0
     carte : list = []
     ingioco : boolean = True
+    vittoriaPartita : boolean = False
 
 # per far si che questi sopra siano serializzabili 
 # fare listaGiocatori.append(dataclasses.asdict(ClasseGiocatore('prova', 14, [])))
@@ -260,6 +261,10 @@ class PartitaConsumer(WebsocketConsumer):
             giocatore.carte.remove(1)
             giocatore.carte.remove(1)
             k=4
+
+        #aggiungi calcolo continenti
+
+
         for i in self.listaTerritori:
             if xgiocatore.nickname == i.giocatore:
                 cont = cont + 1
@@ -313,7 +318,7 @@ class PartitaConsumer(WebsocketConsumer):
         for i in truppeATK:
             valATK[i] = random.randint(0,5)
         
-        for i in truppeATK:
+        for i in truppeDEF:
             valDEF[i] = random.randint(0,5)
 
         valATK.reverse()
@@ -324,7 +329,6 @@ class PartitaConsumer(WebsocketConsumer):
                 if valATK[i] > valDEF[i]:
                     territorioDEF.numTruppe = territorioDEF.numTruppe - 1
                     giocatoreDEF.numTruppe = giocatoreDEF.numTruppe -1
-                    vittoria = True
                 else:
                     territorioATK.numTruppe = territorioATK.numTruppe - 1
                     giocatoreATK.numTruppe = giocatoreATK.numTruppe -1
@@ -334,18 +338,20 @@ class PartitaConsumer(WebsocketConsumer):
                 if valATK[i] > valDEF[i]:
                     territorioDEF.numTruppe = territorioDEF.numTruppe - 1
                     giocatoreDEF.numTruppe = giocatoreDEF.numTruppe -1
-                    vittoria = True
                 else:
                     territorioATK.numTruppe = territorioATK.numTruppe - 1
                     giocatoreATK.numTruppe = giocatoreATK.numTruppe -1
 
         if territorioDEF.numTruppe == 0:
             territorioDEF.giocatore = territorioATK.giocatore
+            vittoria = True
         if giocatoreDEF.numTruppe == 0:
             giocatoreDEF.ingioco = False
 
+        #aggiungi controllo vittoriaPartita
+
         if vittoria :
-            giocatoreATK.carte.append(random.randint(0,3) + 1)
+            giocatoreATK.carte.append(random.randint(1,4))
 
         
 
