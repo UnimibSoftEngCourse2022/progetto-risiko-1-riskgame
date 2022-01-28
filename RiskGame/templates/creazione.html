@@ -40,8 +40,8 @@ borders: top right !important
     <br>
     <div class="selection">
         <label>Seleziona la mappa:</label>
-            <select id="mappa" name="mappa">
-                <option value="MappaDefault">MappaDefault</option>
+            <select id="mappa" name="nome-mappa">
+                <option value="">--------</option>
                 {% if user.is_authenticated %}
                     {% for nome in nomi %}
                     <option value="{{ nome }}">{{ nome }}</option>
