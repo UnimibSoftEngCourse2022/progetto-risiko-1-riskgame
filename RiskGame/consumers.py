@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-import dataclasses, json, math
+import dataclasses, json, math, random
+from xmlrpc.client import boolean
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from .models import Partita, Territorio
@@ -18,6 +19,9 @@ class ClasseGiocatore:
     nickname: str = ""
     numTruppe: int = 0
     numeroTruppeTurno: int = 0
+    carte : list = []
+    ingioco : boolean = True
+    vittoriaPartita : boolean = False
 
 # per far si che questi sopra siano serializzabili 
 # fare listaGiocatori.append(dataclasses.asdict(ClasseGiocatore('prova', 14, [])))
@@ -220,20 +224,150 @@ class PartitaConsumer(WebsocketConsumer):
             h = h + h
             
 
-    def chiamataMetodoAssegnazioneTruppeTerritorio(self, classeGiocatore):
-        xlistaTerritori = []
+    def chiamataAssegnazioneTruppeTerritorio(self, classeGiocatore):
+        k = 0
+        cont = 0
+        xgiocatore : ClasseGiocatore
         for giocatore in self.listaGiocatori:
             if giocatore.nickname == classeGiocatore.nickname:
-                giocatore.numeroTruppeTurno = len(giocatore.territori)/3
-            break
+                xgiocatore = classeGiocatore
+        if giocatore.carte.count(1)>1 and giocatore.carte.count(4)>0:
+            giocatore.carte.remove(1)
+            giocatore.carte.remove(1)
+            giocatore.carte.remove(4)
+            k = 12
+        elif giocatore.carte.count(2)>1 and giocatore.carte.count(4)>0:
+            giocatore.carte.remove(2)
+            giocatore.carte.remove(2)
+            giocatore.carte.remove(4)
+            k = 12
+        elif giocatore.carte.count(3)>1 and giocatore.carte.count(4)>0:
+            giocatore.carte.remove(3)
+            giocatore.carte.remove(3)
+            giocatore.carte.remove(4)
+            k = 12
+        elif giocatore.carte.count(3)>0 and giocatore.carte.count(2)>0 and giocatore.carte.count(1)>0:
+            giocatore.carte.remove(3)
+            giocatore.carte.remove(2)
+            giocatore.carte.remove(1)
+            k = 10
+        elif giocatore.carte.count(3)>2:
+            giocatore.carte.remove(3)
+            giocatore.carte.remove(3)
+            giocatore.carte.remove(3)
+            k=8
+        elif giocatore.carte.count(2)>2:
+            giocatore.carte.remove(2)
+            giocatore.carte.remove(2)
+            giocatore.carte.remove(2)
+            k=6
+        elif giocatore.carte.count(1)>2:
+            giocatore.carte.remove(1)
+            giocatore.carte.remove(1)
+            giocatore.carte.remove(1)
+            k=4
+
+        #aggiungi calcolo continenti
+
+
         for i in self.listaTerritori:
-            if i.giocatore == classeGiocatore.nickname:
-                xlistaTerritori.append(ClasseTerritorio(i.numTruppe, i.giocatore, i.nome, i.continente))
-        return xlistaTerritori
+            if xgiocatore.nickname == i.giocatore:
+                cont = cont + 1
+        xgiocatore.numeroTruppeTurno = math.floor(cont/3)
+        if xgiocatore.numeroTruppeTurno == 0:
+            xgiocatore.numeroTruppeTurno = 1
+        xgiocatore.numeroTruppeTurno = xgiocatore.numeroTruppeTurno + k
+        xgiocatore.numTruppe = xgiocatore.numTruppe + xgiocatore.numeroTruppeTurno
+        for i in self.listaGiocatori:
+            if xgiocatore.nickname == i.nickname :
+                i = xgiocatore
+
+        
+        """ LEGENDA : 1 Cannoni, 2 Fanti, 3 Cavalieri, 4 Jolly:
+            4 armate con tre cannoni;
+            6 armate con tre fanti;
+            8 armate con tre cavalieri;
+            10 armate con tre simboli diversi;
+            12 armate con un simbolo jolly e altri due simboli uguali."""
 
 
-    def metodoAssegnazioneTruppeTerritorio(self, listaTerritoriSocket):
+    def ricezioneAssegnazioneTruppeTerritorio(self, listaTerritoriSocket):
         for i in listaTerritoriSocket:
             for j in self.listaTerritori:
                 if self.listaTerritori.nome == listaTerritoriSocket.nome:
                     j = i
+                    break
+    
+
+    def chiamataAttacco(self, attacante, truppeATK, difensore, truppeDEF):
+        valATK = []
+        valDEF = []
+        giocatoreATK : ClasseGiocatore
+        giocatoreDEF : ClasseGiocatore
+        territorioATK : ClasseTerritorio
+        territorioDEF : ClasseTerritorio
+        vittoria : boolean = False
+
+        for giocatore in self.listaGiocatori:
+            if giocatore.nickname == attacante.giocatore:
+                giocatoreATK = giocatore
+            if giocatore.nickname == difensore.giocatore:
+                giocatoreDEF = giocatore
+
+        for territorio in self.listaTerritori:
+            if territorio.nome == difensore.nome:
+                territorioDEF = territorio
+            if territorio.nome == attacante.nome:
+                territorioATK = territorio
+        
+        for i in truppeATK:
+            valATK[i] = random.randint(0,5)
+        
+        for i in truppeDEF:
+            valDEF[i] = random.randint(0,5)
+
+        valATK.reverse()
+        valDEF.reverse()
+
+        if len(valDEF) > len(valATK):
+            for i in valATK:
+                if valATK[i] > valDEF[i]:
+                    territorioDEF.numTruppe = territorioDEF.numTruppe - 1
+                    giocatoreDEF.numTruppe = giocatoreDEF.numTruppe -1
+                else:
+                    territorioATK.numTruppe = territorioATK.numTruppe - 1
+                    giocatoreATK.numTruppe = giocatoreATK.numTruppe -1
+        
+        else :
+             for i in valDEF:
+                if valATK[i] > valDEF[i]:
+                    territorioDEF.numTruppe = territorioDEF.numTruppe - 1
+                    giocatoreDEF.numTruppe = giocatoreDEF.numTruppe -1
+                else:
+                    territorioATK.numTruppe = territorioATK.numTruppe - 1
+                    giocatoreATK.numTruppe = giocatoreATK.numTruppe -1
+
+        if territorioDEF.numTruppe == 0:
+            territorioDEF.giocatore = territorioATK.giocatore
+            vittoria = True
+        if giocatoreDEF.numTruppe == 0:
+            giocatoreDEF.ingioco = False
+
+        #aggiungi controllo vittoriaPartita
+
+        if vittoria :
+            giocatoreATK.carte.append(random.randint(1,4))
+
+        
+
+        for i in self.listaTerritori:
+            for j in self.listaTerritori:
+                if self.listaTerritori.nome == territorioATK.nome:
+                    j = territorioATK
+                if self.listaTerritori.nome == territorioDEF.nome:
+                    j = territorioDEF
+
+
+"""assegna truppe, sposta truppe, attacca, termina turno"""
+                    
+                
