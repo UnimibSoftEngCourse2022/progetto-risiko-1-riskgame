@@ -18,7 +18,8 @@
       </div><style class="u-sticky-style" data-style-id="038f">.u-sticky-fixed.u-sticky-038f:before, .u-body.u-sticky-fixed .u-sticky-038f:before {
 borders: top right !important
 }</style></header>
-    <form action="{% url 'RiskGame:creaPartita' %}" method="GET">
+    <form action="{% url 'RiskGame:creaPartita' %}" method="POST">
+        {% csrf_token %}
         {% if messages %}
             <ul class="messages">
             {% for message in messages %}

@@ -109,16 +109,16 @@ class PartitaView(TemplateView):
 
     def creaPartita(request):
         #Crea la partita nel DB, aggiunge il nuovo giocatore e lo reindirizza alla partita
-        nome = request.GET['mappa']
-        difficolta = request.GET['difficolta']
+        nome = request.POST['mappa']
+        difficolta = request.POST['difficolta']
         nome_mappa = nome + "-" + "Difficile"
         if nome == "MappaDefault" and difficolta == "Semplice":
             mappa = Mappa.objects.filter(NomeMappa=nome_mappa).first()
-            print(mappa)
             percorso = mappa.PercorsoMappa + "\\" + nome + "-Difficile.map.json"
             file = open(percorso)
             data = json.load(file)
             MappaView.collassaConfini(data, mappa)
+            MappaView.saveMappa(request)
             percorso = mappa.PercorsoMappa
             if not os.path.exists(percorso):
                 os.makedirs(percorso)
@@ -127,7 +127,7 @@ class PartitaView(TemplateView):
                 json.dump(data, jsonFile)
             file.close()
             nuovoID = Partita.getNuovoID()
-            numGiocatori = request.GET['giocatori']
+            numGiocatori = request.POST['giocatori']
 
             intDiff = 0
             if (difficolta == 'Semplice'):
@@ -149,10 +149,10 @@ class PartitaView(TemplateView):
 
         else:
             nuovoID = Partita.getNuovoID()
-            numGiocatori = request.GET['giocatori']
-            difficolta = request.GET['difficolta']
-            nome_mappa = request.GET['mappa'] + "-" + difficolta
-            mappa = Mappa.objects.get(NomeMappa=request.GET['mappa']+'-'+difficolta)
+            numGiocatori = request.POST['giocatori']
+            difficolta = request.POST['difficolta']
+            nome_mappa = request.POST['mappa'] + "-" + difficolta
+            mappa = Mappa.objects.get(NomeMappa=request.POST['mappa']+'-'+difficolta)
             n_continenti = Continente.objects.filter(Mappa=mappa).count()
             intDiff = 0
             if (difficolta=='Semplice'):
@@ -217,7 +217,12 @@ class MappaView(TemplateView):
     def saveMappa(request):
         if request.method == "POST":
             n_random = random.randint(0, 1000)
-            nome_mappa = request.POST['nome-mappa']
+            nome_mappa = request.POST['mappa']
+            print(nome_mappa)
+            if nome_mappa == "MappaDefault":
+                nome = request.POST['mappa']
+                difficolta = request.POST['difficolta']
+                nome_mappa = nome + "-" + difficolta
             username = User.objects.get(username=request.user.username)
             dirname = os.path.dirname(__file__)
             filename = os.path.join(dirname, 'static\Mappe')
@@ -230,12 +235,32 @@ class MappaView(TemplateView):
             MappaView.loadMappa(request)
             return render(request, 'menu.html')
 
+    def saveMappaDefault(request):
+        n_random = random.randint(0, 1000)
+        nome = request.GET['mappa']
+        difficolta = request.GET['difficolta']
+        username = User.objects.get(username=request.user.username)
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, 'static\Mappe')
+        nome_mappa = nome + "-" + difficolta
+        while Mappa.objects.filter(IDMappa=n_random).exists():
+            n_random = random.randint(0, 1000)
+        div = nome_mappa.split("-")
+        difficolta = div[1]
+        Mappa.objects.create(IDMappa=n_random, NomeMappa=nome_mappa, Autore=username, PercorsoMappa=filename,
+                             Difficolta=difficolta)
+        MappaView.loadMappa(request)
+
     def loadMappa(request):
         template_name = "editor.html"
         mappa = None
         data = None
         if request.method == "POST":
-            nome_mappa = request.POST['nome-mappa']
+            nome_mappa = request.POST['mappa']
+            if nome_mappa == "MappaDefault":
+                nome = request.POST['mappa']
+                difficolta = request.POST['difficolta']
+                nome_mappa = nome + "-" + difficolta
             username = User.objects.get(username=request.user.username)
             mappa = Mappa.objects.filter(NomeMappa=nome_mappa, Autore=username).first()
             percorso = mappa.PercorsoMappa + "\\" + nome_mappa + ".map.json"
