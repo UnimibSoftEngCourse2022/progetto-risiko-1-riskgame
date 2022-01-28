@@ -115,6 +115,7 @@ class Partita(models.Model):
         return listaGiocatori
 
     
+    
 
 
 class Statistiche(models.Model):
@@ -131,10 +132,11 @@ class Statistiche(models.Model):
     NumeroScontriVintiDEF = models.IntegerField()
     NumeroScontriPersiDEF = models.IntegerField()
     PercentualeScontriVintiATK = models.FloatField()
-    TempoDiGioco = models.TimeField(null= True)
-    NumeroTruppeGenerate = models.IntegerField()
-    NumeroTruppePerse = models.IntegerField()
     NumeroPartiteGiocate = models.IntegerField()
+
+    def getListaStatistiche(username):
+        return Statistiche.objects.get(IDGiocatore=username)
+
 
 
 class Continente(models.Model):
