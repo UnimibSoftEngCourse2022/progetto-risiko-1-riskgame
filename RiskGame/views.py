@@ -34,9 +34,6 @@ def register(request):
                 NumeroScontriVintiDEF = 0,
                 NumeroScontriPersiDEF = 0,
                 PercentualeScontriVintiATK = 0.0,
-                TempoDiGioco = None,
-                NumeroTruppeGenerate = 0,
-                NumeroTruppePerse = 0,
                 NumeroPartiteGiocate = 0
             )
             return redirect('login')
