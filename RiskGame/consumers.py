@@ -77,6 +77,7 @@ class PartitaConsumer(WebsocketConsumer):
 
         with open(str(Path(__file__).absolute().parent) +'/static/Mappe/' + nomeMappa + '.map.json') as json_file:
             jsonMappa = json.load(json_file)
+        json_file.close()
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -164,10 +165,8 @@ class PartitaConsumer(WebsocketConsumer):
                     'sender': mittente
                 }
             )
-            self.indexGiocatoreAttivo += 1
-            self.giocatoreAttivo = [self.indexGiocatoreAttivo]
         elif (tipo == 'truppeAssegnate'):
-            self.ricezioneAssegnazioneTruppeTerritorio(json.loads(text_data_json['listaTerritoriSocket']))
+            self.ricezioneAssegnazioneTruppeTerritorio(text_data_json['listaTerritoriSocket'])
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
@@ -202,12 +201,6 @@ class PartitaConsumer(WebsocketConsumer):
                     'sender': mittente
                 }
             )
-            self.indexGiocatoreAttivo += 1
-            if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
-                self.indexGiocatoreAttivo = 0
-                self.numeroTurno += 1
-            else:
-                self.giocatoreAttivo = [self.indexGiocatoreAttivo]
         elif(tipo == 'chiamataSpostamento'):
             self.chiamataSpostamento(json.loads(text_data_json['postinoSocket'], json.loads(text_data_json['mittenteSocket'], json.loads(text_data_json['riceventeSocket'], json.loads(text_data_json['numeroTruppeSocket'])))))
 
@@ -258,11 +251,13 @@ class PartitaConsumer(WebsocketConsumer):
                 'listaTerritori': self.serializzaLista(self.listaTerritori),
                 'numeroTurno': self.numeroTurno
             }))
+            self.indexGiocatoreAttivo += 1
+            self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo]
         elif (tipo == 'truppeAssegnate'):
             self.send(text_data=json.dumps({
                 'tipo': tipo,
                 'sender': mittente,
-                'giocatoreAttivo': self.giocatoreAttivo,
+                # 'giocatoreAttivo': self.giocatoreAttivo,
                 'listaTerritori': self.serializzaLista(self.listaTerritori),
                 'numeroTurno': self.numeroTurno
             }))
@@ -276,6 +271,12 @@ class PartitaConsumer(WebsocketConsumer):
                 'listaStatistiche': self.serializzaLista(self.listaStatistiche),
                 'numeroTurno': self.numeroTurno
             }))
+            self.indexGiocatoreAttivo += 1
+            if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
+                self.indexGiocatoreAttivo = 0
+                self.numeroTurno += 1
+            else:
+                self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo]
         elif (tipo == 'chiamataSpostamento'):
             self.send(text_data=json.dumps({
                 'tipo': tipo,
@@ -402,9 +403,10 @@ class PartitaConsumer(WebsocketConsumer):
 
 
     def ricezioneAssegnazioneTruppeTerritorio(self, listaTerritoriSocket):
+        print(listaTerritoriSocket)
         for i in listaTerritoriSocket:
             for j in self.listaTerritori:
-                if self.listaTerritori.nome == listaTerritoriSocket.nome:
+                if j.nome == i.nome:
                     j = i
                     break
     

@@ -119,7 +119,7 @@
         var listaTerritori = [];
         var divMappa = document.getElementById('map');
         var statoPartita = 0;
-        var data;
+        var data = null;
 
         const partitaSocket = new WebSocket(
             'ws://'
@@ -229,6 +229,7 @@
                 disegnaTabella();
             }
             else if (data.tipo == 'iniziaTurno') {
+                console.log(data.giocatoreAttivo);
                 if (data.giocatoreAttivo == nomeGiocatore) {
                     territoriGiocatore = [];
                     listaTerritori.forEach(territorio => {
@@ -253,6 +254,7 @@
 
                     var h2 = document.createElement('h2');
                     h2.innerHTML = '<center>' + data.giocatoreAttivo.numeroTruppeTurno + 'disponibili</center>';
+                    form.appendChild(h2);
 
                     var terrDiv = document.createElement('div');
                     terrDiv.setAttribute('class', 'tabella-assegna-truppe');
@@ -347,12 +349,9 @@
         }
 
         function confermaTruppe() {
-            var parsedData = data;
             var container = document.getElementById('container-territori');
-            console.log('container:' + container);
             var listaDivTerritori = container.children;
-            console.log('lista: ' + listaDivTerritori);
-            var truppeDisponibili = parsedData.giocatoreAttivo.numeroTruppeTurno;
+            var truppeDisponibili = data.giocatoreAttivo.numeroTruppeTurno;
 
             var sommaNuoviValori = 0;
 
@@ -360,15 +359,20 @@
                 var oggTerritorioCorr = null;
                 listaTerritori.forEach(territorio => {
                     if (territorio.nome == listaDivTerritori[i].id.substring(5)) {
-                        oggTerritorioCorr = territorio;
+                        //oggTerritorioCorr = territorio;
+                        //territorio.numTruppe = listaDivTerritori[i].firstChild.value;
+                        territorio.numTruppe = document.getElementById('num_' + territorio.nome).value;
                     }
                 });
-                var nuovoNumTruppe = listaDivTerritori[i].children[0].value;
-                sommaNuoviValori += nuovoNumTruppe - (oggTerritorioCorr.numTruppe);
+                //var nuovoNumTruppe = listaDivTerritori[i].children[0].value;
+                //sommaNuoviValori += nuovoNumTruppe - (oggTerritorioCorr.numTruppe);
             }
 
-            if (sommaNuoviValori > truppeDisponibili) { // Non cancellare form e mettere scritta errore
+            /*if (sommaNuoviValori > truppeDisponibili) { // Non cancellare form e mettere scritta errore
                 alert('Errore: la somma delle nuove truppe eccede il numero di truppe disponibili.');
+            }
+            else if (sommaNuoviValori < truppeDisponibili) {
+                alert('Errore: devi usare tutte le truppe a disposizione.');
             }
             else { // Cancellare form, send con aggiornamento truppe e passare turno
                 for (let i = 0; i < listaDivTerritori.length; i++) {
@@ -377,16 +381,17 @@
                             territorio.numTruppe = listaDivTerritori[i].children[0].value;
                         }
                     });
-                }
+                }*/
                 document.getElementById('formTruppe').remove();
 
+                console.log(listaTerritori);
                 partitaSocket.send(JSON.stringify({
-                    'tipo': 'assegnaTruppe',
+                    'tipo': 'truppeAssegnate',
                     'idPartita': '{{ PartitaID }}',
                     'sender': nomeGiocatore,
-                    'listaTerritori': listaTerritori
+                    'listaTerritoriSocket': listaTerritori
                 }));
-            }
+            //}
         }
 
         partitaSocket.onclose = function (e) {
