@@ -19,7 +19,7 @@ class ClasseGiocatore:
     nickname: str = ""
     numTruppe: int = 0
     numeroTruppeTurno: int = 0
-    carte : list = []
+    carte : List[int] = None
     ingioco : boolean = True
     vittoriaPartita : boolean = False
 
@@ -134,9 +134,7 @@ class PartitaConsumer(WebsocketConsumer):
                 }
             )
             self.indexGiocatoreAttivo += 1
-            if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
-                self.indexGiocatoreAttivo = 0
-                self.numeroTurno += 1
+            self.giocatoreAttivo = [self.indexGiocatoreAttivo]
         elif (tipo == 'iniziaTurno'):
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
@@ -146,6 +144,12 @@ class PartitaConsumer(WebsocketConsumer):
                     'sender': mittente
                 }
             )
+            self.indexGiocatoreAttivo += 1
+            if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
+                self.indexGiocatoreAttivo = 0
+                self.numeroTurno += 1
+            else:
+                self.giocatoreAttivo = [self.indexGiocatoreAttivo]
 
 
     # Riceve il messaggio dalla room group (locale)
