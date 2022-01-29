@@ -1,7 +1,7 @@
 import secrets
 
 from django.shortcuts import render, redirect, reverse
-from django.views.decorators.http import require_safe
+from django.views.decorators.http import *
 from django.views.generic import TemplateView
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -19,7 +19,7 @@ from django.http import HttpResponse
 import pytest
 
 # Create your views here.
-@require_safe
+@require_http_methods(["POST", "GET"])
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
@@ -70,15 +70,16 @@ class RegistrazioneView(TemplateView):
 
 class MenuView(TemplateView):
     template_name = "menu.html"
-    @require_safe
-    def drawMenu(self, request):
-        request.session['ospite'] = 'null'
-        return render(request, views.MenuView.template_name)
 
-    @require_safe
-    def drawOspite(self, request):
+    @require_http_methods(["POST", "GET"])
+    def drawMenu(request):
+        request.session['ospite'] = 'null'
+        return render(request, MenuView.template_name)
+
+    @require_http_methods(["POST", "GET"])
+    def drawOspite(request):
         request.session['ospite'] = Ospite.assegnaOspite()
-        return render(request, views.MenuView.template_name)
+        return render(request, MenuView.template_name)
 
 
 class ImpostazioniView(TemplateView):
@@ -86,8 +87,8 @@ class ImpostazioniView(TemplateView):
 
 
 class CreazioneView(TemplateView):
-    @require_safe
-    def draw(self, request):
+    @require_http_methods(["POST", "GET"])
+    def draw(request):
         username = User.objects.get(username=request.user.username)
         template_name = "creazione.html"
         mappe = Mappa.objects.filter(Autore=username)
@@ -107,8 +108,8 @@ class CreazioneView(TemplateView):
 class PartecipaView(TemplateView):
     template_name = "partecipa.html"
 
-    @require_safe
-    def loadPartite(self, request):
+    @require_http_methods(["POST", "GET"])
+    def loadPartite(request):
         temp_data = Partita.objects.all()
         return render(request, "partecipa.html", {"partita_package": temp_data})
 
@@ -116,8 +117,8 @@ class PartecipaView(TemplateView):
 class PartitaView(TemplateView):
     template_name = "partita.html"
 
-    @require_safe
-    def creaPartita(self, request):
+    @require_http_methods(["POST", "GET"])
+    def creaPartita(request):
         # Crea la partita nel DB, aggiunge il nuovo giocatore e lo reindirizza alla partita
         nuovoID = Partita.getNuovoID()
         numGiocatori = request.GET['giocatori']
@@ -141,8 +142,8 @@ class PartitaView(TemplateView):
 
         return redirect(reverse('RiskGame:partecipaPartita', kwargs={'PartitaID': nuovoID}))
 
-    @require_safe
-    def partecipaPartita(self, request, PartitaID):
+    @require_http_methods(["POST", "GET"])
+    def partecipaPartita(request, PartitaID):
         # Aggiunge il giocatore alla lista giocatori e lo reindirizza alla partita
         partita = Partita.objects.get(IDPartita=PartitaID)
         if request.user.is_authenticated:
@@ -152,12 +153,12 @@ class PartitaView(TemplateView):
             partita.Ospiti.add(ospite)
         return render(request, "partita.html", {"Partita": partita, "PartitaID": PartitaID,
             "Ospite": request.session['ospite']})
-        
+
 
 
 class StatisticheView(TemplateView):
-    @require_safe
-    def draw(self, request):
+    @require_http_methods(["POST", "GET"])
+    def draw(request):
         username = User.objects.get(username=request.user.username)
         template_name = "statistiche.html"
         statistica = Statistiche.objects.filter(IDGiocatore=username)
@@ -168,8 +169,8 @@ class StatisticheView(TemplateView):
 
 
 class CredenzialiView(TemplateView):
-    @require_safe
-    def draw(self, request):
+    @require_http_methods(["POST", "GET"])
+    def draw(request):
         userprofile_form = UserRegisterForm(request.POST if request.POST else None,
                                            instance=User.objects.get(username=request.user))
         if request.method == 'POST':
@@ -208,8 +209,8 @@ class CredenzialiView(TemplateView):
 class MappaView(TemplateView):
     template_name = "editor.html"
 
-    @require_safe
-    def saveMappa(self, request):
+    @require_http_methods(["POST", "GET"])
+    def saveMappa(request):
         if request.method == "POST":
             n_random = secrets.randbelow(1000)
             nome_mappa = request.POST['nome-mappa']
@@ -229,7 +230,7 @@ class MappaView(TemplateView):
                 MappaView.loadMappaDifficile(request)
             return render(request, 'menu.html')
 
-    def loadMappaDifficile(self, request):
+    def loadMappaDifficile(request):
         template_name = "editor.html"
         mappa = None
         data = None
@@ -266,7 +267,7 @@ class MappaView(TemplateView):
         return render(request, 'menu.html')
 
 
-    def generaConfini(self, data, mappa):
+    def generaConfini(data, mappa):
         for i in data['map']['areas']:
             territorio1 = Territorio.objects.filter(NomeTerritorio=i['title'], Mappa = mappa).first()
             for j in data['map']['areas']:
@@ -281,7 +282,7 @@ class MappaView(TemplateView):
                     if stop:
                         break
 
-    def findContinenteJson(self, data, name):
+    def findContinenteJson(data, name):
         for i in data['map']['areas']:
             if i['title'] == name:
                 return i['group']
