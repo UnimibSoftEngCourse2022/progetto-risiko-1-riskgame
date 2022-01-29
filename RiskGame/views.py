@@ -123,7 +123,10 @@ class PartitaView(TemplateView):
         else:
             if request.user.is_authenticated:
                 username = User.objects.get(username=request.user.username)
-                mappa = Mappa.objects.filter(NomeMappa= nome, Autore = username, Difficolta = "Difficile").first()
+                if nome == "MappaDefault":
+                    mappa = Mappa.objects.filter(NomeMappa= nome, Difficolta = "Difficile").first()
+                else:
+                    mappa = Mappa.objects.filter(NomeMappa= nome, Autore = username, Difficolta = "Difficile").first()
             else:
                 mappa = Mappa.objects.filter(NomeMappa = "MappaDefault", Difficolta = "Difficile").first()
             percorso = mappa.PercorsoMappa + "\\" + nome + ".map.json"
@@ -148,6 +151,7 @@ class PartitaView(TemplateView):
             if (request.user.is_authenticated):
                 Partita.objects.get(IDPartita=nuovoID).Giocatori.add(request.user)
             else:
+                print(request.session['ospite'])
                 ospite = Ospite.objects.get(Nickname=request.session['ospite'])
                 Partita.objects.get(IDPartita=nuovoID).Ospiti.add(ospite)
 

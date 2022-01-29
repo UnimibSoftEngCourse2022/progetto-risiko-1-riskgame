@@ -6,6 +6,7 @@
         <style>
             div.appearance {
                 position: relative;
+                text-align : center;
             }
         </style>
     </head>
@@ -14,7 +15,7 @@
         <div id='appearance' class='appearance'>
             <div id='mappa'></div>
             <div id="tabella-giocatori"></div>
-            <textarea id="chat-log" cols="100" rows="20"></textarea><br>
+            <textarea id="chat-log" class = "chat" cols="100" rows="20"></textarea><br>
             <input id="chat-message-input" type="text" size="100"><br>
             <input id="chat-message-submit" type="button" value="Invia">
             <input id="abbandona" type="button" value="Esci">
@@ -137,7 +138,8 @@
                     'idPartita': '{{ PartitaID }}',
                     'sender': sender
                 }));
-                location.href="/match-list"
+                //location.href="/match-list"
+                location.href = "{% url 'RiskGame:partecipa' %}"
             };
 
             function iniziaPartita(){
