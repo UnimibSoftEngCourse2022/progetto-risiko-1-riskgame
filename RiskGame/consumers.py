@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import dataclasses, json, math, random
 from msilib.schema import Class
 from datetime import datetime
+from this import d
 from xmlrpc.client import boolean
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
@@ -162,7 +163,8 @@ class PartitaConsumer(WebsocketConsumer):
                 }
             )
         elif (tipo == 'iniziaTurno'):
-            self.chiamataAssegnazioneTruppeTerritorio(mittente)
+            if (self.numeroTurno != 0):
+                self.chiamataAssegnazioneTruppeTerritorio(mittente)
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
@@ -193,7 +195,7 @@ class PartitaConsumer(WebsocketConsumer):
             )
         elif(tipo == 'chiamataSpostamento'):
             self.chiamataSpostamento(json.loads(text_data_json['postinoSocket'], json.loads(text_data_json['mittenteSocket'], json.loads(text_data_json['riceventeSocket'], json.loads(text_data_json['numeroTruppeSocket'])))))
-        elif (tipo == 'passaTurno'):
+        """elif (tipo == 'passaTurno'):
             self.indexGiocatoreAttivo += 1
             if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
                 self.indexGiocatoreAttivo = 0
@@ -206,7 +208,7 @@ class PartitaConsumer(WebsocketConsumer):
                     'tipo': 'iniziaTurno',
                     'sender': mittente
                 }
-            )
+            )"""
 
 
     # Riceve il messaggio dalla room group (locale)
@@ -254,12 +256,12 @@ class PartitaConsumer(WebsocketConsumer):
                 'listaTerritori': self.serializzaLista(self.listaTerritori),
                 'numeroTurno': self.numeroTurno
             }))
-            """self.indexGiocatoreAttivo += 1
-            self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname"""
+            self.indexGiocatoreAttivo += 1
+            if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
+                self.indexGiocatoreAttivo = 0
+                self.numeroTurno += 1
+            self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname
         elif (tipo == 'truppeAssegnate'):
-            if (self.numeroTurno == 0):
-                self.indexGiocatoreAttivo += 1
-                self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname
             self.send(text_data=json.dumps({
                 'tipo': tipo,
                 'sender': mittente,
@@ -317,7 +319,8 @@ class PartitaConsumer(WebsocketConsumer):
         k = 0
 
         for i in xlistaGiocatori:
-            self.listaGiocatori.append(ClasseGiocatore(nickname=i,numTruppe=35, numeroTruppeTurno=0))
+            self.listaGiocatori.append(ClasseGiocatore(nickname=i,numTruppe=35, numeroTruppeTurno=0,
+                carte=[], ingioco=True, vittoriaPartita=False))
             if not (i.find("Ospite")):
                 self.listaStatistiche.append(Statistiche.getListaStatistiche(i))
             for j in range(k , h):
@@ -326,7 +329,8 @@ class PartitaConsumer(WebsocketConsumer):
             h = h + h
 
         for continente in xlistaContinenti:
-            self.listaContinenti.append(ClasseContinente(continente.IDContinente, continente.NomeContinente, continente.NumeroTruppe))
+            self.listaContinenti.append(ClasseContinente(continente.IDContinente,
+                continente.NomeContinente, continente.NumeroTruppe))
 
         #for statistiche in xlistaStatistiche:
             #self.listaStatistiche.append(ClasseStatistiche(statistiche.IDGiocatore, statistiche.NumeroPartiteVinte, statistiche.NumeroPartitePerse, statistiche.PercentualeVinte, statistiche.NumeroScontriVinti, statistiche.NumeroScontriPersi, statistiche.NumeroScontriPersiATK, statistiche.NumeroScontriVintiDEF, statistiche.NumeroScontriPersiDEF, statistiche.PercentualeScontriVintiATK, statistiche.NumeroPartiteGiocate))
@@ -336,8 +340,8 @@ class PartitaConsumer(WebsocketConsumer):
         cont = 0
         xgiocatore : ClasseGiocatore
         for giocatore in self.listaGiocatori:
-            if giocatore.nickname == classeGiocatore.nickname:
-                xgiocatore = classeGiocatore
+            if giocatore.nickname == classeGiocatore:
+                xgiocatore = giocatore
         if giocatore.carte.count(1)>1 and giocatore.carte.count(4)>0:
             giocatore.carte.remove(1)
             giocatore.carte.remove(1)

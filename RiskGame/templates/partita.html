@@ -121,6 +121,7 @@
         var divMappa = document.getElementById('map');
         var statoPartita = 0;
         var data = null;
+        var truppeAssegnateTurno = false;
 
         const partitaSocket = new WebSocket(
             'ws://'
@@ -236,6 +237,8 @@
             }
             else if (data.tipo == 'iniziaTurno') {
                 if (data.giocatoreAttivo == nomeGiocatore) {
+                    truppeAssegnateTurno = false;
+
                     territoriGiocatore = [];
                     listaTerritori.forEach(territorio => {
                         if (territorio.giocatore == nomeGiocatore)
@@ -297,15 +300,17 @@
             }
             else if (data.tipo == 'truppeAssegnate') { // Aggiorna la tabella dei giocatori con le truppe assegnate
                 aggiornaTabella();
-                console.log(data.giocatoreAttivo + '=' + nomeGiocatore);
+                console.log('Turno numero: ' + data.numeroTurno);
+                console.log('Tocca a: ' + data.giocatoreAttivo);
+
                 if (data.giocatoreAttivo == nomeGiocatore){
-                    if (data.numeroTurno > 0){ // Se il turno non è di setup, si prosegue con l'attacco
+                    if (data.numeroTurno > 0 && truppeAssegnateTurno){ // Se il turno non è di setup, si prosegue con l'attacco
                         proseguiTurno();
                     }
                     else { // Altrimenti si passa il turno
                         passaTurno();
                     }
-                }                
+                }
             }
             else if (data.tipo == 'esitoAttacco') { // Gestione della risposta a seguito di un attacco
                 
@@ -313,28 +318,28 @@
         };
 
         function proseguiTurno() {
-            var formDiv = document.createElement('div');
-            formDiv.setAttribute('class', 'form-popup');
-            formDiv.setAttribute('id', 'formTruppe');
+            var formOpzioni = document.createElement('div');
+            formOpzioni.setAttribute('class', 'form-popup');
+            formOpzioni.setAttribute('id', 'formTruppe');
 
             var titolo = document.createElement('h1');
             titolo.innerHTML = '<center>Scegli operazione</center>';
-            formDiv.appendChild(titolo);
+            formOpzioni.appendChild(titolo);
 
             // Bottone Attacca
             var btnAttacco = document.createElement('button');
             btnAttacco.innerText = 'Attacca';
             btnAttacco.onclick = iniziaAttacco();
-            formDiv.appendChild(btnAttacco);
+            formOpzioni.appendChild(btnAttacco);
 
             // Bottone Passa Turno
             var btnPassa = document.createElement('button');
             btnPassa.innerText = 'Passa Turno';
             btnPassa.onclick = passaTurno();
-            formDiv.appendChild(btnPassa);
+            formOpzioni.appendChild(btnPassa);
 
-            document.getElementById('appearance').appendChild(formDiv);
-            formDiv.style.display = 'flex';
+            document.getElementById('appearance').appendChild(formOpzioni);
+            formOpzioni.style.display = 'flex';
         }
 
         function iniziaAttacco() {
@@ -343,7 +348,7 @@
 
         function passaTurno() {
             partitaSocket.send(JSON.stringify({
-                'tipo': 'passaTurno',
+                'tipo': 'iniziaTurno',
                 'idPartita': '{{ PartitaID }}',
                 'sender': nomeGiocatore
             }));
@@ -419,7 +424,6 @@
                         //territorio.numTruppe = document.getElementById('num_' + territorio.nome).value;
                     }
                 });
-                console.log('valore: ' + document.getElementById('num_' + oggTerritorioCorr.nome).value);
                 var nuovoNumTruppe = document.getElementById('num_' + oggTerritorioCorr.nome).value;
                 sommaNuoviValori += nuovoNumTruppe - (oggTerritorioCorr.numTruppe);
             }
@@ -439,6 +443,8 @@
                     });
                 }
                 document.getElementById('formTruppe').remove();
+
+                truppeAssegnateTurno = true;
 
                 partitaSocket.send(JSON.stringify({
                     'tipo': 'truppeAssegnate',
