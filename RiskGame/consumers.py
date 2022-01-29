@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import dataclasses, json, math, random
+from msilib.schema import Class
 from datetime import datetime
 from xmlrpc.client import boolean
 from asgiref.sync import async_to_sync
@@ -47,8 +48,6 @@ class ClasseStatistiche:
     PercentualeScontriVintiATK : float = 0.0,
     NumeroPartiteGiocate : int = 0
 
-# per far si che questi sopra siano serializzabili 
-# fare listaGiocatori.append(dataclasses.asdict(ClasseGiocatore('prova', 14, [])))
 
 class PartitaConsumer(WebsocketConsumer):
  
@@ -145,30 +144,20 @@ class PartitaConsumer(WebsocketConsumer):
             Partita.disconnettiOspite(text_data_json['idPartita'], text_data_json['sender'])
         elif (tipo == 'iniziaPartita'):
             self.assegnazioneTerritoriTruppeIniziali()
-            async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name,
-                {
-                    'type': 'evento_gioco',
-                    'tipo': tipo,
-                    'sender': mittente
-                }
-            )
             self.giocatoreAttivo = self.listaGiocatori[0].nickname
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
                     'type': 'evento_gioco',
-                    'tipo': 'iniziaTurno',
+                    'tipo': tipo,
                     'sender': mittente
                 }
             )
-        elif (tipo == 'truppeAssegnate'):
-            self.ricezioneAssegnazioneTruppeTerritorio(text_data_json['listaTerritoriSocket'])
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
                     'type': 'evento_gioco',
-                    'tipo': tipo,
+                    'tipo': 'iniziaTurno',
                     'sender': mittente
                 }
             )
@@ -182,12 +171,16 @@ class PartitaConsumer(WebsocketConsumer):
                     'sender': mittente
                 }
             )
-            """self.indexGiocatoreAttivo += 1
-            if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
-                self.indexGiocatoreAttivo = 0
-                self.numeroTurno += 1
-            else:
-                self.giocatoreAttivo = [self.indexGiocatoreAttivo]"""
+        elif (tipo == 'truppeAssegnate'):
+            self.ricezioneAssegnazioneTruppeTerritorio(text_data_json['listaTerritoriSocket'])
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'evento_gioco',
+                    'tipo': tipo,
+                    'sender': mittente
+                }
+            )
         elif(tipo == 'chiamataAttacco'):
             self.chiamataAttacco(json.loads(text_data_json['attaccante'], json.loads(text_data_json['truppeATK'],json.loads(text_data_json['difensore'],json.loads(text_data_json['truppeDEF'])))))
             async_to_sync(self.channel_layer.group_send)(
@@ -200,6 +193,21 @@ class PartitaConsumer(WebsocketConsumer):
             )
         elif(tipo == 'chiamataSpostamento'):
             self.chiamataSpostamento(json.loads(text_data_json['postinoSocket'], json.loads(text_data_json['mittenteSocket'], json.loads(text_data_json['riceventeSocket'], json.loads(text_data_json['numeroTruppeSocket'])))))
+        elif (tipo == 'passaTurno'):
+            self.indexGiocatoreAttivo += 1
+            if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
+                self.indexGiocatoreAttivo = 0
+                self.numeroTurno += 1
+            else:
+                self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'evento_gioco',
+                    'tipo': 'iniziaTurno',
+                    'sender': mittente
+                }
+            )
 
 
     # Riceve il messaggio dalla room group (locale)
@@ -247,8 +255,8 @@ class PartitaConsumer(WebsocketConsumer):
                 'listaTerritori': self.serializzaLista(self.listaTerritori),
                 'numeroTurno': self.numeroTurno
             }))
-            self.indexGiocatoreAttivo += 1
-            self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo]
+            """self.indexGiocatoreAttivo += 1
+            self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname"""
         elif (tipo == 'truppeAssegnate'):
             self.send(text_data=json.dumps({
                 'tipo': tipo,
@@ -268,12 +276,12 @@ class PartitaConsumer(WebsocketConsumer):
                 'listaStatistiche': self.serializzaLista(self.listaStatistiche),
                 'numeroTurno': self.numeroTurno
             }))
-            self.indexGiocatoreAttivo += 1
+            """self.indexGiocatoreAttivo += 1
             if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
                 self.indexGiocatoreAttivo = 0
                 self.numeroTurno += 1
             else:
-                self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo]
+                self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo]"""
         elif (tipo == 'chiamataSpostamento'):
             self.send(text_data=json.dumps({
                 'tipo': tipo,
@@ -307,7 +315,7 @@ class PartitaConsumer(WebsocketConsumer):
         k = 0
 
         for i in xlistaGiocatori:
-            self.listaGiocatori.append(ClasseGiocatore(nickname=i,numTruppe = 35, numeroTruppeTurno=0))
+            self.listaGiocatori.append(ClasseGiocatore(nickname=i,numTruppe=35, numeroTruppeTurno=0))
             if not (i.find("Ospite")):
                 self.listaStatistiche.append(Statistiche.getListaStatistiche(i))
             for j in range(k , h):

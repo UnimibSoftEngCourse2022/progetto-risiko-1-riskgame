@@ -115,6 +115,7 @@
         const numGiocAtt = document.querySelector('#numGiocAtt');
 
         var nomeGiocatore = "";
+        var oggettoGiocatore = null;
         var listaGiocatori = [];
         var listaTerritori = [];
         var divMappa = document.getElementById('map');
@@ -146,6 +147,13 @@
             data = JSON.parse(e.data);
             listaGiocatori = data.listaGiocatori;
             listaTerritori = data.listaTerritori;
+
+            if (data.giocatoreAttivo == nomeGiocatore){
+                listaGiocatori.forEach(giocatore => {
+                    if (giocatore.nickname == nomeGiocatore)
+                        oggettoGiocatore = giocatore;
+                })
+            } 
 
             if (data.tipo == 'messaggio')
                 document.querySelector('#chat-log').value += ('[' + data.sender + ']: '
@@ -246,12 +254,15 @@
                     // La roba del form
 
                     var h = document.createElement('h1');
-                    h.innerHTML = 'Assegna Truppe';
+                    h.innerHTML = '<center>Assegna Truppe</center>';
                     form.appendChild(h);
 
-                    var h2 = document.createElement('h2');
-                    h2.innerHTML = '<center>' + data.giocatoreAttivo.numeroTruppeTurno + 'disponibili</center>';
-                    form.appendChild(h2);
+                    var h3 = document.createElement('h3');
+                    if (data.numeroTurno > 0)
+                        h3.innerHTML = '<center>[' + oggettoGiocatore.numeroTruppeTurno + ' disponibili]</center>';
+                    else
+                        h3.innerHTML = '<center>[' + oggettoGiocatore.numTruppe + ' disponibili]</center>';
+                    form.appendChild(h3);
 
                     var terrDiv = document.createElement('div');
                     terrDiv.setAttribute('class', 'tabella-assegna-truppe');
@@ -283,14 +294,20 @@
                     document.getElementById('appearance').appendChild(formDiv);
 
                     formDiv.style.display = 'flex';
-
-                    if (data.numeroTurno > 0) { // Se non è il turno di setup
-                        // Attacco, spostamento, passare turno
-                    }
                 }
             }
-            else if (data.tipo == 'truppeAssegnate') { // Aggiornare la tabella giocatori con numero truppe
+            else if (data.tipo == 'truppeAssegnate') { // Aggiorna la tabella dei giocatori con le truppe assegnate
                 aggiornaTabella();
+                if (data.numeroTurno > 0){ // Se il turno non è di setup, si prosegue con l'attacco
+                    alert('inizio fase attacco');
+                }
+                else { // Altrimenti si passa il turno
+                    partitaSocket.send(JSON.stringify({
+                        'tipo': 'passaTurno',
+                        'idPartita': '{{ PartitaID }}',
+                        'sender': nomeGiocatore
+                    }));
+                }
             }
         };
 
@@ -348,7 +365,11 @@
         function confermaTruppe() {
             var container = document.getElementById('container-territori');
             var listaDivTerritori = container.children;
-            var truppeDisponibili = data.giocatoreAttivo.numeroTruppeTurno;
+            var truppeDisponibili = 0;
+            if (data.numeroTurno == 0)
+                truppeDisponibili = oggettoGiocatore.numTruppe;
+            else
+                truppeDisponibili = oggettoGiocatore.numeroTruppeTurno;
 
             var sommaNuoviValori = 0;
 
@@ -356,16 +377,15 @@
                 var oggTerritorioCorr = null;
                 listaTerritori.forEach(territorio => {
                     if (territorio.nome == listaDivTerritori[i].id.substring(5)) {
-                        //oggTerritorioCorr = territorio;
-                        //territorio.numTruppe = listaDivTerritori[i].firstChild.value;
-                        territorio.numTruppe = document.getElementById('num_' + territorio.nome).value;
+                        oggTerritorioCorr = territorio;
+                        //territorio.numTruppe = document.getElementById('num_' + territorio.nome).value;
                     }
                 });
-                //var nuovoNumTruppe = listaDivTerritori[i].children[0].value;
-                //sommaNuoviValori += nuovoNumTruppe - (oggTerritorioCorr.numTruppe);
+                var nuovoNumTruppe = document.getElementById('num_' + oggTerritorioCorr.nome).value;
+                sommaNuoviValori += nuovoNumTruppe - (oggTerritorioCorr.numTruppe);
             }
 
-            /*if (sommaNuoviValori > truppeDisponibili) { // Non cancellare form e mettere scritta errore
+            if (sommaNuoviValori > truppeDisponibili) {
                 alert('Errore: la somma delle nuove truppe eccede il numero di truppe disponibili.');
             }
             else if (sommaNuoviValori < truppeDisponibili) {
@@ -375,20 +395,19 @@
                 for (let i = 0; i < listaDivTerritori.length; i++) {
                     listaTerritori.forEach(territorio => {
                         if (territorio.nome == listaDivTerritori[i].id.substring(5)) {
-                            territorio.numTruppe = listaDivTerritori[i].children[0].value;
+                            territorio.numTruppe = document.getElementById('num_' + territorio.nome).value;
                         }
                     });
-                }*/
+                }
                 document.getElementById('formTruppe').remove();
 
-                console.log(listaTerritori);
                 partitaSocket.send(JSON.stringify({
                     'tipo': 'truppeAssegnate',
                     'idPartita': '{{ PartitaID }}',
                     'sender': nomeGiocatore,
                     'listaTerritoriSocket': listaTerritori
                 }));
-            //}
+            }
         }
 
         partitaSocket.onclose = function (e) {
