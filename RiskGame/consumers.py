@@ -198,8 +198,7 @@ class PartitaConsumer(WebsocketConsumer):
             if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
                 self.indexGiocatoreAttivo = 0
                 self.numeroTurno += 1
-            else:
-                self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname
+            self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
@@ -258,10 +257,13 @@ class PartitaConsumer(WebsocketConsumer):
             """self.indexGiocatoreAttivo += 1
             self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname"""
         elif (tipo == 'truppeAssegnate'):
+            if (self.numeroTurno == 0):
+                self.indexGiocatoreAttivo += 1
+                self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname
             self.send(text_data=json.dumps({
                 'tipo': tipo,
                 'sender': mittente,
-                # 'giocatoreAttivo': self.giocatoreAttivo,
+                'giocatoreAttivo': self.giocatoreAttivo,
                 'listaTerritori': self.serializzaLista(self.listaTerritori),
                 'listaGiocatori': self.serializzaLista(self.listaGiocatori),
                 'numeroTurno': self.numeroTurno

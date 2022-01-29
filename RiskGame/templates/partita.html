@@ -277,7 +277,7 @@
                         campoNumber.setAttribute('type', 'number');
                         campoNumber.setAttribute('id', 'num_' + territorio.nome);
                         campoNumber.setAttribute('min', territorio.numTruppe);
-                        campoNumber.setAttribute('value', '0');
+                        campoNumber.setAttribute('value', territorio.numTruppe);
 
                         campoDiv.appendChild(campoNumber);
                         terrDiv.appendChild(campoDiv);
@@ -292,24 +292,62 @@
                     formDiv.appendChild(form);
 
                     document.getElementById('appearance').appendChild(formDiv);
-
                     formDiv.style.display = 'flex';
                 }
             }
             else if (data.tipo == 'truppeAssegnate') { // Aggiorna la tabella dei giocatori con le truppe assegnate
                 aggiornaTabella();
-                if (data.numeroTurno > 0){ // Se il turno non è di setup, si prosegue con l'attacco
-                    alert('inizio fase attacco');
-                }
-                else { // Altrimenti si passa il turno
-                    partitaSocket.send(JSON.stringify({
-                        'tipo': 'passaTurno',
-                        'idPartita': '{{ PartitaID }}',
-                        'sender': nomeGiocatore
-                    }));
-                }
+                console.log(data.giocatoreAttivo + '=' + nomeGiocatore);
+                if (data.giocatoreAttivo == nomeGiocatore){
+                    if (data.numeroTurno > 0){ // Se il turno non è di setup, si prosegue con l'attacco
+                        proseguiTurno();
+                    }
+                    else { // Altrimenti si passa il turno
+                        passaTurno();
+                    }
+                }                
+            }
+            else if (data.tipo == 'esitoAttacco') { // Gestione della risposta a seguito di un attacco
+                
             }
         };
+
+        function proseguiTurno() {
+            var formDiv = document.createElement('div');
+            formDiv.setAttribute('class', 'form-popup');
+            formDiv.setAttribute('id', 'formTruppe');
+
+            var titolo = document.createElement('h1');
+            titolo.innerHTML = '<center>Scegli operazione</center>';
+            formDiv.appendChild(titolo);
+
+            // Bottone Attacca
+            var btnAttacco = document.createElement('button');
+            btnAttacco.innerText = 'Attacca';
+            btnAttacco.onclick = iniziaAttacco();
+            formDiv.appendChild(btnAttacco);
+
+            // Bottone Passa Turno
+            var btnPassa = document.createElement('button');
+            btnPassa.innerText = 'Passa Turno';
+            btnPassa.onclick = passaTurno();
+            formDiv.appendChild(btnPassa);
+
+            document.getElementById('appearance').appendChild(formDiv);
+            formDiv.style.display = 'flex';
+        }
+
+        function iniziaAttacco() {
+            
+        }
+
+        function passaTurno() {
+            partitaSocket.send(JSON.stringify({
+                'tipo': 'passaTurno',
+                'idPartita': '{{ PartitaID }}',
+                'sender': nomeGiocatore
+            }));
+        }
 
         function aggiornaTabella() {
             document.getElementById('tabella-giocatori').innerHTML = '';
@@ -381,10 +419,11 @@
                         //territorio.numTruppe = document.getElementById('num_' + territorio.nome).value;
                     }
                 });
+                console.log('valore: ' + document.getElementById('num_' + oggTerritorioCorr.nome).value);
                 var nuovoNumTruppe = document.getElementById('num_' + oggTerritorioCorr.nome).value;
                 sommaNuoviValori += nuovoNumTruppe - (oggTerritorioCorr.numTruppe);
             }
-
+            
             if (sommaNuoviValori > truppeDisponibili) {
                 alert('Errore: la somma delle nuove truppe eccede il numero di truppe disponibili.');
             }
@@ -444,7 +483,7 @@
                 'idPartita': '{{ PartitaID }}',
                 'sender': nomeGiocatore
             }));
-            location.href = "/match-list"
+            location.href = "";
         };
 
         function iniziaPartita() {
