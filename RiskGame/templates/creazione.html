@@ -64,10 +64,13 @@ borders: top right !important
             </select>
     </div>
         <br>
+        {% if user.is_authenticated %}
         <div class = "messages">
     <input type="checkbox" id = "collassaGiocatori" name="collassaGiocatori" value="collassaGiocatori">
     <label for="collassaGiocatori">Vuoi adattare la mappa al numero di giocatori? <br> Ciò portera il numero di continenti a coincidere con il numero di giocatori</label>
   </div>
+      {% endif %}
+
     <div class="u-align-center u-form-group u-form-submit u-block-16f1-13">
         <br>
         <button type="submit" class="btn btn-outline-info">Conferma</button>
@@ -77,12 +80,16 @@ borders: top right !important
                                         -se selezioni la difficolta 'Semplice' ci saranno soltanto i Continenti<br>
                                         -se selezioni la difficolta 'Media' i territori verrano dimezzati<br>
                                         -se selezioni la difficoltà 'Difficile' la mappa rimarrà nello stesso stato in cui lo hai creata
+                                        {% if not user.is_authenticated %}
+                                            <br>
+                                        Se fossi registrato potresti anche ridurre il numero di confini al numero di giocatori
+                                        {% endif %}
+
 </span>
 </div>
     </form>
 
-
-
+</body>
 <style data-mode="XL" data-visited="true">@media (min-width: 1200px) {
     .messages{
        text-align: center;
@@ -100,4 +107,4 @@ borders: top right !important
     margin-bottom: 0;
   }
 }</style>
-</body></html>
+</html>
