@@ -313,18 +313,35 @@
             else if (data.tipo == 'scegliOpzione'){
                 if (data.giocatoreAttivo == nomeGiocatore) {
                     if (data.numeroTurno > 0){ // Se il turno non è di setup, si prosegue con l'attacco
+                        listaTerritori.forEach(territorio => {
+                            if (territorio.giocatore == nomeGiocatore && territorio.numTruppe == 0){
+                                setTerrRicevente(territorio.nome);
+                            }
+                        });
                         proseguiTurno();
                     }
                     else { // Altrimenti si passa il turno
-                        passaTurno();
+                        nuovoTurno();
                     }
                 }
             }
             else if (data.tipo == 'esitoAttacco') { // Gestione della risposta a seguito di un attacco
-                // manca notificare al giocatore cos'è successo durante l'attacco
                 aggiornaTabella();
-                if (data.giocatoreAttivo == nomeGiocatore)
-                    passaTurno();
+                if (data.giocatoreAttivo == nomeGiocatore){
+                    alert('Attacco concluso');
+                    proseguiTurno();
+                }
+            }
+            else if (data.tipo == 'chiamataSpostamento') { // Gestione risposta a seguito di spostamento
+                aggiornaTabella();
+                if (data.giocatoreAttivo == nomeGiocatore){
+                    console.log(data.esitoOperazione);
+                    if (data.esitoOperazione == true)
+                        alert('Truppe spostate');
+                    else
+                        alert('ERRORE: lo spostamento non è andato a buon fine.');
+                    proseguiTurno();
+                }
             }
         };
 
@@ -343,6 +360,12 @@
             btnAttacco.setAttribute('onclick', 'javascript:iniziaAttacco()');
             formOpzioni.appendChild(btnAttacco);
 
+            // Bottone Sposta Trupppe
+            var btnSposta = document.createElement('button');
+            btnSposta.innerText = 'Sposta Truppe';
+            btnSposta.setAttribute('onclick', 'javascript:spostaTruppe()');
+            formOpzioni.appendChild(btnSposta);
+
             // Bottone Passa Turno
             var btnPassa = document.createElement('button');
             btnPassa.innerText = 'Passa Turno';
@@ -351,6 +374,82 @@
 
             document.getElementById('appearance').appendChild(formOpzioni);
             formOpzioni.style.display = 'flex';
+        }
+
+        function spostaTruppe() {
+            alert('SPOSTAMENTO: clicca sul territorio in cui vuoi spostare delle truppe.');
+            document.getElementById('formOpzioni').remove();
+
+            var aree = oggMappa.children;
+            for (let i = 0; i < aree.length; i++){
+                listaTerritori.forEach(territorio => {
+                    if (territorio.giocatore == nomeGiocatore){
+                        aree[i].setAttribute('href', 'javascript:setTerrRicevente(\''+ aree[i].id +'\')');
+                    }
+                })            
+            }
+        }
+
+        function setTerrRicevente(terrRicevente) {
+            alert('SPOSTAMENTO: clicca sul territorio da cui vuoi spostare delle truppe.');
+
+            var aree = oggMappa.children;
+            for (let i = 0; i < aree.length; i++){
+                listaTerritori.forEach(territorio => {
+                    if (territorio.giocatore == nomeGiocatore){
+                        aree[i].setAttribute('href', 'javascript:setTerrMittente(\''+ terrRicevente
+                            + '\', \'' + aree[i].id +'\')');
+                    }
+                })
+            }
+        }
+
+        function setTerrMittente(terrRicevente, terrMittente){
+            var aree = oggMappa.children;
+            for (let i = 0; i < aree.length; i++){
+                aree[i].setAttribute('href', '#');
+            }
+
+            var formNumTruppe = document.createElement('div');
+            formNumTruppe.setAttribute('class', 'form-popup');
+            formNumTruppe.setAttribute('id', 'formNumTruppe');
+
+            // Campo numerico
+            var numTruppe = document.createElement('input');
+            numTruppe.setAttribute('id', 'casellaNumTruppe');
+            numTruppe.setAttribute('type', 'number');
+            numTruppe.setAttribute('min', 0);
+            formNumTruppe.appendChild(numTruppe);
+
+            // Etichetta campo numerico
+            var label = document.createElement('label');
+            label.setAttribute('for', 'casellaNumTruppe');
+            label.innerText = 'Numero truppe: ';
+            formNumTruppe.appendChild(label);
+
+            // Bottone Conferma
+            var btnConferma = document.createElement('button');
+            btnConferma.innerText = 'Conferma';
+            btnConferma.setAttribute('onclick', 'javascript:confermaSpostamento(\''
+                + terrRicevente +'\',\'' + terrMittente + '\')');
+            formNumTruppe.appendChild(btnConferma);
+
+            document.getElementById('appearance').appendChild(formNumTruppe);
+            formNumTruppe.style.display = 'flex';
+        }
+
+        function confermaSpostamento(terrRicevente, terrMittente) {
+            var numTruppeSpostate = document.getElementById('casellaNumTruppe').value;
+            document.getElementById('formNumTruppe').remove();            
+
+            partitaSocket.send(JSON.stringify({
+                'tipo': 'chiamataSpostamento',
+                'idPartita': '{{ PartitaID }}',
+                'sender': nomeGiocatore,
+                'mittenteSocket': terrMittente,
+                'riceventeSocket': terrRicevente,
+                'numeroTruppeSocket': numTruppeSpostate
+            }));
         }
 
         function iniziaAttacco() {
@@ -384,12 +483,26 @@
             var truppeAttaccante = 0;
             var truppeDifensore = 0;
             listaTerritori.forEach(territorio => {
-                if (territorio.nome == terrDef)
+                if (territorio.nome == terrDef){
                     truppeDifensore = territorio.numTruppe;
-                else if (territorio.nome == terrAtt)
-                    truppeAttaccante = territorio.numTruppe;
+                    if (truppeDifensore > 3)
+                        truppeDifensore = 3;
+                }
+                else if (territorio.nome == terrAtt){
+                    if (territorio.numTruppe >= 4)
+                        truppeAttaccante = 3;
+                    else {
+                        truppeAttaccante = territorio.numTruppe - 1;
+                    }
+                }
             })
-            chiamataAttacco(terrAtt, terrDef, truppeAttaccante, truppeDifensore);
+
+            if (truppeAttaccante == 0){
+                alert('ERRORE: non puoi attaccare con una sola truppa sul territorio.');
+                proseguiTurno();
+            }
+            else
+                chiamataAttacco(terrAtt, terrDef, truppeAttaccante, truppeDifensore);
         }
 
         function chiamataAttacco(territorioAtt, territorioDef, truppeAttaccante, truppeDifensore) {
@@ -406,6 +519,10 @@
 
         function passaTurno() {
             document.getElementById('formOpzioni').remove();
+            nuovoTurno();
+        }
+
+        function nuovoTurno() {
             partitaSocket.send(JSON.stringify({
                 'tipo': 'iniziaTurno',
                 'idPartita': '{{ PartitaID }}',
@@ -564,16 +681,6 @@
                 'sender': 'gioco'
             }));
         }
-
-        function conquistaTerritorio(territorio, nuovoProprietario) {
-            partitaSocket.send(JSON.stringify({
-                'tipo': 'conquistaTerritorio',
-                'idPartita': '{{ PartitaID }}',
-                'sender': 'gioco',
-                'territorio': territorio,
-                'nuovoProprietario': nuovoProprietario
-            }));
-        }        
 
             // Assegna truppe
             // Spostamento truppe

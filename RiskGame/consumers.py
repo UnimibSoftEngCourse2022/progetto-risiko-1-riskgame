@@ -195,7 +195,7 @@ class PartitaConsumer(WebsocketConsumer):
                         'tipo': 'iniziaTurno',
                         'sender': mittente
                     }
-                )   
+                )
         elif(tipo == 'chiamataAttacco'):
             territorioAtt = None
             territorioDef = None
@@ -215,7 +215,16 @@ class PartitaConsumer(WebsocketConsumer):
                 }
             )
         elif(tipo == 'chiamataSpostamento'):
-            self.chiamataSpostamento(json.loads(text_data_json['postinoSocket'], json.loads(text_data_json['mittenteSocket'], json.loads(text_data_json['riceventeSocket'], json.loads(text_data_json['numeroTruppeSocket'])))))
+            self.chiamataSpostamento(mittente, text_data_json['mittenteSocket'],
+                text_data_json['riceventeSocket'], text_data_json['numeroTruppeSocket'])
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'evento_gioco',
+                    'tipo': tipo,
+                    'sender': mittente
+                }
+            )
 
 
     # Riceve il messaggio dalla room group (locale)
@@ -332,8 +341,15 @@ class PartitaConsumer(WebsocketConsumer):
         for i in xlistaGiocatori:
             self.listaGiocatori.append(ClasseGiocatore(nickname=i,numTruppe=35, numeroTruppeTurno=0,
                 carte=[], ingioco=True, vittoriaPartita=False))
-            if not (i.find("Ospite")):
-                self.listaStatistiche.append(Statistiche.getListaStatistiche(i))
+            # if not (i.find("Ospite")):
+            if not (i[0:6] == 'Ospite'):
+                # self.listaStatistiche.append(Statistiche.getListaStatistiche(i))
+                oggStat = Statistiche.getListaStatistiche(i)
+                self.listaStatistiche.append(ClasseStatistiche(i, oggStat.NumeroPartiteVinte,
+                    oggStat.NumeroPartitePerse, oggStat.PercentualeVinte, oggStat.NumeroScontriVinti,
+                    oggStat.NumeroScontriPersi, oggStat.NumeroScontriVintiATK, oggStat.NumeroScontriPersiATK,
+                    oggStat.NumeroScontriVintiDEF, oggStat.NumeroScontriPersiDEF, oggStat.PercentualeScontriVintiATK,
+                    oggStat.NumeroPartiteGiocate))
             for j in range(k , h):
                 self.listaTerritori[j].giocatore = i
             k = h
@@ -440,9 +456,6 @@ class PartitaConsumer(WebsocketConsumer):
         vittoria : boolean = False
         totTerritori : int = 0
 
-        print(territorioATK)
-        print(territorioDEF)
-
         for giocatore in self.listaGiocatori:
             if giocatore.nickname == territorioATK.giocatore:
                 giocatoreATK = giocatore
@@ -453,7 +466,7 @@ class PartitaConsumer(WebsocketConsumer):
             if statistiche.IDGiocatore == giocatoreATK.nickname:
                 statisticheATK = statistiche
             elif statistiche.IDGiocatore == giocatoreDEF.nickname:
-                statisticheDEF = statistiche            
+                statisticheDEF = statistiche
         
         for i in range(0, truppeATK):
             valATK.append(random.randint(0,5))
@@ -511,21 +524,20 @@ class PartitaConsumer(WebsocketConsumer):
         
         for i in self.listaTerritori:
             for j in self.listaTerritori:
-                if self.listaTerritori.nome == territorioATK.nome:
+                if j.nome == territorioATK.nome:
                     j = territorioATK
-                if self.listaTerritori.nome == territorioDEF.nome:
+                if j.nome == territorioDEF.nome:
                     j = territorioDEF
 
         #controllo vittoriaPartita
 
         for i in self.listaTerritori:
-            for j in self.listaGiocatori:
-                if i.giocatore == j.nickname:
-                    totTerritori = totTerritori + 1
+            if i.giocatore == giocatoreATK.nickname:
+                totTerritori = totTerritori + 1
 
         if totTerritori >= len(self.listaTerritori):
             giocatoreATK.vittoriaPartita = True
-            self.aggiornaStatisticheVittora(giocatoreATK)
+            self.aggiornaStatisticheVittoria(giocatoreATK)
         
         for giocatore in self.listaGiocatori:
             if giocatore.nickname == territorioATK.giocatore:
@@ -540,27 +552,26 @@ class PartitaConsumer(WebsocketConsumer):
         ricevente : ClasseTerritorio        
 
         for giocatore in self.listaGiocatori:
-            if giocatore.nickname == postinoSocket.giocatore:
+            if giocatore.nickname == postinoSocket:
                 postino = giocatore
 
         for territorio in self.listaTerritori:
-            if territorio.nome == mittenteSocket.nome:
+            if territorio.nome == mittenteSocket:
                 mittente = territorio
-            if territorio.nome == riceventeSocket.nome:
+            if territorio.nome == riceventeSocket:
                 ricevente = territorio
 
-        if (mittente.numTruppe -1) >= numeroTruppeSocket :
-            mittente.numTruppe = mittente.numTruppe - numeroTruppeSocket
-            ricevente.numTruppe = ricevente.numTruppe + numeroTruppeSocket
-            self.operazione = True
+        if mittente.giocatore == postino.nickname:
+            if (mittente.numTruppe - 1) >= int(numeroTruppeSocket):
+                mittente.numTruppe = mittente.numTruppe - int(numeroTruppeSocket)
+                ricevente.numTruppe = ricevente.numTruppe + int(numeroTruppeSocket)
+                self.operazione = True
 
         for territorio in self.listaTerritori:
-            if territorio.nome == mittenteSocket.nome:
+            if territorio.nome == mittenteSocket:
                 territorio = mittente
-            if territorio.nome == riceventeSocket.nome:
+            if territorio.nome == riceventeSocket:
                 territorio = ricevente
-
-        return self.operazione
 
     
     def aggiornaStatisticheVittoria(self, vincitore):

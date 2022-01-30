@@ -134,8 +134,9 @@ class Statistiche(models.Model):
     PercentualeScontriVintiATK = models.FloatField()
     NumeroPartiteGiocate = models.IntegerField()
 
-    def getListaStatistiche(username):
-        return Statistiche.objects.get(IDGiocatore=username)
+    def getListaStatistiche(usernamePl):
+        idGiocatore = User.objects.filter(username=usernamePl).first().pk
+        return Statistiche.objects.get(IDGiocatore=idGiocatore)
 
 
 
