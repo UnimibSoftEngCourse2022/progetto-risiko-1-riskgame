@@ -131,7 +131,7 @@ class PartitaView(TemplateView):
             #percorso = mappa.PercorsoMappa + "\\" + nome + ".map.json"
         elif difficolta == 'Semplice':
             intDiff = 1
-            percorso = mappa.PercorsoMappa + "\\" + nome + "-" + difficolta + ".map.json"
+            percorso = mappa.PercorsoMappa + "\\" + nome + ".map.json"
             file = open(percorso)
             data = json.load(file)
             MappaView.collassaConfiniDifficolta(request, data)
@@ -141,7 +141,7 @@ class PartitaView(TemplateView):
             MappaView.saveMappaEditor(request)
         elif difficolta == 'Media':
             intDiff = 2
-            percorso = mappa.PercorsoMappa + "\\" + nome + "-" + difficolta + ".map.json"
+            percorso = mappa.PercorsoMappa + "\\" + nome + ".map.json"
             file = open(percorso)
             data = json.load(file)
             MappaView.collassaConfiniDifficolta(request, data)
@@ -179,6 +179,7 @@ class PartitaView(TemplateView):
                     percorso = mappa.PercorsoMappa + "\\" + nome + ".map.json"
                 else:
                     percorso = mappa.PercorsoMappa + "\\" + nome + "-" + difficolta + ".map.json"
+                print(percorso)
                 file = open(percorso)
                 data = json.load(file)
                 MappaView.collassaConfiniGiocatori(request, data, mappa, numGiocatori)
