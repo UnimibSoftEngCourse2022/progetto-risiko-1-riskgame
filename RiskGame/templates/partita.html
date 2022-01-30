@@ -199,9 +199,10 @@
                 var imgMappa = document.createElement('img');
                 //width = '80%';
                 //height = '80vh'
+                imgMappa.setAttribute('position', 'relative');
                 imgMappa.setAttribute('src', 'static/Mappe/' + mappa.name);
-                imgMappa.setAttribute('width', mappa.width);
-                imgMappa.setAttribute('height', mappa.height);
+                imgMappa.setAttribute('width', 800);
+                imgMappa.setAttribute('height', 476);
                 imgMappa.setAttribute('usemap', '#' + data.nomeMappa);
                 imgMappa.setAttribute('class', 'map maphilighted');
                 divMappa.appendChild(imgMappa);
@@ -384,27 +385,11 @@
             btnPassa.setAttribute('onclick', 'javascript:passaTurno()');
             formOpzioni.appendChild(btnPassa);
 
-<<<<<<< HEAD
+
             document.getElementById('appearance').appendChild(formOpzioni);
             formOpzioni.style.display = 'flex';
         }
-=======
-            document.querySelector('#abbandona').onclick = function(e) {
-                if ('{{ user.is_authenticated }}' == 'True'){ 
-                    tipo = 'abbandonaUtente';
-                }
-                else {
-                    tipo = 'abbandonaOspite';
-                }
-                partitaSocket.send(JSON.stringify({
-                    'tipo': tipo,
-                    'idPartita': '{{ PartitaID }}',
-                    'sender': sender
-                }));
-                //location.href="/match-list"
-                location.href = "{% url 'RiskGame:partecipa' %}"
-            };
->>>>>>> Aggiustamenti_Mappa
+
 
         function spostaTruppe() {
             alert('SPOSTAMENTO: clicca sul territorio in cui vuoi spostare delle truppe.');
@@ -693,7 +678,7 @@
                 'idPartita': '{{ PartitaID }}',
                 'sender': nomeGiocatore
             }));
-            location.href = "";
+            location.href = "/";
         };
 
         function iniziaPartita() {

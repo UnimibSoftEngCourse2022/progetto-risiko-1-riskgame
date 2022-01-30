@@ -118,7 +118,7 @@
         color: #43A047; } */
   .fr-view span.fr-emoticon {
     font-weight: normal;
-    font-family: "Apple Color Emoji","Segoe UI Emoji","NotoColorEmoji","Segoe UI Symbol","Android Emoji","EmojiSymbols";
+    font-family: "Apple Color Emoji","Segoe UI Emoji","NotoColorEmoji","Segoe UI Symbol","Android Emoji","EmojiSymbols", sans-serif;
     display: inline;
     line-height: 0; }
     .fr-view span.fr-emoticon.fr-emoticon-img {
@@ -151,8 +151,8 @@
     -webkit-border-radius: 2px;
     -moz-background-clip: padding;
     -webkit-background-clip: padding-box;
-    background-clip: padding-box;
     background: #f5f5f5;
+    background-clip: padding-box;
     padding: 10px;
     font-family: "Courier New", Courier, monospace; }
   .fr-view .fr-class-transparency {
@@ -3975,7 +3975,7 @@ span.fr-img-caption.fr-view {
   animation-duration: 3s;
 }
 
-@media (print), (prefers-reduced-motion: reduce) {
+@media print, (prefers-reduced-motion: reduce) {
   .animated {
     -webkit-animation-duration: 1ms !important;
     animation-duration: 1ms !important;
@@ -4655,7 +4655,6 @@ ol {
   background-color: transparent;
   margin: 0;
   -webkit-text-decoration-skip: objects;
-  font-style: initial;
   white-space: nowrap;
   -webkit-user-select: none;
       -ms-user-select: none;
@@ -18158,7 +18157,7 @@ p {
   font-family: 'Playfair Display', serif !important;
 }
 .u-font-lobster.u-custom-font {
-  font-family: Lobster, display !important;
+  font-family: Lobster, sans-serif, display !important;
 }
 .u-rectangle {
   border-radius: 0;
@@ -20044,15 +20043,12 @@ a.pswp__share--download:hover {
   background-color: transparent;
   margin: 0;
   -webkit-text-decoration-skip: objects;
-  border: none;
-  margin: 0 !important;
   position: absolute;
   top: 0;
   bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
   text-align: center;
   opacity: 1;
 }
