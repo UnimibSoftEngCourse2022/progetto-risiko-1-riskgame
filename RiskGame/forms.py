@@ -16,7 +16,6 @@ class UserRegisterForm(UserCreationForm):
             'username': "<br />L'username può contenere lettere, numeri e @/./+/-/_ soltanto",
         }
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['password1'].help_text = "<br />La password non può essere troppo simile alle tue altre informazioni personali<br />" \

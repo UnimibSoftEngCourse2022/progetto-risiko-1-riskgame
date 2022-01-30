@@ -1,101 +1,101 @@
+{% load bootstrap5 %}
 {% load static %}
-<!DOCTYPE html>
-<html xml:lang>
+
+<!doctype html>
+<html lang="en">
 
 <head>
 
+    <link rel="stylesheet" type="text/css" href="{% static 'RiskGame/main.css' %}">
     <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 
-    <!-- Bootstrap CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <link rel="stylesheet" type="text/css" href="{% static 'RiskGame/main.css' %}">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
 
-    {% if title %}
-    <title>Risk Game - {{ title }}</title>
-    {% else %}
-    <title>Risk Game</title>
-    {% endif %}
-</head>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <title>RiskGame!</title>
+
 
 <body>
-    <header class="site-header">
 
-        <nav class="navbar  navbar-expand-lg navbar-light bg-steel fixed-top">
+
+    <header class=" site-header">
+
+        <nav class="navbar navbar-expand-lg bg-steel fixed-top">
             <div class="container-fluid">
-                <a class="navbar-brand mr-4" href="{% url 'RiskGame:home' %}">RiskGame</a>
+                <a href="{% url 'home' %}" class=" navbar-brand">
+                    <img src=" {% static 'Home/MapBackground.png' %}" width=" 30" height="30" alt="">
+                    RiskGame
+                </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
                     aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarToggle">
                     <div class="navbar-nav mr-auto">
-                        <a class="nav-item nav-link" href="{% url 'RiskGame:home' %}">Home</a>
-                        <a class="nav-item nav-link" href="#">About</a>
+                        <a class="nav-item nav-link" href="{% url 'home' %}">Home</a>
+                        <a class="nav-item nav-link" href="#">Gioca!</a>
                     </div>
                     <!-- Navbar Right Side -->
                     <div class="navbar-nav">
-                        <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+
+                        {% if user.is_authenticated %}
+                        <a class="nav-item nav-link" href="">Profilo</a>
+                        <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+                        {% elif request.path == '/' %}
+
+                        <a class="nav-item nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
+                            aria-controls="offcanvasExample">Login</a>
+
                         <a class="nav-item nav-link" href="{% url 'RiskGame:registrazione' %}">Registrazione</a>
+                        <a class="nav-item nav-link" href="#">Ospite</a>
+                        {% endif %}
+
                     </div>
                 </div>
             </div>
         </nav>
     </header>
 
-    <main role="main" class="container">
-        <div class="row">
-            <div class="col-md-8">
-                {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-                {% endfor %}
-                {% endif %}
-                {% block content %}{% endblock %}
-            </div>
-            <!--<div class="col-md-4">
-                <div class="content-section">
-                    <h3>Our Sidebar</h3>
-                    <p class='text-muted'>You can put any information here you'd like.
-                    <ul class="list-group">
-                        <li class="list-group-item list-group-item-light">Latest Posts</li>
-                        <li class="list-group-item list-group-item-light">Announcements</li>
-                        <li class="list-group-item list-group-item-light">Calendars</li>
-                        <li class="list-group-item list-group-item-light">etc</li>
-                    </ul>
-                    </p>
-                </div>
-            </div>-->
-        </div>
-    </main>
+    {% block content %}
+
+    {% endblock content %}
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
         crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
         crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+        crossorigin="anonymous"></script>
+
+
+
+
+
+
 </body>
 
 </html>
-
-
-<!-- <main role="main" class="container-fluid p-0 m-0">-->
-<!--
-        <div class="bg-image"
-            style="background-image: url('{% static 'SfondoMappa.png' %}'); width:110vw; filter:blur(10px) brightness(50%); height: 110vh; background-size:cover; background-position:center center; position:absolute; top:-5vh; left:-5vw">
-        </div>
-        <div class="bg-image"
-            style="background-image: url('{% static 'SfondoMappa.png' %}'); position:relative; width: 65vw; height:90vh; background-size:100% 100%; background-repeat:no-repeat; background-position:center; margin:0 auto; margin-top:7vh">
-            </div>
-        -->
