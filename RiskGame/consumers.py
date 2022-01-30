@@ -268,9 +268,9 @@ class PartitaConsumer(WebsocketConsumer):
             if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
                 self.indexGiocatoreAttivo = 0
                 self.numeroTurno += 1
-            self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname
+            self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo - 1].nickname
             if (self.numeroTurno > 0):
-                self.chiamataAssegnazioneTruppeTerritorio(self.giocatoreAttivo)
+                self.chiamataAssegnazioneTruppeTerritorio(self.giocatoreAttivo, mittente)
             self.send(text_data=json.dumps({
                 'tipo': tipo,
                 'sender': mittente,
@@ -362,7 +362,9 @@ class PartitaConsumer(WebsocketConsumer):
         #for statistiche in xlistaStatistiche:
             #self.listaStatistiche.append(ClasseStatistiche(statistiche.IDGiocatore, statistiche.NumeroPartiteVinte, statistiche.NumeroPartitePerse, statistiche.PercentualeVinte, statistiche.NumeroScontriVinti, statistiche.NumeroScontriPersi, statistiche.NumeroScontriPersiATK, statistiche.NumeroScontriVintiDEF, statistiche.NumeroScontriPersiDEF, statistiche.PercentualeScontriVintiATK, statistiche.NumeroPartiteGiocate))
 
-    def chiamataAssegnazioneTruppeTerritorio(self, classeGiocatore):
+    def chiamataAssegnazioneTruppeTerritorio(self, classeGiocatore, mittente):
+        print(classeGiocatore + mittente)
+        
         k = 0
         cont = 0
         xgiocatore : ClasseGiocatore
