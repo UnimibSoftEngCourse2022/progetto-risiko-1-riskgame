@@ -21,7 +21,7 @@
 
         .tabella-giocatori {
             display: flex;
-            width: 200px;
+            width: 300px;
             height: 75vh;
             float: right;
             overflow-x: hidden;
@@ -52,7 +52,8 @@
         }
 
         .form-popup {
-            width: 300px;
+            width: 500px;
+            height: 50vh;
             display: none;
             position: fixed;
             align-self: center;
@@ -63,8 +64,8 @@
             z-index: 9;
             background-color: rgba(255, 255, 255, 0.5);
             left: 50%;
-            margin-left: -150px;
-            margin-top: -25%;
+            margin-left: -250px;
+            margin-top: 0;
             padding: 0px 15px 10px 10px
         }
 
@@ -83,6 +84,7 @@
         .tabella-assegna-truppe {
             display: flex;
             width: 90%;
+            height: 70%;
             float: right;
             overflow-x: hidden;
             overflow-y: scroll;
@@ -196,10 +198,11 @@
                 mappa = data.mappa.map; // contiene i dati della mappa in JSON
 
                 var imgMappa = document.createElement('img');
+                //width = '80%';
+                //height = '80vh'
                 imgMappa.setAttribute('src', 'static/Mappe/' + mappa.name);
-                //imgMappa.setAttribute('width', mappa.width);
-                //imgMappa.setAttribute('height', mappa.height);
-                imgMappa.setAttribute('max-width', '70%');
+                imgMappa.setAttribute('width', mappa.width);
+                imgMappa.setAttribute('height', mappa.height);
                 imgMappa.setAttribute('usemap', '#' + data.nomeMappa);
                 imgMappa.setAttribute('class', 'map maphilighted');
                 divMappa.appendChild(imgMappa);
