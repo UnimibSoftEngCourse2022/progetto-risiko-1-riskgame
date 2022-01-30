@@ -41,7 +41,7 @@
 
         <nav class="navbar navbar-expand-lg bg-steel fixed-top">
             <div class="container-fluid">
-                <a href="" class="navbar-brand">
+                <a href="{% url 'home' %}" class=" navbar-brand">
                     <img src=" {% static 'Home/MapBackground.png' %}" width=" 30" height="30" alt="">
                     RiskGame
                 </a>
@@ -56,15 +56,19 @@
                     </div>
                     <!-- Navbar Right Side -->
                     <div class="navbar-nav">
+
                         {% if user.is_authenticated %}
                         <a class="nav-item nav-link" href="">Profilo</a>
                         <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
                         {% else %}
+
                         <a class="nav-item nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
                             aria-controls="offcanvasExample">Login</a>
+
                         <a class="nav-item nav-link" href="{% url 'RiskGame:registrazione' %}">Registrazione</a>
                         <a class="nav-item nav-link" href="#">Ospite</a>
                         {% endif %}
+
                     </div>
                 </div>
             </div>
@@ -89,6 +93,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
         crossorigin="anonymous"></script>
+
 
 
 
