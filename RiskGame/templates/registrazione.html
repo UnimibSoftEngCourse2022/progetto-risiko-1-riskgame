@@ -29,7 +29,7 @@
     <header class="u-clearfix u-custom-color-1 u-header u-header" id="sec-3a71" data-animation-name=""
       data-animation-duration="0" data-animation-delay="0" data-animation-direction="">
       <div class="u-align-left u-clearfix u-sheet u-valign-middle u-sheet-1">
-        <a href="{% url 'RiskGame:home' %}"
+        <a href="{% url 'home' %}"
           class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Ritorna alla
           Home<br>
         </a>
@@ -49,31 +49,31 @@
     <div class="selection">
       <form method="post">
         {% csrf_token %}
-          {{ form|crispy }}
+        {{ form|crispy }}
         <div class="form-group">
           <button class="btn btn-outline-info" type="submit">Registrati!</button>
         </div>
       </form>
       <div class="border-top pt-3">
         <small class="text-muted">
-          Hai già un Account?<a class="ml-2" href="{% url 'login' %}">Accedi</a>
+          Hai già un Account?<a class="ml-2" href="#">Accedi</a>
         </small>
       </div>
     </div>
 
 
     <style data-mode="XL" data-visited="true">
-        div.selection {
-    letter-spacing: 1px;
-    border-style: none;
-    background-image: none;
-    text-align: center;
-    margin-top: 78px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 0;
-    position: relative;
-    }
+      div.selection {
+        letter-spacing: 1px;
+        border-style: none;
+        background-image: none;
+        text-align: center;
+        margin-top: 78px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 0;
+        position: relative;
+      }
 
       @media (min-width: 1200px) {
         .u-block-16f1-1 {
@@ -328,7 +328,7 @@
   </form>
   <div class="border-top pt-3">
     <small class="text-muted">
-      Hai già un Account?<a class="ml-2" href="{% url 'login' %}">Sign In</a>
+      Hai già un Account?<a class="ml-2" href="#">Sign In</a>
     </small>
   </div>
 </div>
