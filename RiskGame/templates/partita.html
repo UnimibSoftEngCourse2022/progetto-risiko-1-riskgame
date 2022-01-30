@@ -197,8 +197,9 @@
 
                 var imgMappa = document.createElement('img');
                 imgMappa.setAttribute('src', 'static/Mappe/' + mappa.name);
-                imgMappa.setAttribute('width', mappa.width);
-                imgMappa.setAttribute('height', mappa.height);
+                //imgMappa.setAttribute('width', mappa.width);
+                //imgMappa.setAttribute('height', mappa.height);
+                imgMappa.setAttribute('max-width', '70%');
                 imgMappa.setAttribute('usemap', '#' + data.nomeMappa);
                 imgMappa.setAttribute('class', 'map maphilighted');
                 divMappa.appendChild(imgMappa);
@@ -327,15 +328,24 @@
             }
             else if (data.tipo == 'esitoAttacco') { // Gestione della risposta a seguito di un attacco
                 aggiornaTabella();
-                if (data.giocatoreAttivo == nomeGiocatore){
-                    alert('Attacco concluso');
-                    proseguiTurno();
+                var giocatoreVincitore = null;
+                listaGiocatori.forEach(giocatore => {
+                    if (giocatore.vittoriaPartita == true)
+                        giocatoreVincitore = giocatore.nome;
+                });
+                if (giocatoreVincitore == null){
+                    if (data.giocatoreAttivo == nomeGiocatore){
+                        alert('Attacco concluso');
+                        proseguiTurno();
+                    }
+                    else
+                        alert('VITTORIA! ' + giocatoreVincitore + ' ha vinto!');
+                        finePartita();
                 }
             }
             else if (data.tipo == 'chiamataSpostamento') { // Gestione risposta a seguito di spostamento
                 aggiornaTabella();
                 if (data.giocatoreAttivo == nomeGiocatore){
-                    console.log(data.esitoOperazione);
                     if (data.esitoOperazione == true)
                         alert('Truppe spostate');
                     else
@@ -414,18 +424,18 @@
             formNumTruppe.setAttribute('class', 'form-popup');
             formNumTruppe.setAttribute('id', 'formNumTruppe');
 
+            // Etichetta campo numerico
+            var label = document.createElement('label');
+            label.setAttribute('for', 'casellaNumTruppe');
+            label.innerText = 'Numero truppe: ';
+            formNumTruppe.appendChild(label);
+
             // Campo numerico
             var numTruppe = document.createElement('input');
             numTruppe.setAttribute('id', 'casellaNumTruppe');
             numTruppe.setAttribute('type', 'number');
             numTruppe.setAttribute('min', 0);
             formNumTruppe.appendChild(numTruppe);
-
-            // Etichetta campo numerico
-            var label = document.createElement('label');
-            label.setAttribute('for', 'casellaNumTruppe');
-            label.innerText = 'Numero truppe: ';
-            formNumTruppe.appendChild(label);
 
             // Bottone Conferma
             var btnConferma = document.createElement('button');

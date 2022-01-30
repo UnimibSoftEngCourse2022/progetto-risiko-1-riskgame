@@ -49,8 +49,6 @@ class ClasseStatistiche:
 
 class PartitaConsumer(WebsocketConsumer):
  
-    # Set to True to automatically port users from HTTP cookies
-    # (you don't need channel_session_user, this implies it)
     http_user = True
     listaGiocatori = []
     listaTerritori = []
@@ -73,7 +71,6 @@ class PartitaConsumer(WebsocketConsumer):
             jsonMappa = json.load(json_file)
         json_file.close()
 
-        # Join room group
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
             self.channel_name
@@ -83,7 +80,6 @@ class PartitaConsumer(WebsocketConsumer):
 
 
     def disconnect(self, close_code):
-        # Leave room group
         async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name,
             self.channel_name
@@ -304,7 +300,7 @@ class PartitaConsumer(WebsocketConsumer):
                 'giocatoreAttivo': self.giocatoreAttivo,
                 'listaGiocatori': self.serializzaLista(self.listaGiocatori),
                 'listaTerritori': self.serializzaLista(self.listaTerritori),
-                'numeroTurno': self.numeroTurno
+                'numeroTurno': self.numeroTurno,
             }))
         elif (tipo == 'chiamataSpostamento'):
             self.send(text_data=json.dumps({
@@ -424,7 +420,9 @@ class PartitaConsumer(WebsocketConsumer):
         if xgiocatore.numeroTruppeTurno == 0:
             xgiocatore.numeroTruppeTurno = 1
         xgiocatore.numeroTruppeTurno = xgiocatore.numeroTruppeTurno + k
+        print (xgiocatore.numeroTruppeTurno)
         xgiocatore.numTruppe = xgiocatore.numTruppe + xgiocatore.numeroTruppeTurno
+        print (xgiocatore.numTruppe)
         for i in self.listaGiocatori:
             if xgiocatore.nickname == i.nickname :
                 i = xgiocatore
