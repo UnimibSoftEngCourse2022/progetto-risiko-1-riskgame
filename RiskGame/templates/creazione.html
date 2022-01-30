@@ -10,6 +10,13 @@
     <link rel="stylesheet" href="{% static 'Sfondo.css' %}" media="screen">
     <script class="u-script" type="text/javascript" src="{% static 'jquery.js' %}" defer=""></script>
     <script class="u-script" type="text/javascript" src="{% static 'nicepage.js' %}" defer=""></script>
+    <link rel="stylesheet" href="{% static 'Info.css' %}" media="screen">
+    <script>
+function myFunction() {
+  var popup = document.getElementById("myPopup");
+  popup.classList.toggle("show");
+}
+</script>
 </head>
 <body class="body" data-style="blank" data-posts="" data-global-section-properties="{&quot;colorings&quot;:{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}}" data-source="blank" data-page-sections-style="[]" data-page-coloring-types="{&quot;light&quot;:[&quot;clean&quot;],&quot;colored&quot;:[&quot;clean&quot;],&quot;dark&quot;:[&quot;dark&quot;]}" data-page-category="&quot;Basic&quot;"><section class="u-clearfix u-custom-color-1 u-block-702b-1" custom-posts-hash="[]" data-style="blank" data-section-properties="{&quot;margin&quot;:&quot;none&quot;,&quot;stretch&quot;:true}" id="sec-341e" data-source="Blank" data-id="702b">
   <header class="u-clearfix u-custom-color-1 u-header u-header" id="sec-3a71" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction=""><div class="u-align-left u-clearfix u-sheet u-valign-middle u-sheet-1">
@@ -56,11 +63,26 @@ borders: top right !important
                 <option value="Difficile">Difficile</option>
             </select>
     </div>
+        <br>
+        <div class = "messages">
+    <input type="checkbox" id = "collassaGiocatori" name="collassaGiocatori" value="collassaGiocatori">
+    <label for="collassaGiocatori">Vuoi adattare la mappa al numero di giocatori? <br> Ciò portera il numero di continenti a coincidere con il numero di giocatori</label>
+  </div>
     <div class="u-align-center u-form-group u-form-submit u-block-16f1-13">
         <br>
         <button type="submit" class="btn btn-outline-info">Conferma</button>
     </div>
+         <div class="popup" onclick="myFunction()">INFORMAZIONI
+  <span class="popuptext" id="myPopup">In questa schermata puoi impostare i dati della partita. La mappa che hai creato si adatta automaticamente alla difficoltà:<br>
+                                        -se selezioni la difficolta 'Semplice' ci saranno soltanto i Continenti<br>
+                                        -se selezioni la difficolta 'Media' i territori verrano dimezzati<br>
+                                        -se selezioni la difficoltà 'Difficile' la mappa rimarrà nello stesso stato in cui lo hai creata
+</span>
+</div>
     </form>
+
+
+
 <style data-mode="XL" data-visited="true">@media (min-width: 1200px) {
     .messages{
        text-align: center;
