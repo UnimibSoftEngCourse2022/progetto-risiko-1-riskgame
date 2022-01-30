@@ -115,7 +115,6 @@
     <script>
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
         const numGiocAtt = document.querySelector('#numGiocAtt');
-
         var nomeGiocatore = "";
         var oggettoGiocatore = null;
         var listaGiocatori = [];
@@ -385,9 +384,27 @@
             btnPassa.setAttribute('onclick', 'javascript:passaTurno()');
             formOpzioni.appendChild(btnPassa);
 
+<<<<<<< HEAD
             document.getElementById('appearance').appendChild(formOpzioni);
             formOpzioni.style.display = 'flex';
         }
+=======
+            document.querySelector('#abbandona').onclick = function(e) {
+                if ('{{ user.is_authenticated }}' == 'True'){ 
+                    tipo = 'abbandonaUtente';
+                }
+                else {
+                    tipo = 'abbandonaOspite';
+                }
+                partitaSocket.send(JSON.stringify({
+                    'tipo': tipo,
+                    'idPartita': '{{ PartitaID }}',
+                    'sender': sender
+                }));
+                //location.href="/match-list"
+                location.href = "{% url 'RiskGame:partecipa' %}"
+            };
+>>>>>>> Aggiustamenti_Mappa
 
         function spostaTruppe() {
             alert('SPOSTAMENTO: clicca sul territorio in cui vuoi spostare delle truppe.');

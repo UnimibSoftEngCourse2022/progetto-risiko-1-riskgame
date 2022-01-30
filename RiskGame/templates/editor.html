@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{% static 'Sfondo.css' %}" media="screen">
     <script class="u-script" type="text/javascript" src="{% static 'jquery.js' %}" defer=""></script>
     <script class="u-script" type="text/javascript" src="{% static 'nicepage.js' %}" defer=""></script>
+    <link rel="stylesheet" href="{% static 'Info.css' %}" media="screen">
 </head>
 <body class="body">
 
@@ -17,7 +18,7 @@
 <p class="text">Una volta generato il file Html, spostare l'immagine jpeg della mappa e il file generato all'interno della cartella Mappe; fare attenzione ad aver nominato entrambi i file con il nome della mappa presente nell'editor.<br>
                 Successivamente clicca il tasto "Conferma"</p>
 </div>
-<form action="{% url 'RiskGame:saveMappa' %}" method = "POST">
+<form action="{% url 'RiskGame:checkButton' %}" method = "POST">
     {% csrf_token %}
     <div class="text">
         <div class="light-text">
@@ -25,12 +26,30 @@
             <input type="text" onblur="getChecked()" id="nome-mappa" name="nome-mappa">
             </div>
     <br>
+        {% if messages %}
+            <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
 <div class="button">
-    <button class="btn btn-outline-info" type="submit">Conferma</button>
+    <button class="btn btn-outline-info" type="submit" value = "conferma" name = "conferma">Conferma</button>
+    <button class="btn btn-outline-info" type="submit" value = "elimina" name = "elimina">Elimina</button>
 </div>
     </div>
 </form>
 </body>
+<div class="popup" onclick="myFunction()">INFORMAZIONI
+  <span class="popuptext" id="myPopup">In questa schermata puoi creare la tua mappa personalizzata.<br>
+                                        Utilizza il Tool Poligono per essere il più preciso possibile<br>
+                                        Una volta che hai creato il territorio clicca col tasto destro su di esso per impostare il nome e il continente a cui appartiene,
+                                        due territori non possono avere lo stesso nome<br>
+                                        Se vuoi che due territori risultino confinanti, crea le aree in modo che due punti risultino in comune<br>
+                                        Se vuoi eliminare una mappa che avevi creato in passato, scrivi il nome e successivamente clicca sul tasto 'Elimina'
+
+</span>
+</div>
 <script>
     function getChecked(){
         return(document.getElementById('nome-mappa').value)
@@ -43,11 +62,17 @@
 <script type="text/javascript">
 		let iMap = new imageMapCreator("id");
 </script>
+<script>
+function myFunction() {
+  var popup = document.getElementById("myPopup");
+  popup.classList.toggle("show");
+}
+</script>
 <style>
 	.qs_main {
 		position: absolute;
     	top: 35% !important;
-    	left: 75% !important;
+    	left: 15% !important;
    	 	margin-top: -50px;
     	margin-left: -50px;
 
@@ -55,7 +80,7 @@
 	#defaultCanvas0 {
 	    position: absolute;
     	top: 35% !important;
-    	left: 25% !important;
+    	left: 30% !important;
    	 	margin-top: -50px;
     	margin-left: -50px;
     	width: 800px !important;
@@ -73,4 +98,5 @@
 	.light-text{
 	    text-shadow: -1px -1px 10px rgba(255, 255, 255, 1);
 	}
+
 </style>
