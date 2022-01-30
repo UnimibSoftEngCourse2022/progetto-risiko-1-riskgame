@@ -27,6 +27,21 @@ def register(request):
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}!')
+            user=User.objects.filter(username = username).first()
+            Statistiche.objects.create(
+                IDGiocatore = user, 
+                NumeroPartiteVinte = 0, 
+                NumeroPartitePerse = 0, 
+                PercentualeVinte = 0.0, 
+                NumeroScontriVinti = 0,
+                NumeroScontriPersi = 0,
+                NumeroScontriVintiATK = 0,
+                NumeroScontriPersiATK = 0,
+                NumeroScontriVintiDEF = 0,
+                NumeroScontriPersiDEF = 0,
+                PercentualeScontriVintiATK = 0.0,
+                NumeroPartiteGiocate = 0
+            )
             return redirect('login')
     else:
         form = UserRegisterForm()
@@ -123,7 +138,7 @@ class PartitaView(TemplateView):
         nuovoID = Partita.getNuovoID()
         numGiocatori = request.GET['giocatori']
         difficolta = request.GET['difficolta']
-        mappa = Mappa.objects.get(NomeMappa=request.GET['mappa']+'-'+difficolta)
+        mappa = Mappa.objects.filter(NomeMappa=request.GET['mappa']+'-'+difficolta).first()
 
         if (difficolta=='Semplice'):
             intDiff = 1

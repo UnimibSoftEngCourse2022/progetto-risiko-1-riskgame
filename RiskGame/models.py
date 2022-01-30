@@ -101,7 +101,7 @@ class Partita(models.Model):
             Partita.objects.get(IDPartita=idPartita).delete()
 
     def getMappa(idPartita):
-        return Partita.objects.get(IDPartita=idPartita).Mappa
+        return Partita.objects.get(IDPartita=idPartita).Mappa.NomeMappa
 
     def getListaGiocatori(idPartita):
         partita = Partita.objects.get(IDPartita=idPartita)
@@ -113,6 +113,9 @@ class Partita(models.Model):
         for ospite in listOspiti:
             listaGiocatori.append(ospite.Nickname)
         return listaGiocatori
+
+    
+    
 
 
 class Statistiche(models.Model):
@@ -129,21 +132,25 @@ class Statistiche(models.Model):
     NumeroScontriVintiDEF = models.IntegerField()
     NumeroScontriPersiDEF = models.IntegerField()
     PercentualeScontriVintiATK = models.FloatField()
-    TempoDiGioco = models.TimeField()
-    NumeroTruppeGenerate = models.IntegerField()
-    NumeroTruppePerse = models.IntegerField()
     NumeroPartiteGiocate = models.IntegerField()
+
+    def getListaStatistiche(usernamePl):
+        idGiocatore = User.objects.filter(username=usernamePl).first().pk
+        return Statistiche.objects.get(IDGiocatore=idGiocatore)
+
 
 
 class Continente(models.Model):
     IDContinente = models.IntegerField(primary_key=True)
     NomeContinente = models.CharField(max_length=45)
-    Colore = models.CharField(max_length=45)
     NumeroTruppe = models.IntegerField()
     Mappa = models.ForeignKey(Mappa, on_delete=models.CASCADE)
-
+    
     def getListaContinentiMappa(mappa):
-        return Continente.objects.filter(Mappa=mappa)
+        objMappa = Mappa.objects.filter(NomeMappa=mappa).first()
+        return Continente.objects.filter(Mappa=objMappa.IDMappa)
+
+    
 
 
 class Territorio(models.Model):
@@ -157,7 +164,9 @@ class Territorio(models.Model):
         listaTerritori = []
         listaContinenti = Continente.getListaContinentiMappa(mappa)
         for continente in listaContinenti:
-            listaTerritori.append(Territorio.objects.filter(Continente=continente.IDContinente))
+            territoriContinente = Territorio.objects.filter(Continente=continente.IDContinente)
+            for territorio in territoriContinente:
+                listaTerritori.append(territorio)
         return listaTerritori
 
 
