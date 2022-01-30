@@ -1,5 +1,5 @@
 div.popup {
-
+  position: relative;
   display: block;
   cursor: pointer;
   text-align: center !important;
@@ -22,7 +22,7 @@ div.popup {
   width: 350px;
   background-color: #555;
   color: #fff;
-  text-align: center;
+  text-align: center;s
   border-radius: 6px;
   padding: 8px 0;
   position: absolute;
