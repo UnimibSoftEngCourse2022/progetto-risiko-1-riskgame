@@ -18,14 +18,16 @@
         <h1>
           <div class="display-2">RiskGame!</div>
         </h1>
-        <p class="lead my-4 text-muted">Benvenuto, Accedi o Registrati se non l'hai ancora fatto!</p>
+        <p class="lead my-4 text-muted">Benvenuto, Accedi o Registrati se non l'hai ancora fatto!
+
+        </p>
         <a class="btn btn-secondary btn-lg" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"
           aria-controls="offcanvasExample">
           Login
         </a>
 
 
-        <a href="#" class="btn btn-secondary btn-lg">Registrati</a>
+        <a href="{% url 'RiskGame:registrazione' %}" class=" btn btn-secondary btn-lg">Registrati</a>
       </div>
       <div class="col-md-5 text-center d-none d-md-block">
         <img src="{% static 'Home/RiskLogo.png' %}" class="img-fluid" alt="Logo">
