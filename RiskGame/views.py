@@ -82,7 +82,7 @@ class RegistrazioneView(TemplateView):
                                                Email=Email,
                                                Password=Password)
             messages.success(request, 'I dati sono stati salvati')
-            return redirect(reverse('RiskGame:home'))"""
+            return redirect(reverse('home'))"""
 
 
 class MenuView(TemplateView):

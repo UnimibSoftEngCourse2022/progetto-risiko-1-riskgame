@@ -436,7 +436,6 @@ class PartitaConsumer(WebsocketConsumer):
             10 armate con tre simboli diversi;
             12 armate con un simbolo jolly e altri due simboli uguali."""
 
-        return xlistaTerritori
 
     def ricezioneAssegnazioneTruppeTerritorio(self, listaTerritoriSocket):
         for i in listaTerritoriSocket:
