@@ -71,8 +71,7 @@ class RegistrazioneView(TemplateView):
             )
             dirname = os.path.dirname(__file__)
             filename = os.path.join(dirname, PATH)
-            mappa = Mappa.objects.filter(NomeMappa = "MappaDefault").first()
-            mappa.update(Percorso = filename)
+            Mappa.objects.filter(NomeMappa = "MappaDefault").update(PercorsoMappa = filename)
             return redirect('home')
         else:
             form = UserRegisterForm()

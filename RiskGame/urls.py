@@ -6,8 +6,8 @@ app_name = "RiskGame"
 
 urlpatterns = [
     #path("", HomePageView.as_view(), name="home"),
-    path('registrazione', views.register, name='register'),
-    path("registrazione", RegistrazioneView.as_view(), name="registrazione"),
+    #path('registrazione', views.register, name='register'),
+    path("registrazione", views.RegistrazioneView.register, name="registrazione"),
     path("crea-partita", views.CreazioneView.draw, name="creazione"),
     path("menu", views.MenuView.drawMenu, name="menu"),
     path("menuospite", views.MenuView.drawOspite, name="menuospite"),
