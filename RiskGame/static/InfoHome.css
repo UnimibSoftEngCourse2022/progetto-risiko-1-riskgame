@@ -7,8 +7,8 @@ div.popup {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  margin:0 auto;
-  width:20%;
+  margin: 0 auto;
+  width: 20%;
   left: 40%;
   bottom: 4vh;
   color: #e81a24;
@@ -52,11 +52,19 @@ div.popup {
 
 /* Add animation (fade in the popup) */
 @-webkit-keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity: 1;}
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity:1 ;}
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
