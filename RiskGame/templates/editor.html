@@ -1,76 +1,86 @@
 {% load static %}
+
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="utf-8">
-    <meta name="keywords" content=""><meta name="description" content=""><meta name="page_type" content="np-template-header-footer-from-plugin">
-    <title></title>
-    <link rel="stylesheet" href="{% static 'nicepage.css' %}" media="screen">
-    <link rel="stylesheet" href="{% static 'Sfondo.css' %}" media="screen">
-    <script class="u-script" type="text/javascript" src="{% static 'jquery.js' %}" defer=""></script>
-    <script class="u-script" type="text/javascript" src="{% static 'nicepage.js' %}" defer=""></script>
+	<meta charset="utf-8">
+	<meta name="keywords" content="">
+	<meta name="description" content="">
+	<meta name="page_type" content="np-template-header-footer-from-plugin">
+	<title></title>
+	<link rel="stylesheet" href="{% static 'nicepage.css' %}" media="screen">
+	<link rel="stylesheet" href="{% static 'Sfondo.css' %}" media="screen">
+	<script class="u-script" type="text/javascript" src="{% static 'jquery.js' %}" defer=""></script>
+	<script class="u-script" type="text/javascript" src="{% static 'nicepage.js' %}" defer=""></script>
 </head>
+
 <body class="body">
 
-<div id="id"></div>
-<br>
-<div class="light-text">
-<p class="text">Una volta generato il file Html, spostare l'immagine jpeg della mappa e il file generato all'interno della cartella Mappe; fare attenzione ad aver nominato entrambi i file con il nome della mappa presente nell'editor.<br>
-                Successivamente clicca il tasto "Conferma"</p>
-</div>
-<form action="{% url 'RiskGame:saveMappa' %}" method = "POST">
-    {% csrf_token %}
-    <div class="text">
-        <div class="light-text">
-            <label for="nome-mappa">Nome mappa:</label>
-            <input type="text" onblur="getChecked()" id="nome-mappa" name="nome-mappa">
-            </div>
-    <br>
-<div class="button">
-    <button class="btn btn-outline-info" type="submit">Conferma</button>
-</div>
-    </div>
-</form>
+	<div id="id"></div>
+	<br>
+	<div class="light-text">
+		<p class="text">Una volta generato il file Html, spostare l'immagine jpeg della mappa e il file generato
+			all'interno della cartella Mappe; fare attenzione ad aver nominato entrambi i file con il nome della mappa
+			presente nell'editor.<br>
+			Successivamente clicca il tasto "Conferma"</p>
+	</div>
+	<form action="{% url 'RiskGame:saveMappa' %}" method="POST">
+		{% csrf_token %}
+		<div class="text">
+			<div class="light-text">
+				<label for="nome-mappa">Nome mappa:</label>
+				<input type="text" onblur="getChecked()" id="nome-mappa" name="nome-mappa">
+			</div>
+			<br>
+			<div class="button">
+				<button class="btn btn-outline-info" type="submit">Conferma</button>
+			</div>
+		</div>
+	</form>
 </body>
 <script>
-    function getChecked(){
-        return(document.getElementById('nome-mappa').value)
-    }
+	function getChecked() {
+		return (document.getElementById('nome-mappa').value)
+	}
 </script>
 <script src="{% static 'node_modules\image-map-creator\dist\image-map-creator.bundle.js' %}"></script>
 <script src="{% static 'node_modules\image-map-creator\dist\script.js' %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/addons/p5.dom.min.js"></script>
 <script type="text/javascript">
-		let iMap = new imageMapCreator("id");
+	let iMap = new imageMapCreator("id");
 </script>
 <style>
 	.qs_main {
 		position: absolute;
-    	top: 35% !important;
-    	left: 75% !important;
-   	 	margin-top: -50px;
-    	margin-left: -50px;
+		top: 35% !important;
+		left: 75% !important;
+		margin-top: -50px;
+		margin-left: -50px;
 
 	}
+
 	#defaultCanvas0 {
-	    position: absolute;
-    	top: 35% !important;
-    	left: 25% !important;
-   	 	margin-top: -50px;
-    	margin-left: -50px;
-    	width: 800px !important;
-    	height: 476px !important;
+		position: absolute;
+		top: 35% !important;
+		left: 25% !important;
+		margin-top: -50px;
+		margin-left: -50px;
+		width: 800px !important;
+		height: 476px !important;
 	}
-	.text{
-	    text-align: center;
-	    filter: brightness(110%);
-	    font-weight: bold;
+
+	.text {
+		text-align: center;
+		filter: brightness(110%);
+		font-weight: bold;
 	}
-	.button{
-	    text-align: center;
-	    bottom: 0 !important;
+
+	.button {
+		text-align: center;
+		bottom: 0 !important;
 	}
-	.light-text{
-	    text-shadow: -1px -1px 10px rgba(255, 255, 255, 1);
+
+	.light-text {
+		text-shadow: -1px -1px 10px rgba(255, 255, 255, 1);
 	}
 </style>
