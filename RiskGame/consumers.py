@@ -60,7 +60,7 @@ class PartitaConsumer(WebsocketConsumer):
     listaContinenti = []
     listaStatistiche = []
     giocatoreAttivo = ""
-    indexGiocatoreAttivo = 0
+    indexGiocatoreAttivo = -1
     numeroTurno = 0
     operazione: boolean = False
 
@@ -140,6 +140,7 @@ class PartitaConsumer(WebsocketConsumer):
                 text_data_json['idPartita'], text_data_json['sender'])
         elif (tipo == 'iniziaPartita'):
             self.assegnazioneTerritoriTruppeIniziali()
+            self.giocatoreAttivo = self.listaGiocatori[0].nickname
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
@@ -148,7 +149,6 @@ class PartitaConsumer(WebsocketConsumer):
                     'sender': mittente
                 }
             )
-            self.giocatoreAttivo = self.listaGiocatori[0].nickname
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
@@ -158,13 +158,6 @@ class PartitaConsumer(WebsocketConsumer):
                 }
             )
         elif (tipo == 'iniziaTurno'):
-            self.indexGiocatoreAttivo += 1
-            if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
-                self.indexGiocatoreAttivo = 0
-                self.numeroTurno += 1
-            self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname
-            if (self.numeroTurno > 0):
-                self.chiamataAssegnazioneTruppeTerritorio(self.giocatoreAttivo)
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
@@ -194,14 +187,6 @@ class PartitaConsumer(WebsocketConsumer):
                     }
                 )
             else:
-                self.indexGiocatoreAttivo += 1
-                if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
-                    self.indexGiocatoreAttivo = 0
-                    self.numeroTurno += 1
-                self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname
-                if (self.numeroTurno > 0):
-                    self.chiamataAssegnazioneTruppeTerritorio(self.giocatoreAttivo)
-                print('Tocca a: ' + self.giocatoreAttivo)
                 async_to_sync(self.channel_layer.group_send)(
                     self.room_group_name,
                     {
@@ -278,6 +263,13 @@ class PartitaConsumer(WebsocketConsumer):
                 'nomeMappa': nomeMappa
             }))
         elif (tipo == 'iniziaTurno'):
+            self.indexGiocatoreAttivo += 1
+            if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
+                self.indexGiocatoreAttivo = 0
+                self.numeroTurno += 1
+            self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname
+            if (self.numeroTurno > 0):
+                self.chiamataAssegnazioneTruppeTerritorio(self.giocatoreAttivo)
             self.send(text_data=json.dumps({
                 'tipo': tipo,
                 'sender': mittente,

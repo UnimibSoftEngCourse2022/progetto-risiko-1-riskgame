@@ -113,6 +113,23 @@
             align-items: center;
             margin-bottom: 10px;
         }
+
+        .form-numero-truppe {
+            width: 311px;
+            height: 5vh;
+            display: none;
+            position: fixed;
+            align-self: center;
+            align-content: center;
+            border: 3px solid #f1f1f1;
+            border-radius: 7px;
+            z-index: 9;
+            background-color: rgba(255, 255, 255, 0.5);
+            left: 50%;
+            margin-left: -155px;
+            margin-top: -45vh;
+            padding: 8px 15px 10px 10px;
+        }
     </style>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script type="text/javascript"
@@ -359,10 +376,10 @@
                         alert('Attacco concluso');
                         proseguiTurno();
                     }
-                    else
-                        alert('VITTORIA! ' + giocatoreVincitore + ' ha vinto!');
-                        finePartita();
                 }
+                else
+                    alert('VITTORIA! ' + giocatoreVincitore + ' ha vinto!');
+                    finePartita();
             }
             else if (data.tipo == 'chiamataSpostamento') { // Gestione risposta a seguito di spostamento
                 aggiornaTabella();
@@ -442,7 +459,7 @@
             }
 
             var formNumTruppe = document.createElement('div');
-            formNumTruppe.setAttribute('class', 'form-popup');
+            formNumTruppe.setAttribute('class', 'form-numero-truppe');
             formNumTruppe.setAttribute('id', 'formNumTruppe');
 
             // Etichetta campo numerico
@@ -490,7 +507,11 @@
 
             var aree = oggMappa.children;
             for (let i = 0; i < aree.length; i++){
-                aree[i].setAttribute('href', 'javascript:setTerrAtt(\''+ aree[i].id +'\')');
+                listaTerritori.forEach(territorio => {
+                    if (territorio.giocatore == nomeGiocatore){
+                        aree[i].setAttribute('href', 'javascript:setTerrAtt(\''+ aree[i].id +'\')');
+                    }
+                });
             }
         }
 
@@ -499,8 +520,12 @@
 
             var aree = oggMappa.children;
             for (let i = 0; i < aree.length; i++){
-                aree[i].setAttribute('href', 'javascript:setTerrDef(\''+ terrAtt
-                + '\', \'' + aree[i].id +'\')');
+                listaTerritori.forEach(territorio => {
+                    if (territorio.giocatore != nomeGiocatore){
+                        aree[i].setAttribute('href', 'javascript:setTerrDef(\''+ terrAtt
+                            + '\', \'' + aree[i].id +'\')');
+                    }
+                });
             }
         }
 
@@ -581,7 +606,6 @@
 
                 var numTruppe = document.createElement('div');
                 numTruppe.setAttribute('id', 'div_num_truppe_' + giocatore.nickname);
-                numTruppe.innerHTML = '<u>Truppe totali:</u> ' + giocatore.numTruppe;
                 infoGiocatore.appendChild(numTruppe);
 
                 var numTruppeTurno = document.createElement('div');
@@ -595,16 +619,21 @@
                 elencoTerritori.setAttribute('id', 'div_territori_' + giocatore.nickname);
                 elencoTerritori.innerHTML = '<u>Territori</u>';
 
+                var truppeTotali = 0;
+
                 var ul = document.createElement('ul');
                 ul.setAttribute('id', 'ul_territori_' + giocatore.nickname);
                 listaTerritori.forEach(territorio => {
                     if (giocatore.nickname == territorio.giocatore) {
                         var li = document.createElement('li');
                         li.innerText = territorio.nome + ' (' + territorio.numTruppe + ' truppe)';
+                        truppeTotali += territorio.numTruppe;
                         ul.appendChild(li);
                     }
                 });
                 elencoTerritori.appendChild(ul);
+
+                numTruppe.innerHTML = '<u>Truppe totali:</u> ' + truppeTotali;
 
                 infoGiocatore.appendChild(elencoTerritori);
 
