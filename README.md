@@ -6,7 +6,7 @@
 
 ### Installazione
 
-E' necessaria la presenza di [Python](https://www.python.org/downloads/) versione 3.9 o 3.10 e il conseguente inserimento
+Per l'esecuzione del gioco è necessaria la presenza di [Python](https://www.python.org/downloads/) versione 3.9 o 3.10, il conseguente inserimento
 della cartella d'installazione nel `Path` delle variabili d'ambiente, e l'installazione del package manager [Pip](https://pypi.org/project/pip/).
 
 Una volta installato, aprire una finestra del prompt dei comandi nella cartella `progetto-risiko-1` ed eseguire il comando 
