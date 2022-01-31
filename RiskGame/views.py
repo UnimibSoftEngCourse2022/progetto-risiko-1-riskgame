@@ -148,6 +148,9 @@ class PartitaView(TemplateView):
         mappa = None
         percorso = None
         intDiff = 0
+        if nome == "nullo":
+            messages.error(request, "Non hai selezionato alcuna mappa")
+            return render(request, 'creazione.html')
         if request.user.is_authenticated:
             if nome == "MappaDefault":
                 mappa = Mappa.objects.filter(NomeMappa=nome, Difficolta="Difficile").first()
@@ -247,6 +250,7 @@ class PartitaView(TemplateView):
                 percorso = mappa.PercorsoMappa
                 MappaView.saveJson(nome, difficolta, percorso, data)
                 file.close()
+                MappaView.saveConfigurazione(request)
                 result = Continente.objects.filter(Mappa=mappa).order_by('IDContinente').annotate(
                     count=Count('territorio'))
                 for x in result:
@@ -286,6 +290,13 @@ class CredenzialiView(TemplateView):
 
 class MappaView(TemplateView):
     template_name = "editor.html"
+
+    @staticmethod
+    def draw(request):
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, 'static\Mappe')
+        return render(request, "editor.html", {"percorso" : filename})
+
     @staticmethod
     def checkButton(request):
         print(request.POST['nome-mappa'])
@@ -370,33 +381,37 @@ class MappaView(TemplateView):
             percorso = mappa.PercorsoMappa + "\\" + nome + ESTENSIONE
         else:
             percorso = mappa.PercorsoMappa + "\\" + nome + "-" + difficolta + ESTENSIONE
-        file = open(percorso)
-        data = json.load(file)
-        if (Continente.objects.count() == 0) and (Territorio.objects.count() == 0):
-            n_continente = 0
-            n_territorio = 0
+        if not os.path.exists(percorso):
+            messages.error(request, "Il file inserito non è nella cartella: controlla di averlo salvato correttamente. Reinserisci il file nell'editor e rinomina i continenti")
+            return render(request, 'editor.html')
         else:
-            n_continente = Continente.objects.latest('IDContinente').IDContinente + 1
-            n_territorio = Territorio.objects.latest('IDTerritorio').IDTerritorio + 1
-        for i in data['map']['areas']:
-            if not Continente.objects.filter(NomeContinente=i['group'], Mappa=mappa).exists():
-                Continente.objects.create(IDContinente=n_continente, NomeContinente=i['group'], NumeroTruppe=0,
-                                              Mappa=mappa)
-                n_continente = n_continente + 1
-            continente = Continente.objects.filter(NomeContinente=i['group'], Mappa=mappa).first()
-            if not Territorio.objects.filter(NomeTerritorio=i['title'], Continente=continente).exists():
-                Territorio.objects.create(IDTerritorio=n_territorio, NomeTerritorio=i['title'],
-                                              Continente=continente, Mappa=mappa)
-                n_territorio = n_territorio + 1
-        result = Continente.objects.filter(Mappa=mappa).order_by('IDContinente').annotate(
-            count=Count('territorio'))
-        for x in result:
-            numero_truppe = int(math.floor(x.count / 3))
-            if numero_truppe == 0:
-                numero_truppe = 1
-            Continente.objects.filter(NomeContinente=x.NomeContinente).update(NumeroTruppe=numero_truppe)
-        MappaView.generaConfini(data, mappa)
-        file.close()
+            file = open(percorso)
+            data = json.load(file)
+            if (Continente.objects.count() == 0) and (Territorio.objects.count() == 0):
+                n_continente = 0
+                n_territorio = 0
+            else:
+                n_continente = Continente.objects.latest('IDContinente').IDContinente + 1
+                n_territorio = Territorio.objects.latest('IDTerritorio').IDTerritorio + 1
+            for i in data['map']['areas']:
+                if not Continente.objects.filter(NomeContinente=i['group'], Mappa=mappa).exists():
+                    Continente.objects.create(IDContinente=n_continente, NomeContinente=i['group'], NumeroTruppe=0,
+                                                      Mappa=mappa)
+                    n_continente = n_continente + 1
+                continente = Continente.objects.filter(NomeContinente=i['group'], Mappa=mappa).first()
+                if not Territorio.objects.filter(NomeTerritorio=i['title'], Continente=continente).exists():
+                    Territorio.objects.create(IDTerritorio=n_territorio, NomeTerritorio=i['title'],
+                                                      Continente=continente, Mappa=mappa)
+                    n_territorio = n_territorio + 1
+            result = Continente.objects.filter(Mappa=mappa).order_by('IDContinente').annotate(
+                count=Count('territorio'))
+            for x in result:
+                numero_truppe = int(math.floor(x.count / 3))
+                if numero_truppe == 0:
+                    numero_truppe = 1
+                Continente.objects.filter(NomeContinente=x.NomeContinente).update(NumeroTruppe=numero_truppe)
+            MappaView.generaConfini(data, mappa)
+            file.close()
 
     @staticmethod
     def generaConfini(data, mappa):
