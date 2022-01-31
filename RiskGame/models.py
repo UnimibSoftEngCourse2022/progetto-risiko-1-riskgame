@@ -12,7 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
     Nome = models.CharField(max_length=45)
     Cognome = models.CharField(max_length=45)
     Email = models.CharField(max_length=45)
-    Password = models.CharField(max_length=16)"""
+    Password = models.CharFielTerritorio.objects.count()d(max_length=16)"""
 
 
 class Ospite(models.Model):
@@ -42,6 +42,8 @@ class Mappa(models.Model):
     Autore = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        blank = True,
+        null = True
     )
     PercorsoMappa = models.CharField(max_length=100)
     Difficolta = models.CharField(max_length = 20, default="")
@@ -81,7 +83,7 @@ class Partita(models.Model):
             listaGiocatori.append(ospite.Nickname)
         return listaGiocatori
 
-    def disconnettiGiocatore(idPartita, username):
+    def disconnettiGiocatore( idPartita, username):
         giocatore = User.objects.get(username=username)
         partita = Partita.objects.get(IDPartita=idPartita)
         partita.Giocatori.remove(giocatore)
@@ -101,7 +103,7 @@ class Partita(models.Model):
             Partita.objects.get(IDPartita=idPartita).delete()
 
     def getMappa(idPartita):
-        return Partita.objects.get(IDPartita=idPartita).Mappa
+        return Partita.objects.get(IDPartita=idPartita).Mappa.NomeMappa
 
     def getListaGiocatori(idPartita):
         partita = Partita.objects.get(IDPartita=idPartita)
@@ -113,6 +115,9 @@ class Partita(models.Model):
         for ospite in listOspiti:
             listaGiocatori.append(ospite.Nickname)
         return listaGiocatori
+
+    
+    
 
 
 class Statistiche(models.Model):
@@ -129,21 +134,25 @@ class Statistiche(models.Model):
     NumeroScontriVintiDEF = models.IntegerField()
     NumeroScontriPersiDEF = models.IntegerField()
     PercentualeScontriVintiATK = models.FloatField()
-    TempoDiGioco = models.TimeField()
-    NumeroTruppeGenerate = models.IntegerField()
-    NumeroTruppePerse = models.IntegerField()
     NumeroPartiteGiocate = models.IntegerField()
+
+    def getListaStatistiche(usernamePl):
+        idGiocatore = User.objects.filter(username=usernamePl).first().pk
+        return Statistiche.objects.get(IDGiocatore=idGiocatore)
+
 
 
 class Continente(models.Model):
     IDContinente = models.IntegerField(primary_key=True)
     NomeContinente = models.CharField(max_length=45)
-    Colore = models.CharField(max_length=45)
     NumeroTruppe = models.IntegerField()
     Mappa = models.ForeignKey(Mappa, on_delete=models.CASCADE)
-
+    
     def getListaContinentiMappa(mappa):
-        return Continente.objects.filter(Mappa=mappa)
+        objMappa = Mappa.objects.filter(NomeMappa=mappa).first()
+        return Continente.objects.filter(Mappa=objMappa.IDMappa)
+
+    
 
 
 class Territorio(models.Model):
@@ -157,7 +166,9 @@ class Territorio(models.Model):
         listaTerritori = []
         listaContinenti = Continente.getListaContinentiMappa(mappa)
         for continente in listaContinenti:
-            listaTerritori.append(Territorio.objects.filter(Continente=continente.IDContinente))
+            territoriContinente = Territorio.objects.filter(Continente=continente.IDContinente)
+            for territorio in territoriContinente:
+                listaTerritori.append(territorio)
         return listaTerritori
 
 

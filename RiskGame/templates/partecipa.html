@@ -16,44 +16,40 @@
     data-source="Blank" data-id="702b">
 
     <div class="u-clearfix u-sheet u-block-702b-2">
-      <div class="container">
-        {% for partita in partita_package %}
-        {% with partita.Giocatori.count|add:partita.Ospiti.count as totGiocatori %}
-        <div class="tile-partita">
-          <center>
-            <font size="5" color="blue">Partita {{ partita.IDPartita }}</font><br>
-            {% with 'mappe/'|add:partita.Mappa.PercorsoMappa as percorso %}
-            <img src="{% static percorso %}" width="200" height="130">
-            <hr>
-            {% endwith %}
-            <b>Numero giocatori:</b> {{ totGiocatori }}/{{ partita.NumeroGiocatori }}<br>
-            <b>Difficoltà:</b>
-            {% if partita.Difficolta == 1 %}
-            Semplice
-            {% elif partita.Difficolta == 2 %}
-            Media
-            {% else %}
-            Difficile
-            {% endif %}
-            <hr>
-            <div class="div-giocatori">
-              <b>Giocatori:</b>
-              {% for giocatore in partita.Giocatori.all %}
-              <br>{{ giocatore.username }}
-              {% endfor %}
-              {% for ospite in partita.Ospiti.all %}
-              <br>{{ ospite.Nickname }}
-              {% endfor %}
-            </div>
-            <hr>
-            {% if totGiocatori < partita.NumeroGiocatori %} <a
-              href="{% url 'RiskGame:partecipaPartita' partita.IDPartita %}"
-              class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">
-              Partecipa</a>
-              {% else %}
-              <div class="u-btn" disabled>Partecipa</div>
-              {% endif %}
-          </center>
+        <div class="container">
+            {% for partita in partita_package %}
+              {% with partita.Giocatori.count|add:partita.Ospiti.count as totGiocatori %}
+                <div class="tile-partita">
+                    <span style="color:blue">Partita {{ partita.IDPartita }}</span><br>
+                      {% with 'mappe/'|add:partita.Mappa.PercorsoMappa as percorso %}
+                        <img src="{% static percorso %}" width="200" height="130" alt="Immagine mappa"><hr>
+                      {% endwith %}
+                      <strong>Numero giocatori:</strong> {{ totGiocatori }}/{{ partita.NumeroGiocatori }}<br>
+                      <strong>Difficoltà:</strong>
+                      {% if partita.Difficolta == 1 %}
+                        Semplice
+                      {% elif partita.Difficolta == 2 %}
+                        Media
+                      {% else %}
+                        Difficile
+                      {% endif %}<hr>
+                      <div class="div-giocatori">
+                        <strong>Giocatori:</strong>
+                        {% for giocatore in partita.Giocatori.all %}
+                          <br>{{ giocatore.username }}
+                        {% endfor %}
+                        {% for ospite in partita.Ospiti.all %}
+                          <br>{{ ospite.Nickname }}
+                        {% endfor %}
+                        </div><hr>
+                      {% if totGiocatori < partita.NumeroGiocatori %}
+                        <a href="{% url 'RiskGame:partecipaPartita' partita.IDPartita %}" class="u-border-none u-btn u-button-style u-custom-color-4 u-hover-palette-2-dark-2 u-btn-1">Partecipa</a>
+                      {% else %}
+                        <div class="u-btn" disabled>Partecipa</div>
+                      {% endif %}
+                </div>
+              {% endwith %}
+            {% endfor %}
         </div>
         {% endwith %}
         {% endfor %}
@@ -75,15 +71,15 @@
         }
 
         .tile-partita {
-          display: flex;
-          flex-direction: column;
-          margin-right: 10px;
-          min-width: 250px;
-          max-width: 250px;
-          border: 1px solid #e5e5e5;
-          border-radius: 7px;
-          background-color: rgba(255, 255, 255, 0.5);
-          align: center;
+            display: flex;
+            flex-direction: column;
+            margin-right: 10px;
+            min-width: 250px;
+            max-width: 250px;
+            border: 1px solid #e5e5e5;
+            border-radius: 7px;
+            background-color: rgba(255,255,255,0.5);
+            align-self: center;
         }
 
         .div-giocatori {

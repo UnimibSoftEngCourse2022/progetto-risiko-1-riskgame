@@ -9,6 +9,14 @@
     padding: 15vh 0;
   }
 </style>
+<script>
+  function myFunction() {
+    var popup = document.getElementById("myPopup");
+    popup.classList.toggle("show");
+  }
+</script>
+
+<link rel="stylesheet" href="{% static 'InfoHome.css' %}" media="screen">
 
 
 <section id="intro">
@@ -56,5 +64,13 @@
       </div>
     </form>
   </div>
+</div>
+
+<div class="popup" onclick="myFunction()">INFO
+  <span class="popuptext" id="myPopup">Puoi decidere di registrati oppure, se non vuoi inserire l'email, puoi continuare
+    a giocare come ospite, ma attento:
+    ti perderai funzionalità interessanti, come il poter creare e giocare sulle proprie mappe personalizzate, o il poter
+    osservare le proprie statistiche di gioco!
+  </span>
 </div>
 {% endblock content %}

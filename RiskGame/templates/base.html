@@ -28,6 +28,8 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="{% static 'Info.css' %}" media="screen">
+
     <title>RiskGame!</title>
 
 
@@ -50,10 +52,9 @@
                     <div class="navbar-nav mr-auto">
                         <a class="nav-item nav-link" href="{% url 'home' %}">Home</a>
                         {% if user.is_authenticated %}
-
-                        <a class="nav-item nav-link" href="{% url 'RiskGame:menu' %}">Gioca!</a>
+                            <a class="nav-item nav-link" href="{% url 'RiskGame:menu' %}">Gioca!</a>
                         {% else %}
-                        <a class="nav-item nav-link" href="{% url 'RiskGame:menuospite' %}">Gioca!</a>
+                            <a class="nav-item nav-link" href="{% url 'RiskGame:menuospite' %}">Gioca!</a>
                         {% endif %}
                     </div>
                     <!-- Navbar Right Side -->

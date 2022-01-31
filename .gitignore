@@ -1,0 +1,6 @@
+.coverage
+pytest.ini
+sonar-project.properties
+.pytest_cache/
+sonar-scanner-4.6.2.2472-windows/
+coverage.xml

@@ -19,7 +19,7 @@ urlpatterns = [
     # path("credenziali-aggiornamento",
     # views.CredenzialiView.updateData, name="updateData"),
     path("editor-mappa", MappaView.as_view(), name="editor"),
-    path("save-mappa", views.MappaView.saveMappa, name="saveMappa"),
+    path("save-mappa", views.MappaView.checkButton, name="checkButton"),
     #path("load-mappa", views.MappaView.loadMappaDifficile, name="loadMappa"),
     #path("logout", views.userLogout, name="logout"),
     path('creaPartita', views.PartitaView.creaPartita, name="creaPartita"),
