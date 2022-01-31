@@ -467,10 +467,17 @@ class PartitaConsumer(WebsocketConsumer):
                 statisticheDEF = statistiche
 
         for i in range(0, truppeATK):
+<<<<<<< HEAD
             valATK.append(random.randint(0, 5))
 
         for i in range(0, truppeDEF):
             valDEF.append(random.randint(0, 5))
+=======
+            valATK.append(secrets.randbelow(6))
+        
+        for i in range(0, truppeDEF):
+            valDEF.append(secrets.randbelow(6))
+>>>>>>> Sistemazione_Errori
 
         valATK.reverse()
         valDEF.reverse()
@@ -519,9 +526,15 @@ class PartitaConsumer(WebsocketConsumer):
         if giocatoreDEF.numTruppe == 0:
             giocatoreDEF.ingioco = False
 
+<<<<<<< HEAD
         if vittoria:
             giocatoreATK.carte.append(random.randint(1, 4))
 
+=======
+        if vittoria :
+            giocatoreATK.carte.append(secrets.randbelow(4) + 1)
+        
+>>>>>>> Sistemazione_Errori
         for i in self.listaTerritori:
             for j in self.listaTerritori:
                 if j.nome == territorioATK.nome:

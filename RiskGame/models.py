@@ -18,7 +18,7 @@ from django.core.exceptions import ObjectDoesNotExist
 class Ospite(models.Model):
     Nickname = models.CharField(max_length=16, primary_key=True)
     Assegnato = models.IntegerField()
-
+    @staticmethod
     def assegnaOspite():
         try:
             ospite = Ospite.objects.get(Assegnato=0)
@@ -28,7 +28,7 @@ class Ospite(models.Model):
             ospite = Ospite(Nickname='Ospite'+str(Ospite.objects.count()+1), Assegnato=1)
             ospite.save()        
         return ospite.Nickname
-
+    @staticmethod
     def rilasciaOspite(username):
         ospite = Ospite.objects.get(Nickname=username)
         ospite.Assegnato = 0
@@ -45,7 +45,7 @@ class Mappa(models.Model):
         blank = True,
         null = True
     )
-    PercorsoMappa = models.CharField(max_length=100)
+    PercorsoMappa = models.CharField(max_length=100, default="")
     Difficolta = models.CharField(max_length = 20, default="")
 
 
@@ -57,7 +57,7 @@ class Partita(models.Model):
     # Giocatori = models.ManyToManyField(GiocatoreRegistrato)
     Giocatori = models.ManyToManyField(settings.AUTH_USER_MODEL)
     Ospiti = models.ManyToManyField(Ospite)
-
+    @staticmethod
     def getNuovoID():
         if (Partita.objects.count() == 0):
             return 1
@@ -65,46 +65,33 @@ class Partita(models.Model):
             maxID = Partita.objects.latest('IDPartita').IDPartita
             return maxID + 1
 
-    def getMappa(idPartita):
-        return Partita.objects.get(IDPartita=idPartita).Mappa
-
+    @staticmethod
     def getGiocatoriConnessi(idPartita):
         partita = Partita.objects.get(IDPartita=idPartita)
         return partita.Giocatori.count() + partita.Ospiti.count()
-
-    def getListaGiocatori(idPartita):
-        partita = Partita.objects.get(IDPartita=idPartita)
-        listRegistrati = partita.Giocatori.all()
-        listOspiti = partita.Ospiti.all()
-        listaGiocatori = []
-        for giocatore in listRegistrati:
-            listaGiocatori.append(giocatore.username)
-        for ospite in listOspiti:
-            listaGiocatori.append(ospite.Nickname)
-        return listaGiocatori
-
+    @staticmethod
     def disconnettiGiocatore( idPartita, username):
         giocatore = User.objects.get(username=username)
         partita = Partita.objects.get(IDPartita=idPartita)
         partita.Giocatori.remove(giocatore)
         if (partita.Giocatori.count() + partita.Ospiti.count() == 0):
             Partita.objects.get(IDPartita=idPartita).delete()
-
+    @staticmethod
     def connettiOspite(idPartita, username):
         ospite = Ospite.objects.get(Nickname=username)
         partita = Partita.objects.get(IDPartita=idPartita)
         partita.Giocatori.add(ospite)
-
+    @staticmethod
     def disconnettiOspite(idPartita, username):
         ospite = Ospite.objects.get(Nickname=username)
         partita = Partita.objects.get(IDPartita=idPartita)
         partita.Ospiti.remove(ospite)
         if (partita.Giocatori.count() + partita.Ospiti.count() == 0):
             Partita.objects.get(IDPartita=idPartita).delete()
-
+    @staticmethod
     def getMappa(idPartita):
         return Partita.objects.get(IDPartita=idPartita).Mappa.NomeMappa
-
+    @staticmethod
     def getListaGiocatori(idPartita):
         partita = Partita.objects.get(IDPartita=idPartita)
         listRegistrati = partita.Giocatori.all()
@@ -135,7 +122,7 @@ class Statistiche(models.Model):
     NumeroScontriPersiDEF = models.IntegerField()
     PercentualeScontriVintiATK = models.FloatField()
     NumeroPartiteGiocate = models.IntegerField()
-
+    @staticmethod
     def getListaStatistiche(usernamePl):
         idGiocatore = User.objects.filter(username=usernamePl).first().pk
         return Statistiche.objects.get(IDGiocatore=idGiocatore)
@@ -147,7 +134,7 @@ class Continente(models.Model):
     NomeContinente = models.CharField(max_length=45)
     NumeroTruppe = models.IntegerField()
     Mappa = models.ForeignKey(Mappa, on_delete=models.CASCADE)
-    
+    @staticmethod
     def getListaContinentiMappa(mappa):
         objMappa = Mappa.objects.filter(NomeMappa=mappa).first()
         return Continente.objects.filter(Mappa=objMappa.IDMappa)
@@ -161,7 +148,7 @@ class Territorio(models.Model):
     Continente = models.ForeignKey(Continente, on_delete=models.CASCADE)
     Confini = models.ManyToManyField('self', blank=True)
     Mappa = models.ForeignKey(Mappa, on_delete=models.CASCADE, null = True)
-
+    @staticmethod
     def getListaTerritoriMappa(mappa):
         listaTerritori = []
         listaContinenti = Continente.getListaContinentiMappa(mappa)

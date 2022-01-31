@@ -16,13 +16,13 @@ urlpatterns = [
     #path("login-control", views.controlUserData, name="controlUserData"),
     path("statistiche", views.StatisticheView.draw, name="statistiche"),
     path("credenziali", views.CredenzialiView.draw, name="credenziali"),
-    # path("credenziali-aggiornamento",
-    # views.CredenzialiView.updateData, name="updateData"),
-    path("editor-mappa", MappaView.as_view(), name="editor"),
+    #path("credenziali-aggiornamento",
+         #views.CredenzialiView.updateData, name="updateData"),
+    path("editor-mappa", views.MappaView.draw, name="editor"),
     path("save-mappa", views.MappaView.checkButton, name="checkButton"),
     #path("load-mappa", views.MappaView.loadMappaDifficile, name="loadMappa"),
     #path("logout", views.userLogout, name="logout"),
     path('creaPartita', views.PartitaView.creaPartita, name="creaPartita"),
     path('partecipaPartita<PartitaID>',
-         views.PartitaView.partecipaPartita, name="partecipaPartita")
+         views.PartitaView.partecipaPartita, name="partecipaPartita"),
 ]

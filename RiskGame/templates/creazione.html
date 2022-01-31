@@ -15,6 +15,9 @@
 </script>
 
 <section id="intro">
+
+</head>
+
     <form action="{% url 'RiskGame:creaPartita' %}" method="POST">
         {% csrf_token %}
         {% if messages %}
@@ -38,10 +41,10 @@
         <div class="selection">
             <label>Seleziona la mappa:</label>
             <select id="mappa" name="nome-mappa">
-                <option value="">--------</option>
-                {% for nome in nomi %}
-                <option value="{{ nome }}">{{ nome }}</option>
-                {% endfor %}
+                <option value="nullo">--------</option>
+                    {% for nome in nomi %}
+                    <option value="{{ nome }}">{{ nome }}</option>
+                    {% endfor %}
             </select>
         </div>
         <br>

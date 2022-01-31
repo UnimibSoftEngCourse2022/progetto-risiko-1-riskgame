@@ -25,7 +25,7 @@
     <div class="text">
         <div class="light-text">
             <label for="nome-mappa">Nome mappa:</label>
-            <input type="text" onblur="getChecked()" id="nome-mappa" name="nome-mappa">
+            <input type="text" onblur="javascript:getChecked()" id="nome-mappa" name="nome-mappa">
             </div>
     <br>
         {% if messages %}
@@ -36,7 +36,7 @@
             </ul>
         {% endif %}
 <div class="button">
-    <button class="btn btn-outline-info" type="submit" value = "conferma" name = "conferma">Conferma</button>
+    <button class="btn btn-outline-info" type="submit" value = "conferma" name = "conferma" >Conferma</button>
     <button class="btn btn-outline-info" type="submit" value = "elimina" name = "elimina">Elimina</button>
 </div>
     </div>
