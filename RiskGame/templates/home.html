@@ -16,16 +16,37 @@
   }
 </script>
 
-<link rel="stylesheet" href="{% static 'InfoHome.css' %}" media="screen">
+<link rel="stylesheet" href="{% static 'Info.css' %}" media="screen">
 
 
 <section id="intro">
   <div class="container-lg">
     <div class="row g-4 justify-content-center align-items-center">
+
+      {% if user.is_authenticated %}
+
       <div class="col-md-5 text-center text-md-start">
         <h1>
           <div class="display-2">RiskGame!</div>
         </h1>
+
+
+        <p class="lead my-4 text-muted">
+          Benvenuto, {{ user.username }}! Ora che hai effettuato il login potrai iniziare a giocare!
+
+        </p>
+
+        <a href="{% url 'RiskGame:menu' %}" class=" btn btn-secondary btn-lg">Gioca!</a>
+      </div>
+
+
+      {% else %}
+      <div class="col-md-5 text-center text-md-start">
+        <h1>
+          <div class="display-2">RiskGame!</div>
+        </h1>
+
+
         <p class="lead my-4 text-muted">Benvenuto, Accedi o Registrati se non l'hai ancora fatto!
 
         </p>
@@ -35,6 +56,10 @@
         </a>
         <a href="{% url 'RiskGame:registrazione' %}" class=" btn btn-secondary btn-lg">Registrati</a>
       </div>
+
+
+      {% endif %}
+
       <div class="col-md-5 text-center d-none d-md-block">
         <img src="{% static 'Home/RiskLogo.png' %}" class="img-fluid" alt="Logo">
       </div>

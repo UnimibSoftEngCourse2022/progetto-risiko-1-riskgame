@@ -3,20 +3,20 @@
 
 <style>
     section {
-        padding: 10vh 0;
+        padding: 8vh 0;
     }
 </style>
 
 <script>
     function myFunction() {
-      var popup = document.getElementById("myPopup");
-      popup.classList.toggle("show");
+        var popup = document.getElementById("myPopup");
+        popup.classList.toggle("show");
     }
 </script>
 
 <section id="intro">
 
-</head>
+    </head>
 
     <form action="{% url 'RiskGame:creaPartita' %}" method="POST">
         {% csrf_token %}
@@ -42,9 +42,9 @@
             <label>Seleziona la mappa:</label>
             <select id="mappa" name="nome-mappa">
                 <option value="nullo">--------</option>
-                    {% for nome in nomi %}
-                    <option value="{{ nome }}">{{ nome }}</option>
-                    {% endfor %}
+                {% for nome in nomi %}
+                <option value="{{ nome }}">{{ nome }}</option>
+                {% endfor %}
             </select>
         </div>
         <br>
@@ -55,51 +55,57 @@
                 <option value="Media">Media</option>
                 <option value="Difficile">Difficile</option>
             </select>
-    </div>
+        </div>
         <br>
         {% if user.is_authenticated %}
-        <div class = "messages">
-    <input type="checkbox" id = "collassaGiocatori" name="collassaGiocatori" value="collassaGiocatori">
-    <label for="collassaGiocatori">Vuoi adattare la mappa al numero di giocatori? <br> Ciò portera il numero di continenti a coincidere con il numero di giocatori</label>
-  </div>
-      {% endif %}
+        <div class="messages">
+            <input type="checkbox" id="collassaGiocatori" name="collassaGiocatori" value="collassaGiocatori">
+            <label for="collassaGiocatori">Vuoi adattare la mappa al numero di giocatori? <br> Ciò portera il numero di
+                continenti a coincidere con il numero di giocatori</label>
+        </div>
+        {% endif %}
 
-    <div class="u-align-center u-form-group u-form-submit u-block-16f1-13">
-        <br>
-        <button type="submit" class="btn btn-outline-info">Conferma</button>
-    </div>
-         <div class="popup" onclick="myFunction()">INFORMAZIONI
-  <span class="popuptext" id="myPopup">In questa schermata puoi impostare i dati della partita. La mappa che hai creato si adatta automaticamente alla difficoltà:<br>
-                                        -se selezioni la difficolta 'Semplice' ci saranno soltanto i Continenti<br>
-                                        -se selezioni la difficolta 'Media' i territori verrano dimezzati<br>
-                                        -se selezioni la difficoltà 'Difficile' la mappa rimarrà nello stesso stato in cui lo hai creata
-                                        {% if not user.is_authenticated %}
-                                            <br>
-                                        Se fossi registrato potresti anche ridurre il numero di confini al numero di giocatori
-                                        {% endif %}
+        <div class="selection">
+            <br>
+            <button type="submit" class="btn btn-outline-info">Conferma</button>
+        </div>
+        <div class="popup selection" onclick="myFunction()">INFORMAZIONI
+            <span class="popuptext" id="myPopup">In questa schermata puoi impostare i dati della partita. La mappa che
+                hai creato si adatta automaticamente alla difficoltà:<br>
+                -se selezioni la difficolta 'Semplice' ci saranno soltanto i Continenti<br>
+                -se selezioni la difficolta 'Media' i territori verrano dimezzati<br>
+                -se selezioni la difficoltà 'Difficile' la mappa rimarrà nello stesso stato in cui lo hai creata
+                {% if not user.is_authenticated %}
+                <br>
+                Se fossi registrato potresti anche ridurre il numero di confini al numero di giocatori
+                {% endif %}
 
-</span>
-</div>
+            </span>
+        </div>
     </form>
 
-</body>
-<style data-mode="XL" data-visited="true">@media (min-width: 1200px) {
-    .messages{
-       text-align: center;
-    }
-  div.selection {
-    letter-spacing: 1px;
-    border-style: none;
-    font-weight: 700;
-    text-transform: uppercase;
-    background-image: none;
-    text-align: center;
-    margin-top: 78px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 0;
-  }
-}</style>
-</html>
+    </body>
+    <style data-mode="XL" data-visited="true">
+        @media (min-width: 1200px) {
+            .messages {
+                text-align: center;
+            }
 
-{% endblock content %}
+            div.selection {
+                letter-spacing: 1px;
+                border-style: none;
+                font-weight: 700;
+                text-transform: uppercase;
+                background-image: none;
+                text-align: center;
+                margin-top: 78px;
+                margin-left: auto;
+                margin-right: auto;
+                margin-bottom: 0;
+            }
+        }
+    </style>
+
+    </html>
+
+    {% endblock content %}

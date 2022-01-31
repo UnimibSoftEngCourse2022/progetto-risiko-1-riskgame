@@ -9,8 +9,8 @@ div.popup {
   user-select: none;
   margin:0 auto;
   width:20%;
-  bottom: -35vh;
-  right: -80vh;
+  bottom: -0vh;
+  right: 0vh;
   color: #e81a24;
   font-weight: 999;
   text-shadow: -1px -1px 6px rgba(255, 255, 255, 1);
@@ -36,7 +36,7 @@ div.popup {
 /* Popup arrow */
 .popup .popuptext::after {
   content: "";
-  position: relative;
+  position: fixed;
   bottom: 100%;
   left: 50%;
   margin-left: -5px;
