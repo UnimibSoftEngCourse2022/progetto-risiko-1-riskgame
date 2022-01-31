@@ -21,7 +21,7 @@ from urllib import request
 from django.views.decorators.csrf import requires_csrf_token
 
 ESTENSIONE = ".map.json"
-
+PATH = 'static\Mappe'
 
 # Create your views here.
 
@@ -68,6 +68,10 @@ class RegistrazioneView(TemplateView):
                 PercentualeScontriVintiATK=0.0,
                 NumeroPartiteGiocate=0
             )
+            dirname = os.path.dirname(__file__)
+            filename = os.path.join(dirname, PATH)
+            mappa = Mappa.objects.filter(NomeMappa = "MappaDefault").first()
+            mappa.update(Percorso = filename)
             return redirect('login')
         else:
             form = UserRegisterForm()
@@ -136,7 +140,7 @@ class PartecipaView(TemplateView):
 
 class PartitaView(TemplateView):
     template_name = "partita.html"
-
+    template_creazione = "creazione.html"
     @staticmethod
     def creaPartita(request):
         # Crea la partita nel DB, aggiunge il nuovo giocatore e lo reindirizza alla partita
@@ -150,7 +154,7 @@ class PartitaView(TemplateView):
         intDiff = 0
         if nome == "nullo":
             messages.error(request, "Non hai selezionato alcuna mappa")
-            return render(request, 'creazione.html')
+            return render(request, PartitaView.template_creazione)
         mappa = MappaView.checkMappa(request, nome, "Difficile")
         print(mappa)
         if difficolta == "Difficile":
@@ -207,7 +211,7 @@ class PartitaView(TemplateView):
             return redirect(reverse('RiskGame:partecipaPartita', kwargs={'PartitaID': nuovoID}))
         else:
             messages.error(request, "Il numero di giocatori inserito non è compatibile con la mappa")
-            return render(request, 'creazione.html')
+            return render(request, PartitaView.template_creazione)
 
     @staticmethod
     def partecipaPartita(request, PartitaID):
@@ -248,7 +252,7 @@ class PartitaView(TemplateView):
             else:
                 messages.error(request,
                                "La mappa contiene già un numero di continenti pari al numero di giocatori inserito")
-                return render(request, 'creazione.html')
+                return render(request, PartitaView.template_creazione)
 
 
 class StatisticheView(TemplateView):
@@ -281,8 +285,8 @@ class MappaView(TemplateView):
     @staticmethod
     def draw(request):
         dirname = os.path.dirname(__file__)
-        filename = os.path.join(dirname, 'static\Mappe')
-        return render(request, "editor.html", {"percorso" : filename})
+        filename = os.path.join(dirname, PATH)
+        return render(request, MappaView.template_name, {"percorso" : filename})
 
     @staticmethod
     def checkButton(request):
@@ -292,16 +296,16 @@ class MappaView(TemplateView):
         if "conferma" in request.POST:
             if nome_mappa == "MappaDefault":
                 messages.error(request, "Il nome della mappa inserito non può essere scelto")
-                return render(request, "editor.html")
+                return render(request, MappaView.template_name)
 
             elif Mappa.objects.filter(NomeMappa=nome_mappa, Autore=username).exists():
                 messages.error(request, "Il nome della mappa inserito esiste già")
-                return render(request, "editor.html")
+                return render(request, MappaView.template_name)
             else:
                 MappaView.saveMappaEditor(request)
         if "elimina" in request.POST:
             EliminazioneMappaView.controlloEliminazioneMappa(request)
-        return render(request, "editor.html")
+        return render(request, MappaView.template_name)
 
     @staticmethod
     def checkMappa(request, nome, difficolta):
@@ -323,7 +327,7 @@ class MappaView(TemplateView):
         n_random = secrets.randbelow(1000)
         nome_mappa = request.POST['nome-mappa']
         dirname = os.path.dirname(__file__)
-        filename = os.path.join(dirname, 'static\Mappe')
+        filename = os.path.join(dirname, PATH)
         while Mappa.objects.filter(IDMappa=n_random).exists():
             n_random = secrets.randbelow(1000)
         if request.user.is_authenticated:
@@ -377,7 +381,7 @@ class MappaView(TemplateView):
             percorso = mappa.PercorsoMappa + "\\" + nome + "-" + difficolta + ESTENSIONE
         if not os.path.exists(percorso):
             messages.error(request, "Il file inserito non è nella cartella: controlla di averlo salvato correttamente. Reinserisci il file nell'editor e rinomina i continenti")
-            return render(request, 'editor.html')
+            return render(request, MappaView.template_name)
         file = open(percorso)
         data = json.load(file)
         if not (Continente.objects.count() == 0) and not (Territorio.objects.count() == 0):
@@ -492,13 +496,17 @@ class MappaView(TemplateView):
 
     @staticmethod
     def controlloAdiacenzaTerritori(data, territorio1, territorio2):
+        coord_1 = None
+        coord_2 = None
+        intermedio = False
         for elem1 in data['map']['areas'][territorio1]['coords']:
             for elem2 in data['map']['areas'][territorio2]['coords']:
-                if elem1 == elem2:
-                    for elem3 in data['map']['areas'][territorio1]['coords']:
-                        for elem4 in data['map']['areas'][territorio2]['coords']:
-                            if elem3 == elem4 and elem1 != elem3 and elem2 != elem4:
-                                return True
+                if elem1 == elem2 and elem1 != coord_1 and elem2 != coord_2:
+                    intermedio = True
+                    coord_1 = elem1
+                    coord_2 = elem2
+                if intermedio:
+                    return True
         return False
 
 
@@ -513,10 +521,10 @@ class EliminazioneMappaView(TemplateView):
         username = User.objects.get(username=request.user.username)
         if not Mappa.objects.filter(NomeMappa=nome, Autore=username).exists():
             messages.error(request, "Il nome della mappa inserito non esiste")
-            return render(request, "editor.html")
+            return render(request, MappaView.template_name)
         if nome == "MappaDefault":
             messages.error(request, "La mappa selezionata non può essere eliminata")
-            return render(request, "editor.html")
+            return render(request, MappaView.template_name)
         else:
             EliminazioneMappaView.eliminazioneMappa(request, nome, username)
 

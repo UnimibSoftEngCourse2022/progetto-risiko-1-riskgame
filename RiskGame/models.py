@@ -45,7 +45,7 @@ class Mappa(models.Model):
         blank = True,
         null = True
     )
-    PercorsoMappa = models.CharField(max_length=100)
+    PercorsoMappa = models.CharField(max_length=100, default="")
     Difficolta = models.CharField(max_length = 20, default="")
 
 
