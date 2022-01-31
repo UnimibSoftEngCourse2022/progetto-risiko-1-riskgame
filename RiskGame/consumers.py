@@ -60,7 +60,7 @@ class PartitaConsumer(WebsocketConsumer):
     listaContinenti = []
     listaStatistiche = []
     giocatoreAttivo = ""
-    indexGiocatoreAttivo = -1
+    indexGiocatoreAttivo = 0
     numeroTurno = 0
     operazione: boolean = False
 
@@ -93,7 +93,6 @@ class PartitaConsumer(WebsocketConsumer):
         # Chiamato alla ricezione di un messaggio (testo o bytes)
         text_data_json = json.loads(text_data)
         tipo = text_data_json['tipo']
-
         mittente = text_data_json['sender']
 
         # Metti messaggio in room group (locale) per gestire la richiesta
@@ -141,7 +140,6 @@ class PartitaConsumer(WebsocketConsumer):
                 text_data_json['idPartita'], text_data_json['sender'])
         elif (tipo == 'iniziaPartita'):
             self.assegnazioneTerritoriTruppeIniziali()
-            self.giocatoreAttivo = self.listaGiocatori[0].nickname
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
@@ -150,6 +148,7 @@ class PartitaConsumer(WebsocketConsumer):
                     'sender': mittente
                 }
             )
+            self.giocatoreAttivo = self.listaGiocatori[0].nickname
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
@@ -159,6 +158,13 @@ class PartitaConsumer(WebsocketConsumer):
                 }
             )
         elif (tipo == 'iniziaTurno'):
+            self.indexGiocatoreAttivo += 1
+            if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
+                self.indexGiocatoreAttivo = 0
+                self.numeroTurno += 1
+            self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname
+            if (self.numeroTurno > 0):
+                self.chiamataAssegnazioneTruppeTerritorio(self.giocatoreAttivo)
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
@@ -188,6 +194,14 @@ class PartitaConsumer(WebsocketConsumer):
                     }
                 )
             else:
+                self.indexGiocatoreAttivo += 1
+                if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
+                    self.indexGiocatoreAttivo = 0
+                    self.numeroTurno += 1
+                self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname
+                if (self.numeroTurno > 0):
+                    self.chiamataAssegnazioneTruppeTerritorio(self.giocatoreAttivo)
+                print('Tocca a: ' + self.giocatoreAttivo)
                 async_to_sync(self.channel_layer.group_send)(
                     self.room_group_name,
                     {
@@ -264,13 +278,6 @@ class PartitaConsumer(WebsocketConsumer):
                 'nomeMappa': nomeMappa
             }))
         elif (tipo == 'iniziaTurno'):
-            self.indexGiocatoreAttivo += 1
-            if (self.indexGiocatoreAttivo >= len(self.listaGiocatori)):
-                self.indexGiocatoreAttivo = 0
-                self.numeroTurno += 1
-            self.giocatoreAttivo = self.listaGiocatori[self.indexGiocatoreAttivo].nickname
-            if (self.numeroTurno > 0):
-                self.chiamataAssegnazioneTruppeTerritorio(self.giocatoreAttivo)
             self.send(text_data=json.dumps({
                 'tipo': tipo,
                 'sender': mittente,
@@ -344,11 +351,13 @@ class PartitaConsumer(WebsocketConsumer):
                 # self.listaStatistiche.append(Statistiche.getListaStatistiche(i))
                 oggStat = Statistiche.getListaStatistiche(i)
                 self.listaStatistiche.append(ClasseStatistiche(i, oggStat.NumeroPartiteVinte,
-                                                               oggStat.NumeroPartitePerse, oggStat.PercentualeVinte, oggStat.NumeroScontriVinti,
-                                                               oggStat.NumeroScontriPersi, oggStat.NumeroScontriVintiATK, oggStat.NumeroScontriPersiATK,
-                                                               oggStat.NumeroScontriVintiDEF, oggStat.NumeroScontriPersiDEF, oggStat.PercentualeScontriVintiATK,
-                                                               oggStat.NumeroPartiteGiocate))
-            for j in range(k, h):
+                    oggStat.NumeroPartitePerse, oggStat.PercentualeVinte, oggStat.NumeroScontriVinti,
+                    oggStat.NumeroScontriPersi, oggStat.NumeroScontriVintiATK, oggStat.NumeroScontriPersiATK,
+                    oggStat.NumeroScontriVintiDEF, oggStat.NumeroScontriPersiDEF, oggStat.PercentualeScontriVintiATK,
+                    oggStat.NumeroPartiteGiocate))
+            for j in range(k , h):
+                if (h > len(self.listaTerritori)):
+                    break
                 self.listaTerritori[j].giocatore = i
             k = h
             h = h + h
@@ -361,6 +370,7 @@ class PartitaConsumer(WebsocketConsumer):
             #self.listaStatistiche.append(ClasseStatistiche(statistiche.IDGiocatore, statistiche.NumeroPartiteVinte, statistiche.NumeroPartitePerse, statistiche.PercentualeVinte, statistiche.NumeroScontriVinti, statistiche.NumeroScontriPersi, statistiche.NumeroScontriPersiATK, statistiche.NumeroScontriVintiDEF, statistiche.NumeroScontriPersiDEF, statistiche.PercentualeScontriVintiATK, statistiche.NumeroPartiteGiocate))
 
     def chiamataAssegnazioneTruppeTerritorio(self, classeGiocatore):
+        
         k = 0
         cont = 0
         xgiocatore: ClasseGiocatore
@@ -546,9 +556,9 @@ class PartitaConsumer(WebsocketConsumer):
                 giocatore = giocatoreDEF
 
     def chiamataSpostamento(self, postinoSocket, mittenteSocket, riceventeSocket, numeroTruppeSocket):
-        postino: ClasseGiocatore
-        mittente: ClasseTerritorio
-        ricevente: ClasseTerritorio
+        postino : ClasseGiocatore = ClasseGiocatore()
+        mittente : ClasseTerritorio = ClasseTerritorio()
+        ricevente : ClasseTerritorio = ClasseTerritorio()   
 
         for giocatore in self.listaGiocatori:
             if giocatore.nickname == postinoSocket:

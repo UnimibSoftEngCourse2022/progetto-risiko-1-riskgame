@@ -52,21 +52,37 @@
         }
 
         .form-popup {
-            width: 500px;
-            height: 50vh;
+            width: 226px;
+            height: 75vh;
             display: none;
             position: fixed;
             align-self: center;
             align-content: center;
-            align-items: center;
             border: 3px solid #f1f1f1;
             border-radius: 7px;
             z-index: 9;
             background-color: rgba(255, 255, 255, 0.5);
             left: 50%;
-            margin-left: -250px;
-            margin-top: 0;
+            margin-left: -113px;
+            margin-top: -80vh;
             padding: 0px 15px 10px 10px
+        }
+
+        .form-opzioni {
+            width: 292px;
+            height: 12vh;
+            display: none;
+            position: fixed;
+            align-self: center;
+            align-content: center;
+            border: 3px solid #f1f1f1;
+            border-radius: 7px;
+            z-index: 9;
+            background-color: rgba(255, 255, 255, 0.5);
+            left: 50%;
+            margin-left: -140px;
+            margin-top: -55vh;
+            padding: 9px 15px 10px 10px;
         }
 
         hr {
@@ -84,7 +100,7 @@
         .tabella-assegna-truppe {
             display: flex;
             width: 90%;
-            height: 70%;
+            height: 65%;
             float: right;
             overflow-x: hidden;
             overflow-y: scroll;
@@ -197,13 +213,17 @@
                 mappa = data.mappa.map; // contiene i dati della mappa in JSON
 
                 var imgMappa = document.createElement('img');
-                imgMappa.setAttribute('src', 'static/Mappe/' + mappa.name);
                 imgMappa.setAttribute('width', windowsize='100%');
-                imgMappa.setAttribute('height', mappa.height);
-                imgMappa.setAttribute('style', 'width: 80%;')
+                imgMappa.setAttribute('src', 'static/Mappe/' + mappa.name);
+                //imgMappa.setAttribute('height', mappa.height);
                 imgMappa.setAttribute('usemap', '#' + data.nomeMappa);
                 imgMappa.setAttribute('class', 'map maphilighted');
+                imgMappa.setAttribute('style', 'width: 80%;')
                 divMappa.appendChild(imgMappa);
+                
+                
+                //style="display: block; position: relative; padding: 0px; width: 1108px; height: 758px;"
+                
 
                 var mapTag = document.createElement('map');
                 mapTag.setAttribute('name', data.nomeMappa);
@@ -233,7 +253,7 @@
                 $('img[usemap]').mapster({
                     isSelectable: true,
                     fillOpacity: 0.4,
-                    scaleMap: true,
+                    
                     toolTipContainer: '<div style="width:100px; height:100px; color:#BBBBBB"></div>',       
                     showToolTip: true,
                     toolTipClose: ["area-mouseout"],
@@ -248,8 +268,8 @@
                 disegnaTabella();
             }
             else if (data.tipo == 'iniziaTurno') {
+                console.log(data.giocatoreAttivo + '=' + nomeGiocatore);
                 if (data.giocatoreAttivo == nomeGiocatore) {
-
                     territoriGiocatore = [];
                     listaTerritori.forEach(territorio => {
                         if (territorio.giocatore == nomeGiocatore)
@@ -358,10 +378,10 @@
 
         function proseguiTurno() {
             var formOpzioni = document.createElement('div');
-            formOpzioni.setAttribute('class', 'form-popup');
+            formOpzioni.setAttribute('class', 'form-opzioni');
             formOpzioni.setAttribute('id', 'formOpzioni');
 
-            var titolo = document.createElement('h2');
+            var titolo = document.createElement('h3');
             titolo.innerHTML = '<center>Scegli operazione</center>';
             formOpzioni.appendChild(titolo);
 
@@ -674,7 +694,11 @@
                 'idPartita': '{{ PartitaID }}',
                 'sender': nomeGiocatore
             }));
-            location.href = "/";
+            console.log('{{ user.is_authenticated }}');
+            if ('{{ user.is_authenticated }}' == 'True')
+                location.href = "/menu";
+            else
+                location.href = "/";
         };
 
         function iniziaPartita() {
