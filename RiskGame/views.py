@@ -26,7 +26,6 @@ PATH = 'static\Mappe'
 # Create your views here.
 
 
-
 class HomePageView(TemplateView):
     template_name = "home.html"
 
@@ -54,7 +53,7 @@ class RegistrazioneView(TemplateView):
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
-            messages.success(request, f'Account created for {username}!')
+
             user = User.objects.filter(username=username).first()
             Statistiche.objects.create(
                 IDGiocatore=user,
@@ -72,7 +71,8 @@ class RegistrazioneView(TemplateView):
             )
             dirname = os.path.dirname(__file__)
             filename = os.path.join(dirname, PATH)
-            Mappa.objects.filter(NomeMappa = "MappaDefault").update(PercorsoMappa = filename)
+            Mappa.objects.filter(NomeMappa="MappaDefault").update(
+                PercorsoMappa=filename)
             return redirect('home')
         else:
             form = UserRegisterForm()
@@ -147,7 +147,6 @@ class PartitaView(TemplateView):
     template_name = "partita.html"
     template_creazione = "creazione.html"
 
-
     @staticmethod
     @require_http_methods(["GET", "POST"])
     def creaPartita(request):
@@ -204,7 +203,8 @@ class PartitaView(TemplateView):
                 mappa = Mappa.objects.filter(NomeMappa=nome, Difficolta="Difficile").first()
                 percorso = mappa.PercorsoMappa + "\\" + nome + ".map.json"""
         n_continenti = Continente.objects.filter(Mappa=mappa).count()
-        PartitaView.collassaGiocatori(request, nome, difficolta, n_continenti, numGiocatori)
+        PartitaView.collassaGiocatori(
+            request, nome, difficolta, n_continenti, numGiocatori)
         # mappa = Mappa.objects.filter(NomeMappa=nome, Autore=username, Difficolta= difficolta).first()
         if int(numGiocatori) <= n_continenti:
             Partita.objects.create(IDPartita=nuovoID, NumeroGiocatori=numGiocatori,
@@ -219,7 +219,8 @@ class PartitaView(TemplateView):
 
             return redirect(reverse('RiskGame:partecipaPartita', kwargs={'PartitaID': nuovoID}))
         else:
-            messages.error(request, "Il numero di giocatori inserito non è compatibile con la mappa")
+            messages.error(
+                request, "Il numero di giocatori inserito non è compatibile con la mappa")
             return render(request, PartitaView.template_creazione)
 
     @staticmethod
@@ -248,7 +249,8 @@ class PartitaView(TemplateView):
                 print(percorso)
                 file = open(percorso)
                 data = json.load(file)
-                MappaView.collassaConfiniGiocatori(request, data, mappa, numGiocatori)
+                MappaView.collassaConfiniGiocatori(
+                    request, data, mappa, numGiocatori)
                 percorso = mappa.PercorsoMappa
                 MappaView.saveJson(nome, difficolta, percorso, data)
                 file.close()
@@ -259,12 +261,12 @@ class PartitaView(TemplateView):
                     numero_truppe = int(math.floor(x.count / 3))
                     if numero_truppe == 0:
                         numero_truppe = 1
-                    Continente.objects.filter(NomeContinente=x.NomeContinente).update(NumeroTruppe=numero_truppe)
+                    Continente.objects.filter(NomeContinente=x.NomeContinente).update(
+                        NumeroTruppe=numero_truppe)
             else:
                 messages.error(request,
                                "La mappa contiene già un numero di continenti pari al numero di giocatori inserito")
                 return render(request, PartitaView.template_creazione)
-
 
 
 class StatisticheView(TemplateView):
@@ -301,7 +303,7 @@ class MappaView(TemplateView):
     def draw(request):
         dirname = os.path.dirname(__file__)
         filename = os.path.join(dirname, PATH)
-        return render(request, MappaView.template_name, {"percorso" : filename})
+        return render(request, MappaView.template_name, {"percorso": filename})
 
     @staticmethod
     @require_http_methods(["GET", "POST"])
@@ -311,11 +313,13 @@ class MappaView(TemplateView):
         username = User.objects.get(username=request.user.username)
         if "conferma" in request.POST:
             if nome_mappa == "MappaDefault":
-                messages.error(request, "Il nome della mappa inserito non può essere scelto")
+                messages.error(
+                    request, "Il nome della mappa inserito non può essere scelto")
                 return render(request, MappaView.template_name)
 
             elif Mappa.objects.filter(NomeMappa=nome_mappa, Autore=username).exists():
-                messages.error(request, "Il nome della mappa inserito esiste già")
+                messages.error(
+                    request, "Il nome della mappa inserito esiste già")
                 return render(request, MappaView.template_name)
             else:
                 MappaView.saveMappaEditor(request)
@@ -327,13 +331,16 @@ class MappaView(TemplateView):
     def checkMappa(request, nome, difficolta):
         if request.user.is_authenticated:
             if nome == "MappaDefault":
-                mappa = Mappa.objects.filter(NomeMappa=nome, Difficolta=difficolta).first()
+                mappa = Mappa.objects.filter(
+                    NomeMappa=nome, Difficolta=difficolta).first()
             else:
                 username = User.objects.get(username=request.user.username)
                 print(username)
-                mappa = Mappa.objects.filter(NomeMappa=nome, Autore=username, Difficolta=difficolta).first()
+                mappa = Mappa.objects.filter(
+                    NomeMappa=nome, Autore=username, Difficolta=difficolta).first()
         else:
-            mappa = Mappa.objects.filter(NomeMappa=nome, Difficolta=difficolta).first()
+            mappa = Mappa.objects.filter(
+                NomeMappa=nome, Difficolta=difficolta).first()
         print(mappa)
         return mappa
 
@@ -352,8 +359,8 @@ class MappaView(TemplateView):
                 if nome_mappa == "MappaDefault":
                     username = None
                 Mappa.objects.create(IDMappa=n_random, NomeMappa=nome_mappa, Autore=username,
-                                         PercorsoMappa=filename,
-                                         Difficolta="Difficile")
+                                     PercorsoMappa=filename,
+                                     Difficolta="Difficile")
                 MappaView.saveConfigurazione(request)
                 return render(request, template_menu)
             else:
@@ -361,16 +368,16 @@ class MappaView(TemplateView):
                 if nome_mappa == "MappaDefault":
                     username = None
                 if not Mappa.objects.filter(NomeMappa=nome_mappa, Autore=username, PercorsoMappa=filename,
-                                                Difficolta=difficolta).exists():
+                                            Difficolta=difficolta).exists():
                     Mappa.objects.create(IDMappa=n_random, NomeMappa=nome_mappa, Autore=username,
-                                             PercorsoMappa=filename,
-                                             Difficolta=difficolta)
+                                         PercorsoMappa=filename,
+                                         Difficolta=difficolta)
                     MappaView.saveConfigurazione(request)
                     return render(request, template_menu)
         elif not Mappa.objects.filter(NomeMappa="MappaDefault", PercorsoMappa=filename, Autore=None,
-                                    Difficolta="Difficile").exists():
+                                      Difficolta="Difficile").exists():
             Mappa.objects.create(NomeMappa="MappaDefault", PercorsoMappa=filename, Autore=None,
-                                    Difficolta="Difficile")
+                                 Difficolta="Difficile")
             MappaView.saveConfigurazione(request)
             return render(request, template_menu)
 
@@ -396,22 +403,26 @@ class MappaView(TemplateView):
         else:
             percorso = mappa.PercorsoMappa + "\\" + nome + "-" + difficolta + ESTENSIONE
         if not os.path.exists(percorso):
-            messages.error(request, "Il file inserito non è nella cartella: controlla di averlo salvato correttamente. Reinserisci il file nell'editor e rinomina i continenti")
+            messages.error(
+                request, "Il file inserito non è nella cartella: controlla di averlo salvato correttamente. Reinserisci il file nell'editor e rinomina i continenti")
             return render(request, MappaView.template_name)
         file = open(percorso)
         data = json.load(file)
         if not (Continente.objects.count() == 0) and not (Territorio.objects.count() == 0):
-            n_continente = Continente.objects.latest('IDContinente').IDContinente + 1
-            n_territorio = Territorio.objects.latest('IDTerritorio').IDTerritorio + 1
+            n_continente = Continente.objects.latest(
+                'IDContinente').IDContinente + 1
+            n_territorio = Territorio.objects.latest(
+                'IDTerritorio').IDTerritorio + 1
         for i in data['map']['areas']:
             if not Continente.objects.filter(NomeContinente=i['group'], Mappa=mappa).exists():
                 Continente.objects.create(IDContinente=n_continente, NomeContinente=i['group'], NumeroTruppe=0,
-                                                      Mappa=mappa)
+                                          Mappa=mappa)
                 n_continente = n_continente + 1
-            continente = Continente.objects.filter(NomeContinente=i['group'], Mappa=mappa).first()
+            continente = Continente.objects.filter(
+                NomeContinente=i['group'], Mappa=mappa).first()
             if not Territorio.objects.filter(NomeTerritorio=i['title'], Continente=continente).exists():
                 Territorio.objects.create(IDTerritorio=n_territorio, NomeTerritorio=i['title'],
-                                                      Continente=continente, Mappa=mappa)
+                                          Continente=continente, Mappa=mappa)
                 n_territorio = n_territorio + 1
         MappaView.generaTruppe(request, mappa)
         MappaView.generaConfini(data, mappa)
@@ -420,21 +431,24 @@ class MappaView(TemplateView):
     @staticmethod
     def generaTruppe(request, mappa):
         result = Continente.objects.filter(Mappa=mappa).order_by('IDContinente').annotate(
-                count=Count('territorio'))
+            count=Count('territorio'))
         for x in result:
             numero_truppe = int(math.floor(x.count / 3))
             if numero_truppe == 0:
                 numero_truppe = 1
-            Continente.objects.filter(NomeContinente=x.NomeContinente).update(NumeroTruppe=numero_truppe)
+            Continente.objects.filter(NomeContinente=x.NomeContinente).update(
+                NumeroTruppe=numero_truppe)
 
     @staticmethod
     def generaConfini(data, mappa):
         for i in range(0, len(data['map']['areas'])):
-            territorio1 = Territorio.objects.filter(NomeTerritorio=data['map']['areas'][i]['title'], Mappa=mappa).first()
+            territorio1 = Territorio.objects.filter(
+                NomeTerritorio=data['map']['areas'][i]['title'], Mappa=mappa).first()
             for j in range(0, len(data['map']['areas'])):
                 adiacenza = MappaView.controlloAdiacenzaTerritori(data, i, j)
                 if adiacenza:
-                    territorio2 = Territorio.objects.filter(NomeTerritorio=data['map']['areas'][j]['title'], Mappa=mappa).first()
+                    territorio2 = Territorio.objects.filter(
+                        NomeTerritorio=data['map']['areas'][j]['title'], Mappa=mappa).first()
                     territorio1.Confini.add(territorio2)
 
     @staticmethod
@@ -489,8 +503,10 @@ class MappaView(TemplateView):
                     continente_nuovo = Continente.objects.filter(NomeContinente=data['map']['areas'][i]['group'],
                                                                  Mappa=mappa).first()
                     for j in range(0, len(data['map']['areas']) - 1):
-                        adiacenza = MappaView.controlloAdiacenzaTerritori(data, i, j)
-                        result = MappaView.checkFusione(request, data, i, j, mappa, continente_nuovo, adiacenza, selected)
+                        adiacenza = MappaView.controlloAdiacenzaTerritori(
+                            data, i, j)
+                        result = MappaView.checkFusione(
+                            request, data, i, j, mappa, continente_nuovo, adiacenza, selected)
                         if result:
                             n_continenti_visitati = n_continenti_visitati + 1
                             break
@@ -541,7 +557,8 @@ class EliminazioneMappaView(TemplateView):
             messages.error(request, "Il nome della mappa inserito non esiste")
             return render(request, MappaView.template_name)
         if nome == "MappaDefault":
-            messages.error(request, "La mappa selezionata non può essere eliminata")
+            messages.error(
+                request, "La mappa selezionata non può essere eliminata")
             return render(request, MappaView.template_name)
         else:
             EliminazioneMappaView.eliminazioneMappa(request, nome, username)
@@ -549,8 +566,10 @@ class EliminazioneMappaView(TemplateView):
     @staticmethod
     def eliminazioneMappa(request, nome, username):
         if Mappa.objects.filter(NomeMappa=nome, Autore=username, Difficolta="Difficile").exists():
-            mappa = Mappa.objects.filter(NomeMappa=nome, Autore=username, Difficolta="Difficile").first()
-            percorso = mappa.PercorsoMappa + "\\" + mappa.NomeMappa + "-" + mappa.Difficolta + ESTENSIONE
+            mappa = Mappa.objects.filter(
+                NomeMappa=nome, Autore=username, Difficolta="Difficile").first()
+            percorso = mappa.PercorsoMappa + "\\" + \
+                mappa.NomeMappa + "-" + mappa.Difficolta + ESTENSIONE
             if os.path.exists(percorso):
                 os.remove(percorso)
             mappa.delete()
@@ -558,14 +577,18 @@ class EliminazioneMappaView(TemplateView):
             if os.path.exists(percorso):
                 os.remove(percorso)
         if Mappa.objects.filter(NomeMappa=nome, Autore=username, Difficolta="Media").exists():
-            mappa = Mappa.objects.filter(NomeMappa=nome, Autore=username, Difficolta="Media").first()
-            percorso = mappa.PercorsoMappa + "\\" + mappa.NomeMappa + "-" + mappa.Difficolta + ESTENSIONE
+            mappa = Mappa.objects.filter(
+                NomeMappa=nome, Autore=username, Difficolta="Media").first()
+            percorso = mappa.PercorsoMappa + "\\" + \
+                mappa.NomeMappa + "-" + mappa.Difficolta + ESTENSIONE
             if os.path.exists(percorso):
                 os.remove(percorso)
             mappa.delete()
         if Mappa.objects.filter(NomeMappa=nome, Autore=username, Difficolta="Semplice").exists():
-            mappa = Mappa.objects.filter(NomeMappa=nome, Autore=username, Difficolta="Semplice").first()
-            percorso = mappa.PercorsoMappa + "\\" + mappa.NomeMappa + "-" + mappa.Difficolta + ESTENSIONE
+            mappa = Mappa.objects.filter(
+                NomeMappa=nome, Autore=username, Difficolta="Semplice").first()
+            percorso = mappa.PercorsoMappa + "\\" + \
+                mappa.NomeMappa + "-" + mappa.Difficolta + ESTENSIONE
             if os.path.exists(percorso):
                 os.remove(percorso)
             mappa.delete()
