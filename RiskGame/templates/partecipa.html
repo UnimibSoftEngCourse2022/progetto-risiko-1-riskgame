@@ -19,7 +19,7 @@
                 <div class="tile-partita">
                     <span style="color:blue">Partita {{ partita.IDPartita }}</span><br>
                       {% with 'mappe/'|add:partita.Mappa.PercorsoMappa as percorso %}
-                        <img src="{% static percorso %}" width="200" height="130" alt="Immagine mappa"><hr>
+                        <img src="{% static 'Home/RiskLogo.png' %}" width="200" height="130" alt="Immagine mappa"><hr>
                       {% endwith %}
                       <strong>Numero giocatori:</strong> {{ totGiocatori }}/{{ partita.NumeroGiocatori }}<br>
                       <strong>Difficoltà:</strong>

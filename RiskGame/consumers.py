@@ -68,13 +68,20 @@ class PartitaConsumer(WebsocketConsumer):
         self.room_name = self.scope['url_route']['kwargs']['PartitaID']
         self.room_group_name = 'partita_%s' % self.room_name
 
-        global idPartita, nomeMappa, jsonMappa
+        global idPartita, nomeMappa, jsonMappa, difficolta
         idPartita = self.room_name
+        difficolta = Partita.getDifficolta(idPartita)
         nomeMappa = Partita.getMappa(idPartita)
 
-        with open(str(Path(__file__).absolute().parent) + '/static/Mappe/' + nomeMappa + '.map.json') as json_file:
-            jsonMappa = json.load(json_file)
-        json_file.close()
+        if (difficolta == 'Difficile'):
+            with open(str(Path(__file__).absolute().parent) + '/static/Mappe/' + nomeMappa + '.map.json') as json_file:
+                jsonMappa = json.load(json_file)
+            json_file.close()
+        else:
+            with open(str(Path(
+                    __file__).absolute().parent) + '/static/Mappe/' + nomeMappa + '-' + difficolta + '.map.json') as json_file:
+                jsonMappa = json.load(json_file)
+            json_file.close()
 
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,

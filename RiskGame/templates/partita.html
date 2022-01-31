@@ -233,12 +233,12 @@
 
                 var imgMappa = document.createElement('img');
 
-                imgMappa.setAttribute('width', windowsize='100%');
+                //imgMappa.setAttribute('width', windowsize='100%');
                 imgMappa.setAttribute('src', 'static/Mappe/' + mappa.name);
-                //imgMappa.setAttribute('height', mappa.height);
+                imgMappa.setAttribute('height', mappa.height);
                 imgMappa.setAttribute('usemap', '#' + data.nomeMappa);
                 imgMappa.setAttribute('class', 'map maphilighted');
-                imgMappa.setAttribute('style', 'width: 80%;')
+                //imgMappa.setAttribute('style', 'width: 100%;')
                 divMappa.appendChild(imgMappa);
                 
                 

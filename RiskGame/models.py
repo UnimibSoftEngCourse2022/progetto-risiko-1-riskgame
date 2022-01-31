@@ -96,6 +96,16 @@ class Partita(models.Model):
             Partita.objects.get(IDPartita=idPartita).delete()
 
     @staticmethod
+    def getDifficolta(idPartita):
+        diff = Partita.objects.get(IDPartita=idPartita).Difficolta
+        if (diff == 1):
+            return 'Semplice'
+        elif (diff == 2):
+            return 'Media'
+        elif (diff == 3):
+            return 'Difficile'
+
+    @staticmethod
     def getMappa(idPartita):
         return Partita.objects.get(IDPartita=idPartita).Mappa.NomeMappa
 
