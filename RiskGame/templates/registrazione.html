@@ -4,7 +4,11 @@
 {% load crispy_forms_tags %}
 <style>
   section {
-    padding: 15vh 0;
+    padding: 5vh 0;
+  }
+
+  .formp {
+    transform: scale(0.9);
   }
 </style>
 
@@ -12,10 +16,8 @@
 <section id="intro">
   <div class="container-lg">
     <div class="row">
-      <div class="co-md-5 text-md-start">
-
-
-        <form method="post">
+      <div class="col-md-5 text-md-start">
+        <form method="post" class="formp">
           {% csrf_token %}
           {{ form|crispy }}
           <div class="form-group">
