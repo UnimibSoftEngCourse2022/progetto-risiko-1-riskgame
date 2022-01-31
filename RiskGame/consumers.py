@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import dataclasses
 import json
 import math
-import random
+import secrets
 from xmlrpc.client import boolean
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer

@@ -363,8 +363,9 @@
                 listaGiocatori.forEach(giocatore => {
                     console.log(giocatore.vittoriaPartita);
                     if (giocatore.vittoriaPartita == true)
-                        giocatoreVincitore = giocatore.nome;
+                        giocatoreVincitore = giocatore.nickname;
                 });
+                console.log(giocatoreVincitore);
                 if (giocatoreVincitore == null){
                     if (data.giocatoreAttivo == nomeGiocatore){
                         stop = false;
