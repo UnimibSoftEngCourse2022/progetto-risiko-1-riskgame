@@ -424,9 +424,7 @@ class PartitaConsumer(WebsocketConsumer):
         if xgiocatore.numeroTruppeTurno == 0:
             xgiocatore.numeroTruppeTurno = 1
         xgiocatore.numeroTruppeTurno = xgiocatore.numeroTruppeTurno + k
-        print(xgiocatore.numeroTruppeTurno)
         xgiocatore.numTruppe = xgiocatore.numTruppe + xgiocatore.numeroTruppeTurno
-        print(xgiocatore.numTruppe)
         for i in self.listaGiocatori:
             if xgiocatore.nickname == i.nickname:
                 i = xgiocatore
