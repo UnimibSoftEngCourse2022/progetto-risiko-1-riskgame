@@ -1,5 +1,5 @@
 from django.contrib import admin
-from RiskGame.models import *
+from RiskGame.models import Mappa, Partita, Statistiche, Continente, Territorio, Carta, Ospite
 
 # Register your models here.
 

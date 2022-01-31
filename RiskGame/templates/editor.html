@@ -2,9 +2,6 @@
 {% block content %}
 
 {% load static %}
-
-
-
 <body>
 
     <div class="cp">
@@ -22,6 +19,8 @@
                 Se vuoi che due territori risultino confinanti, crea le aree in modo che due punti risultino
                 in
                 comune<br>
+                Se vuoi salvare la mappa, una volta creata la configurazione con i territori e i continenti, premi sul tasto salva a sinistra<br>
+                e sposta il file generato all'interno della cartella '\static\Mappe'; successivamente premi conferma<br>
                 Se vuoi eliminare una mappa che avevi creato in passato, scrivi il nome e successivamente
                 clicca
                 sul
@@ -30,16 +29,6 @@
 
             </span>
         </div>
-
-
-        <div class="light-text p-2">
-            <p class="text">Una volta generato il file Html, spostare l'immagine jpeg della mappa e il file generato
-                all'interno della cartella Mappe; fare attenzione ad aver nominato entrambi i file con il nome della
-                mappa
-                presente nell'editor.<br>
-                Successivamente clicca il tasto "Conferma"</p>
-        </div>
-
         <form action="{% url 'RiskGame:checkButton' %}" method="POST">
             {% csrf_token %}
             <div class="text">
@@ -128,7 +117,6 @@
         margin-left: -50px;
         width: 800px !important;
         height: 476px !important;
-        padding-bottom: 200px;
         box-sizing: content-box;
     }
 

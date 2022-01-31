@@ -1,14 +1,14 @@
 import secrets
 import constant
 from django.shortcuts import render, redirect, reverse
-from django.views.decorators.http import *
+from django.views.decorators.http import require_http_methods
 from django.views.generic import TemplateView
 from django.contrib import messages
 from django.contrib.auth import logout
 from urllib import request
 import views
 from .forms import UserRegisterForm
-from RiskGame.models import *
+from RiskGame.models import Statistiche, Mappa, Ospite, Partita, Continente, Territorio
 from django.db.models import Count
 import os
 import random
@@ -18,7 +18,6 @@ import math
 from django.http import HttpResponse
 import pytest
 from urllib import request
-from django.views.decorators.csrf import requires_csrf_token
 
 ESTENSIONE = ".map.json"
 PATH = 'static\Mappe'

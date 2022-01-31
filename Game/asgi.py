@@ -15,7 +15,6 @@ from django.core.asgi import get_asgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Game.settings')
 
-from RiskGame.consumers import *
 from channels.routing import ProtocolTypeRouter, URLRouter
 import RiskGame.routing
 
