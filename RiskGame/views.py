@@ -1,4 +1,5 @@
 import secrets
+import constant
 from django.shortcuts import render, redirect, reverse
 from django.views.decorators.http import *
 from django.views.generic import TemplateView
@@ -20,6 +21,7 @@ from urllib import request
 from django.views.decorators.csrf import requires_csrf_token
 
 ESTENSIONE = ".map.json"
+
 # Create your views here.
 
 
@@ -45,6 +47,7 @@ class RegistrazioneView(TemplateView):
     template_name = "registrazione.html"
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def register(request):
         if request.method == 'POST':
             form = UserRegisterForm(request.POST)
@@ -70,7 +73,7 @@ class RegistrazioneView(TemplateView):
                 return redirect('login')
         else:
             form = UserRegisterForm()
-        return render(request, template_name, {'form': form})
+        return render(request, 'registrazione.html', {'form': form})
     """def saveUserData(request):
         if request.method == "POST":
             NickName = request.POST['nickname']
@@ -90,11 +93,13 @@ class MenuView(TemplateView):
     template_name = "menu.html"
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def drawMenu(request):
         request.session['ospite'] = 'null'
         return render(request, MenuView.template_name)
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def drawOspite(request):
         request.session['ospite'] = Ospite.assegnaOspite()
         return render(request, MenuView.template_name)
@@ -107,6 +112,7 @@ class ImpostazioniView(TemplateView):
 class CreazioneView(TemplateView):
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def draw(request):
         list_mappe = ["MappaDefault"]
         template_name = "creazione.html"
@@ -127,6 +133,7 @@ class PartecipaView(TemplateView):
     template_name = "partecipa.html"
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def loadPartite(request):
         temp_data = Partita.objects.all()
         return render(request, "partecipa.html", {"partita_package": temp_data})
@@ -136,6 +143,7 @@ class PartitaView(TemplateView):
     template_name = "partita.html"
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def creaPartita(request):
         # Crea la partita nel DB, aggiunge il nuovo giocatore e lo reindirizza alla partita
         nome = request.POST['nome-mappa']
@@ -211,6 +219,7 @@ class PartitaView(TemplateView):
             return render(request, 'creazione.html')
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def partecipaPartita(request, PartitaID):
         # Aggiunge il giocatore alla lista giocatori e lo reindirizza alla partita
         partita = Partita.objects.get(IDPartita=PartitaID)
@@ -223,6 +232,7 @@ class PartitaView(TemplateView):
             "Ospite": request.session['ospite']})
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def collassaGiocatori(request, nome, difficolta, numGiocatori):
         if "collassaGiocatori" in request.POST:
             if n_continenti != int(numGiocatori):
@@ -259,6 +269,7 @@ class PartitaView(TemplateView):
 
 class StatisticheView(TemplateView):
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def draw(request):
         username = User.objects.get(username=request.user.username)
         template_name = "statistiche.html"
@@ -271,6 +282,7 @@ class StatisticheView(TemplateView):
 
 class CredenzialiView(TemplateView):
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def draw(request):
         userprofile_form = UserRegisterForm(request.POST if request.POST else None,
                                             instance=User.objects.get(username=request.user))
@@ -284,25 +296,27 @@ class CredenzialiView(TemplateView):
 
 class MappaView(TemplateView):
     template_name = "editor.html"
-
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def checkButton(request):
-        if request.method == "POST":
+        print(request)
+        if "POST" in request:
             nome_mappa = request.POST['nome-mappa']
             username = User.objects.get(username=request.user.username)
             if "conferma" in request.POST:
                 if nome_mappa == "MappaDefault":
                     messages.error(request, "Il nome della mappa inserito non può essere scelto")
-                    return render(request, template_name)
+                    return render(request, constant.template_name)
                 if Mappa.objects.filter(NomeMappa=nome_mappa, Autore=username).exists():
                     messages.error(request, "Il nome della mappa inserito esiste già")
-                    return render(request, template_name)
+                    return render(request, constant.template_name)
                 MappaView.saveMappaEditor(request)
             if "elimina" in request.POST:
                 EliminazioneMappaView.eliminazioneMappa(request)
-        return render(request, template_name)
+        return render(request, constant.template_name)
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def saveMappaEditor(request):
         template_menu = "menu.html"
         if request.method == "POST":
@@ -342,6 +356,7 @@ class MappaView(TemplateView):
                     return render(request, template_menu)
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def saveJson(nome, difficolta, percorso, data):
         if not os.path.exists(percorso):
             os.makedirs(percorso)
@@ -350,6 +365,7 @@ class MappaView(TemplateView):
             json.dump(data, jsonFile)
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def saveConfigurazione(request):
         if request.method == "POST":
             nome = request.POST['nome-mappa']
@@ -398,6 +414,7 @@ class MappaView(TemplateView):
             file.close()
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def generaConfini(data, mappa):
         for i in data['map']['areas']:
             territorio1 = Territorio.objects.filter(NomeTerritorio=i['title'], Mappa=mappa).first()
@@ -414,12 +431,14 @@ class MappaView(TemplateView):
                         break
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def findContinenteJson(data, name):
         for i in data['map']['areas']:
             if i['title'] == name:
                 return i['group']
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def collassaConfiniDifficolta(request, data):
         selected = []
         difficolta = request.POST['difficolta']
@@ -453,6 +472,7 @@ class MappaView(TemplateView):
         data['map']['areas'] = temp
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def collassaConfiniGiocatori(request, data, mappa, numGiocatori):
         length = Continente.objects.filter(Mappa=mappa).count() - int(numGiocatori)
         n_continenti_visitati = 0
@@ -480,6 +500,7 @@ class MappaView(TemplateView):
                             break
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def controlloAdiacenzaTerritori(data, territorio1, territorio2):
         for elem1 in data['map']['areas'][territorio1]['coords']:
             for elem2 in data['map']['areas'][territorio2]['coords']:
@@ -511,16 +532,17 @@ class EliminazioneMappaView(TemplateView):
         return render(request, template_name, maps)"""
 
     @staticmethod
+    @require_http_methods(["POST", "GET"])
     def eliminazioneMappa(request):
         if request.method == "POST":
             nome = request.POST['nome-mappa']
             username = User.objects.get(username=request.user.username)
             if not Mappa.objects.filter(NomeMappa=nome, Autore=username).exists():
                 messages.error(request, "Il nome della mappa inserito non esiste")
-                return render(request,template_name)
+                return render(request,constant.template_name)
             if nome == "MappaDefault":
                 messages.error(request, "La mappa selezionata non può essere eliminata")
-                return render(request, template_name)
+                return render(request, constant.template_name)
             else:
                 if Mappa.objects.filter(NomeMappa=nome, Autore=username, Difficolta="Difficile").exists():
                     mappa = Mappa.objects.filter(NomeMappa=nome, Autore=username, Difficolta="Difficile").first()
