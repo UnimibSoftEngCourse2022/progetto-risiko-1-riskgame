@@ -24,38 +24,7 @@ ESTENSIONE = ".map.json"
 PATH = 'static\Mappe'
 
 # Create your views here.
-<<<<<<< HEAD
-@require_http_methods(["POST", "GET"])
-def register(request):
-    if request.method == 'POST':
-        form = UserRegisterForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            messages.success(request, f'Account created for {username}!')
-            user = User.objects.filter(username=username).first()
-            Statistiche.objects.create(
-                IDGiocatore=user,
-                NumeroPartiteVinte=0,
-                NumeroPartitePerse=0,
-                PercentualeVinte=0.0,
-                NumeroScontriVinti=0,
-                NumeroScontriPersi=0,
-                NumeroScontriVintiATK=0,
-                NumeroScontriPersiATK=0,
-                NumeroScontriVintiDEF=0,
-                NumeroScontriPersiDEF=0,
-                PercentualeScontriVintiATK=0.0,
-                NumeroPartiteGiocate=0
-            )
-            dirname = os.path.dirname(__file__)
-            filename = os.path.join(dirname, PATH)
-            mappa = Mappa.objects.filter(NomeMappa="MappaDefault").first()
-            mappa.update(Percorso=filename)
-            return redirect('home')
-    else:
-        form = UserRegisterForm()
-    return render(request, 'registrazione.html', {'form': form})
+
 
 
 class HomePageView(TemplateView):
@@ -104,7 +73,7 @@ class RegistrazioneView(TemplateView):
             filename = os.path.join(dirname, PATH)
             mappa = Mappa.objects.filter(NomeMappa = "MappaDefault").first()
             mappa.update(Percorso = filename)
-            return redirect('login')
+            return redirect('home')
         else:
             form = UserRegisterForm()
         return render(request, 'registrazione.html', {'form': form})
