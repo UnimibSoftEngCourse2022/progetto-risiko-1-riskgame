@@ -61,6 +61,7 @@
                     <div class="navbar-nav flex-end">
 
                         {% if user.is_authenticated %}
+                        <ul>
                         <li class="nav-item dropdown justify-content-center">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
@@ -81,14 +82,19 @@
                             </ul>
 
                         </li>
+                        </ul>
 
+                        <ul>
                         <li class="nav-item">
                             <a href="" class="nav-link disabled">&nbsp;&nbsp;&nbsp;</a>
                         </li>
+                        </ul>
+
+                        <ul>
                         <li class="nav-item">
                             <a href="" class="nav-link disabled">&nbsp;&nbsp;</a>
                         </li>
-
+                        </ul>
                         {% elif request.path == '/' %}
 
                         <a class="nav-item nav-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button"

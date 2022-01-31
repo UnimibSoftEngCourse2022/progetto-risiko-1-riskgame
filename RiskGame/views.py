@@ -48,6 +48,7 @@ class RegistrazioneView(TemplateView):
     template_name = "registrazione.html"
 
     @staticmethod
+    @require_http_methods(["GET", "POST"])
     def register(request):
         form = UserRegisterForm(request.POST)
         if form.is_valid():
@@ -96,11 +97,13 @@ class MenuView(TemplateView):
     template_name = "menu.html"
 
     @staticmethod
+    @require_http_methods(["GET", "POST"])
     def drawMenu(request):
         request.session['ospite'] = 'null'
         return render(request, MenuView.template_name)
 
     @staticmethod
+    @require_http_methods(["GET", "POST"])
     def drawOspite(request):
         request.session['ospite'] = Ospite.assegnaOspite()
         return render(request, MenuView.template_name)
@@ -113,6 +116,7 @@ class ImpostazioniView(TemplateView):
 class CreazioneView(TemplateView):
 
     @staticmethod
+    @require_http_methods(["GET", "POST"])
     def draw(request):
         list_mappe = ["MappaDefault"]
         template_name = "creazione.html"
@@ -133,6 +137,7 @@ class PartecipaView(TemplateView):
     template_name = "partecipa.html"
 
     @staticmethod
+    @require_http_methods(["GET", "POST"])
     def loadPartite(request):
         temp_data = Partita.objects.all()
         return render(request, "partecipa.html", {"partita_package": temp_data})
@@ -141,7 +146,10 @@ class PartecipaView(TemplateView):
 class PartitaView(TemplateView):
     template_name = "partita.html"
     template_creazione = "creazione.html"
+
+
     @staticmethod
+    @require_http_methods(["GET", "POST"])
     def creaPartita(request):
         # Crea la partita nel DB, aggiunge il nuovo giocatore e lo reindirizza alla partita
         nome = request.POST['nome-mappa']
@@ -214,8 +222,8 @@ class PartitaView(TemplateView):
             messages.error(request, "Il numero di giocatori inserito non è compatibile con la mappa")
             return render(request, PartitaView.template_creazione)
 
-
     @staticmethod
+    @require_http_methods(["GET", "POST"])
     def partecipaPartita(request, PartitaID):
         # Aggiunge il giocatore alla lista giocatori e lo reindirizza alla partita
         partita = Partita.objects.get(IDPartita=PartitaID)
@@ -228,6 +236,7 @@ class PartitaView(TemplateView):
                                                 "Ospite": request.session['ospite']})
 
     @staticmethod
+    @require_http_methods(["GET", "POST"])
     def collassaGiocatori(request, nome, difficolta, n_continenti, numGiocatori):
         if "collassaGiocatori" in request.POST:
             if n_continenti != int(numGiocatori):
@@ -260,6 +269,7 @@ class PartitaView(TemplateView):
 
 class StatisticheView(TemplateView):
     @staticmethod
+    @require_http_methods(["GET", "POST"])
     def draw(request):
         username = User.objects.get(username=request.user.username)
         template_name = "statistiche.html"
@@ -272,6 +282,7 @@ class StatisticheView(TemplateView):
 
 class CredenzialiView(TemplateView):
     @staticmethod
+    @require_http_methods(["GET", "POST"])
     def draw(request):
         userprofile_form = UserRegisterForm(request.POST if request.POST else None,
                                             instance=User.objects.get(username=request.user))
@@ -286,12 +297,14 @@ class MappaView(TemplateView):
     template_name = "editor.html"
 
     @staticmethod
+    @require_http_methods(["GET", "POST"])
     def draw(request):
         dirname = os.path.dirname(__file__)
         filename = os.path.join(dirname, PATH)
         return render(request, MappaView.template_name, {"percorso" : filename})
 
     @staticmethod
+    @require_http_methods(["GET", "POST"])
     def checkButton(request):
         print(request.POST['nome-mappa'])
         nome_mappa = request.POST['nome-mappa']
