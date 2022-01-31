@@ -17,18 +17,6 @@ class registerTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-class statsTest(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(username= " userTestName")
-        self.user.set_password("userTestPass")
-        self.user.save()
-
-    def test_view_url_exists_at_desired_location(self):
-        self.client.force_login(self.user)
-        response = self.client.get('/statistiche')
-        self.assertEqual(response.status_code, 200)
-
 
 class matchListTest(TestCase):
     def setUp(self):
@@ -101,13 +89,3 @@ class credenzialiTest(TestCase):
         response = self.client.get('/credenziali')
         self.assertEqual(response.status_code, 200)
 
-
-class creazioneTest(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user("userTestName", "userTestPass",)
-
-    def test_view_url_exists_at_desired_location(self):
-        self.client.force_login(self.user)
-        response = self.client.get('/crea-partita')
-        self.assertEqual(response.status_code, 200)
