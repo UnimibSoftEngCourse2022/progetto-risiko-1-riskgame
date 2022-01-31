@@ -467,10 +467,10 @@ class PartitaConsumer(WebsocketConsumer):
                 statisticheDEF = statistiche
         
         for i in range(0, truppeATK):
-            valATK.append(random.randint(0,5))
+            valATK.append(secrets.randbelow(6))
         
         for i in range(0, truppeDEF):
-            valDEF.append(random.randint(0,5))
+            valDEF.append(secrets.randbelow(6))
 
         valATK.reverse()
         valDEF.reverse()
@@ -518,7 +518,7 @@ class PartitaConsumer(WebsocketConsumer):
             giocatoreDEF.ingioco = False
 
         if vittoria :
-            giocatoreATK.carte.append(random.randint(1,4))
+            giocatoreATK.carte.append(secrets.randbelow(4) + 1)
         
         for i in self.listaTerritori:
             for j in self.listaTerritori:
