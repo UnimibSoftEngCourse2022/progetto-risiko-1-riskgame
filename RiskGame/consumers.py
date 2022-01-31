@@ -535,7 +535,9 @@ class PartitaConsumer(WebsocketConsumer):
             if i.giocatore == giocatoreATK.nickname:
                 totTerritori = totTerritori + 1
 
-        if totTerritori >= len(self.listaTerritori):
+        print(totTerritori)
+        print(math.floor(len(self.listaTerritori) * 2 / 3))
+        if totTerritori > math.floor(len(self.listaTerritori) * 2 / 3):
             giocatoreATK.vittoriaPartita = True
             self.aggiornaStatisticheVittoria(giocatoreATK)
 
@@ -576,8 +578,8 @@ class PartitaConsumer(WebsocketConsumer):
 
     def aggiornaStatisticheVittoria(self, vincitore):
         statistiche: ClasseStatistiche
-        for i in self.listaGiocatori:
-            if (i.nickname == vincitore.nickname):
+        for i in self.listaStatistiche:
+            if (i.IDGiocatore == vincitore.nickname):
                 i.NumeroPartiteVinte = i.NumeroPartiteVinte + 1
                 i.PercentualeVinte = i.NumeroPartiteVinte / \
                     (i.NumeroPartiteVinte + i.NumeroPartitePerse) * 100

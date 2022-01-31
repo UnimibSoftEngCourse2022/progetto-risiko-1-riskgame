@@ -44,7 +44,7 @@ def register(request):
                 PercentualeScontriVintiATK=0.0,
                 NumeroPartiteGiocate=0
             )
-            return redirect('login')
+            return redirect('home')
     else:
         form = UserRegisterForm()
     return render(request, 'registrazione.html', {'form': form})
